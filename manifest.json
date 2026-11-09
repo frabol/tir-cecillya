@@ -1,0 +1,10 @@
+{
+  "name": "Tir Cécillya",
+  "short_name": "Tir Cécillya",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#17365D",
+  "theme_color": "#17365D",
+  "orientation": "portrait",
+  "icons": []
+}
