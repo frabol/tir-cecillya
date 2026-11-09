@@ -1,4 +1,3 @@
-
 async function chargerCalendrier() {
 
     const response = await fetch(
@@ -9,10 +8,16 @@ async function chargerCalendrier() {
 
     const workbook = XLSX.read(data);
 
-    document.getElementById("etat").innerHTML =
-        "✅ Excel chargé : " +
-        workbook.SheetNames.length +
-        " feuille(s)";
+    let html = "✅ Excel chargé<br><br>";
+
+    html += "<b>Feuilles trouvées :</b><br>";
+
+    workbook.SheetNames.forEach(sheet => {
+        html += "• " + sheet + "<br>";
+    });
+
+    document.getElementById("etat").innerHTML = html;
 }
 
 chargerCalendrier();
+
