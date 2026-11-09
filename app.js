@@ -1,53 +1,59 @@
 async function chargerCalendrier() {
 
-    const response = await fetch(
-        "Calendrier_Ligue_Tir_NPdC_2026_2027_dernier.xlsx"
-    );
+    try {
 
-    const data = await response.arrayBuffer();
+        const response = await fetch(
+            "Calendrier_Ligue_Tir_NPdC_2026_2027_dernier.xlsx"
+        );
 
-    const workbook = XLSX.read(data);
+        const data = await response.arrayBuffer();
 
-    const sheet = workbook.Sheets["Calendrier 2026-2027"];
+        const workbook = XLSX.read(data);
 
-    const lignes = XLSX.utils.sheet_to_json(sheet, {
-        header: 1
-    });
+        const sheet = workbook.Sheets["Calendrier 2026-2027"];
 
-    let htmlCompetitions = "";
+        const lignes = XLSX.utils.sheet_to_json(sheet, {
+            header: 1
+        });
 
-    for (let i = 4; i < lignes.length; i++) {
+        let html = "<h3>📅 Compétitions trouvées</h3>";
 
-        const ligne = lignes[i];
+        let compteur = 0;
 
-        if (!ligne) continue;
+        for (let i = 4; i < lignes.length; i++) {
 
-        const date = ligne[1];
-        const evenement = ligne[2];
-        const lieu = ligne[3];
-        const statut = ligne[5];
+            const ligne = lignes[i];
 
-        if (statut === "À venir") {
+            if (!ligne) continue;
 
-            htmlCompetitions += `
-            <div class="competition">
-                <div class="date">${date || ""}</div>
-                <b>${evenement || ""}</b><br>
-                📍 ${lieu || "-"}<br>
-                <span style="color:green">
-                ✅ ${statut}
-                </span>
-            </div>
-            `;
+            const date = ligne[1];
+            const evenement = ligne[2];
+            const lieu = ligne[3];
+
+            if (evenement) {
+
+                html += `
+                <div style="padding:10px;border-bottom:1px solid #ddd;">
+                    <b>${date || ""}</b><br>
+                    ${evenement}<br>
+                    📍 ${lieu || "-"}
+                </div>
+                `;
+
+                compteur++;
+
+                if (compteur >= 20) break;
+            }
         }
+
+        document.getElementById("etat").innerHTML = html;
+
+    } catch (erreur) {
+
+        document.getElementById("etat").innerHTML =
+            "❌ Erreur : " + erreur.message;
+
     }
-
-    document.getElementById("competitions")
-        .innerHTML = htmlCompetitions;
-
-    document.getElementById("etat")
-        .innerHTML =
-        "✅ Filtre 'À venir' activé";
 }
 
 chargerCalendrier();
