@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Tir Cécillya</title>
+
+<link rel="manifest" href="manifest.json">
+
+<style>
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#f0f4f8;
+}
+
+header{
+background:#17365D;
+padding:20px;
+text-align:center;
+color:white;
+}
+
+.card{
+background:white;
+margin:15px;
+padding:15px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+
+h2{
+margin-top:0;
+}
+
+.competition{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+.date{
+font-weight:bold;
+color:#17365D;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>Tir Cécillya</h1>
+
+<p>Calendrier Ligue Tir NPdC</p>
+
+</header>
+
+<div class="card">
+
+<h2>Prochaines compétitions</h2>
+
+<div class="competition">
+
+<div class="date">14/11/2026</div>
+
+Tournoi de la Côte d'Opale
+<br>
+Oye-Plage
+
+</div>
+
+<div class="competition">
+
+<div class="date">14/11/2026</div>
+
+Tournoi Nord 10m 3ème tour
+<br>
+Suivant Zones
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Derniers résultats</h2>
+
+<ul>
+
+<li>617.5</li>
+
+<li>612.8</li>
+
+<li>611.9</li>
+
+<li>604.1</li>
+
+</ul>
+
+</div>
+
+<script>
+
+if ('serviceWorker' in navigator) {
+
+navigator.serviceWorker.register('service-worker.js');
+
+}
+
+</script>
+
+</body>
+
+</html>
