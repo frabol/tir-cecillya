@@ -14,9 +14,7 @@ async function chargerCalendrier() {
         header: 1
     });
 
-    let html = "<h3>📅 Compétitions trouvées</h3>";
-
-    let compteur = 0;
+    let htmlCompetitions = "";
 
     for (let i = 4; i < lignes.length; i++) {
 
@@ -27,27 +25,29 @@ async function chargerCalendrier() {
         const date = ligne[1];
         const evenement = ligne[2];
         const lieu = ligne[3];
+        const statut = ligne[5];
 
-        if (evenement) {
+        if (statut === "À venir") {
 
-            html += `
-                <div style="
-                padding:10px;
-                margin:10px 0;
-                border-bottom:1px solid #ddd;">
-                <b>${date || ""}</b><br>
-                ${evenement}<br>
-                📍 ${lieu || "-"}
-                </div>
+            htmlCompetitions += `
+            <div class="competition">
+                <div class="date">${date || ""}</div>
+                <b>${evenement || ""}</b><br>
+                📍 ${lieu || "-"}<br>
+                <span style="color:green">
+                ✅ ${statut}
+                </span>
+            </div>
             `;
-
-            compteur++;
-
-            if (compteur >= 15) break;
         }
     }
 
-    document.getElementById("etat").innerHTML = html;
+    document.getElementById("competitions")
+        .innerHTML = htmlCompetitions;
+
+    document.getElementById("etat")
+        .innerHTML =
+        "✅ Filtre 'À venir' activé";
 }
 
 chargerCalendrier();
