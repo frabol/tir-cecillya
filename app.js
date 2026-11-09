@@ -20,4 +20,3 @@ async function chargerCalendrier() {
 }
 
 chargerCalendrier();
-
