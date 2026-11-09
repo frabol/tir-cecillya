@@ -29,14 +29,19 @@ async function chargerCalendrier() {
             const date = ligne[1];
             const evenement = ligne[2];
             const lieu = ligne[3];
+            const statut = ligne[5];
 
-            if (evenement) {
+            if (evenement && statut === "À venir") {
+
+
 
                 html += `
                 <div style="padding:10px;border-bottom:1px solid #ddd;">
                     <b>${date || ""}</b><br>
                     ${evenement}<br>
-                    📍 ${lieu || "-"}
+                    📍 ${lieu || "-"}<br>
+✅ ${statut}
+
                 </div>
                 `;
 
