@@ -189,16 +189,19 @@ const moyenne =
 ).toFixed(1);
 
 const meilleurEntrainement =
-    Math.max(...entrainementsExcel);
+    entrainementsExcel.length > 0
+    ? Math.max(...entrainementsExcel)
+    : 0;
 
 const moyenneEntrainement =
-(
-    entrainementsExcel.reduce(
-        (a, b) => a + b,
-        0
-    )
-    / entrainementsExcel.length
-).toFixed(1);
+    entrainementsExcel.length > 0
+    ? (
+        entrainementsExcel.reduce(
+            (a, b) => a + b,
+            0
+        ) / entrainementsExcel.length
+      ).toFixed(1)
+    : 0;
        
 
     document.getElementById("etat").innerHTML = `
