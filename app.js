@@ -30,13 +30,12 @@ const valeur = Number(score);
 
 if (
     !isNaN(valeur) &&
-    valeur > 100
+    valeur >= 300
 ) {
 
     scoresExcel.push(valeur);
 
 }
-
         const sheet = workbook.Sheets["Calendrier 2026-2027"];
 
         const lignes = XLSX.utils.sheet_to_json(sheet, {
