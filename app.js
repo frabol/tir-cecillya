@@ -27,7 +27,25 @@ entrainementsExcel = [];
 datesExcel = [];
         
 for (let i = 1; i < donneesGraph.length; i++) {
-const date = donneesGraph[i][0];
+const dateExcel = donneesGraph[i][0];
+
+let date = "";
+
+if (typeof dateExcel === "number") {
+
+    const jsDate = new Date(
+        (dateExcel - 25569) * 86400 * 1000
+    );
+
+    date =
+        jsDate.toLocaleDateString(
+            "fr-FR",
+            {
+                day: "2-digit",
+                month: "2-digit"
+            }
+        );
+}
     if (!donneesGraph[i]) continue;
 
     const score = donneesGraph[i][1];
