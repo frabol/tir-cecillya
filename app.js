@@ -254,6 +254,7 @@ const moyenneEntrainement =
 
     const ctx =
         document.getElementById("graphiqueScores");
+    console.log(datesExcel);
 new Chart(ctx, {
 
     type: "line",
