@@ -223,7 +223,9 @@ const moyenneEntrainement =
 <b>${moyenneEntrainement}</b></p>
 
         <p>📋 Nombre de résultats : <b>${scores.length}</b></p>
-
+        <p>🏋️ Nombre d'entraînements :
+        <b>${entrainementsExcel.length}</b></p>
+        
         <canvas id="graphiqueScores"></canvas>
 
     `;
@@ -250,7 +252,7 @@ new Chart(ctx, {
             backgroundColor:
             "rgba(23,54,93,0.2)",
 
-            fill: false,
+            fill: true ,
 
             tension: 0.3
         },
@@ -264,8 +266,7 @@ new Chart(ctx, {
 
             backgroundColor:
             "rgba(40,167,69,0.2)",
-
-            fill: false,
+            fill: true ,
 
             tension: 0.3
         }
