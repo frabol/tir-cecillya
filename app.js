@@ -39,7 +39,7 @@ for (let i = 1; i < donneesGraph.length; i++) {
     donneesGraph[i][13]
 );
 const dateMatchExcel =
-    donneesGraph[i][0];
+    donneesGraph[i][9];
 
 const dateEntrainementExcel =
     donneesGraph[i][15];
@@ -49,10 +49,28 @@ let dateEntrainement = "";
 
 if (dateMatchExcel) {
 
-    dateMatch =
-        String(dateMatchExcel)
-        .substring(0, 5);
+    if (typeof dateMatchExcel === "number") {
 
+        const jsDate = new Date(
+            (dateMatchExcel - 25569) * 86400 * 1000
+        );
+
+        dateMatch =
+            jsDate.toLocaleDateString(
+                "fr-FR",
+                {
+                    day: "2-digit",
+                    month: "2-digit"
+                }
+            );
+
+    } else {
+
+        dateMatch =
+            String(dateMatchExcel)
+            .substring(0, 5);
+
+    }
 }
 
 if (dateEntrainementExcel) {
@@ -65,7 +83,8 @@ if (dateEntrainementExcel) {
     if (!donneesGraph[i]) continue;
 
     const score = donneesGraph[i][1];
-    const entrainement = donneesGraph[i][13];
+    const entrainement =
+    donneesGraph[i][16];
     const valeurEntrainement =
     Number(entrainement);
 
@@ -84,6 +103,17 @@ if (
     );
 
 }
+    console.log(
+    "Match",
+    dateMatch,
+    score
+);
+
+console.log(
+    "Entrainement",
+    dateEntrainement,
+    entrainement
+);
     const valeur = Number(score);
 
     if (
