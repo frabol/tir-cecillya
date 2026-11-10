@@ -69,12 +69,6 @@ if (
     );
 
 }
-
-    entrainementsExcel.push(
-        valeurEntrainement
-    );
-
-}
     const valeur = Number(score);
 
     if (
@@ -270,8 +264,8 @@ const moyenneEntrainement =
 
     const ctx =
         document.getElementById("graphiqueScores");
-    console.log(datesExcel);
-console.log("Dates", datesExcel);
+   console.log("Dates matchs", datesMatchs);
+console.log("Dates entraînements", datesEntrainements);
 console.log("Matchs", scoresExcel);
 console.log("Entrainements", entrainementsExcel);
     new Chart(ctx, {
