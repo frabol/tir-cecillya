@@ -113,12 +113,52 @@ function afficherAVenir() {
 
 function afficherResultats() {
 
-    alert("Résultats");
+document.getElementById("etat").innerHTML = `
+
+    <h2>🏆 Résultats</h2>
+
+    <div class="competition">
+        <b>Tournoi Nord 10m 1er tour</b><br>
+        Score : 604.1
+    </div>
+
+    <div class="competition">
+        <b>Tournoi du Hainaut</b><br>
+        Score : 407
+    </div>
+
+    <div class="competition">
+        <b>Nord 10m 2ème tour</b><br>
+        Score : 600.3
+    </div>
+
+    <div class="competition">
+        <b>Entraînement</b><br>
+        617.5
+    </div>
+
+    `;
 
 }
 
 function afficherStats() {
 
-    alert("Statistiques");
+   document.getElementById("etat").innerHTML = `
+
+    <h2>📈 Statistiques</h2>
+
+    <p>
+    🏆 Meilleur score : 617.5
+    </p>
+
+    <p>
+    🎯 Dernier score : 600.3
+    </p>
+
+    <p>
+    📊 Progression disponible
+    </p>
+
+    `;
 
 }
