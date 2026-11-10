@@ -1,3 +1,5 @@
+let scoresExcel = [];
+
 async function chargerCalendrier() {
 
     try {
@@ -9,6 +11,31 @@ async function chargerCalendrier() {
         const data = await response.arrayBuffer();
 
         const workbook = XLSX.read(data);
+        const sheetGraph =
+    workbook.Sheets["Chart Data"];
+
+const donneesGraph =
+    XLSX.utils.sheet_to_json(
+        sheetGraph,
+        { header: 1 }
+    );
+
+scoresExcel = [];
+
+for (let i = 1; i < donneesGraph.length; i++) {
+
+    const score = donneesGraph[i][1];
+
+    if (
+        score !== undefined &&
+        !isNaN(score)
+    ) {
+
+        scoresExcel.push(
+            Number(score)
+        );
+    }
+}
 
         const sheet = workbook.Sheets["Calendrier 2026-2027"];
 
@@ -68,7 +95,6 @@ async function chargerCalendrier() {
 chargerCalendrier();
 
 
-
 function afficherToutes() {
 
     chargerCalendrier();
@@ -118,17 +144,14 @@ function afficherResultats() {
 
 function afficherStats() {
 
-  const scores = [
-        604.1,
-        407,
-        600.3,
-        605.5,
-        611.4,
-        605,
-        611.9,
-        612.8,
-        617.5
-    ];
+  const scores = scoresExcel;
+    if (scores.length === 0) {
+
+    document.getElementById("etat").innerHTML =
+        "Aucun score trouvé.";
+
+    return;
+}
 
     const meilleur = Math.max(...scores);
 
