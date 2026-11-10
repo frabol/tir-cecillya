@@ -26,7 +26,9 @@ for (let i = 1; i < donneesGraph.length; i++) {
 
     const score = donneesGraph[i][1];
 
-    if (
+const valeur = Number(score);
+
+if (
     !isNaN(valeur) &&
     valeur > 100
 ) {
