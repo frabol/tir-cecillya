@@ -199,10 +199,7 @@ const moyenneEntrainement =
     )
     / entrainementsExcel.length
 ).toFixed(1);
-        (
-            scores.reduce((a, b) => a + b, 0)
-            / scores.length
-        ).toFixed(1);
+       
 
     document.getElementById("etat").innerHTML = `
 
