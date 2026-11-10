@@ -282,7 +282,7 @@ console.log("Entrainements", entrainementsExcel);
 
     data: {
 
-labels: datesEntrainements.map(d =>
+labels: datesMatchs.map(d =>
     String(d).substring(0, 5)
 ),
         datasets: [
