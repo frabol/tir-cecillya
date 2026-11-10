@@ -2,9 +2,9 @@ async function chargerCalendrier() {
 
     try {
 
-        const response = await fetch(
-            "Calendrier_Ligue_Tir_NPdC_2026_2027_dernier.xlsx"
-        );
+       const response = await fetch(
+    "Calendrier_Ligue_Tir_NPdC_2026_2027_dernier.xlsx?v=" + Date.now()
+);
 
         const data = await response.arrayBuffer();
 
