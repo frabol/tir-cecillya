@@ -142,23 +142,42 @@ document.getElementById("etat").innerHTML = `
 }
 
 function afficherStats() {
+ // Scores présents dans ton fichier Excel
 
-   document.getElementById("etat").innerHTML = `
+    const scores = [
+        604.1,
+        407,
+        600.3,
+        605.5,
+        611.4,
+        605,
+        611.9,
+        612.8,
+        617.5
+    ];
+
+    const meilleur = Math.max(...scores);
+
+    const dernier = scores[scores.length - 1];
+
+    const moyenne =
+        (
+            scores.reduce((a, b) => a + b, 0)
+            / scores.length
+        ).toFixed(1);
+
+    document.getElementById("etat").innerHTML = `
 
     <h2>📈 Statistiques</h2>
 
-    <p>
-    🏆 Meilleur score : 617.5
-    </p>
+    <p>🏆 Meilleur score : <b>${meilleur}</b></p>
 
-    <p>
-    🎯 Dernier score : 600.3
-    </p>
+    <p>🎯 Dernier score : <b>${dernier}</b></p>
 
-    <p>
-    📊 Progression disponible
-    </p>
+    <p>📊 Moyenne : <b>${moyenne}</b></p>
+
+    <p>📋 Nombre de résultats : <b>${scores.length}</b></p>
 
     `;
-
 }
+
