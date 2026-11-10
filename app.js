@@ -38,24 +38,29 @@ for (let i = 1; i < donneesGraph.length; i++) {
     "Entrainement:",
     donneesGraph[i][13]
 );
-const dateExcel = donneesGraph[i][0];
+const dateMatchExcel =
+    donneesGraph[i][9];
 
-let date = "";
+const dateEntrainementExcel =
+    donneesGraph[i][15];
 
-if (typeof dateExcel === "number") {
+let dateMatch = "";
+let dateEntrainement = "";
 
-    const jsDate = new Date(
-        (dateExcel - 25569) * 86400 * 1000
-    );
+if (dateMatchExcel) {
 
-    date =
-        jsDate.toLocaleDateString(
-            "fr-FR",
-            {
-                day: "2-digit",
-                month: "2-digit"
-            }
-        );
+    dateMatch =
+        String(dateMatchExcel)
+        .substring(0, 5);
+
+}
+
+if (dateEntrainementExcel) {
+
+    dateEntrainement =
+        String(dateEntrainementExcel)
+        .substring(0, 5);
+
 }
     if (!donneesGraph[i]) continue;
 
@@ -69,10 +74,11 @@ if (
     valeurEntrainement >= 300
 ) {
 
-    if (date) {
-        datesEntrainements.push(date);
-    }
-
+   if (dateEntrainement) {
+    datesEntrainements.push(
+        dateEntrainement
+    );
+}
     entrainementsExcel.push(
         valeurEntrainement
     );
@@ -84,8 +90,8 @@ if (
         !isNaN(valeur) &&
         valeur >= 300
     ) {
-   if (date) {
-    datesMatchs.push(date);
+if (dateMatch) {
+    datesMatchs.push(dateMatch);
 }
        if (valeur < 500) {
 
