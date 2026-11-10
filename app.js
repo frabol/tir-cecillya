@@ -29,6 +29,14 @@ datesMatchs = [];
 datesEntrainements = [];
         
 for (let i = 1; i < donneesGraph.length; i++) {
+    console.log(
+    "Date:",
+    donneesGraph[i][0],
+    "Score:",
+    donneesGraph[i][1],
+    "Entrainement:",
+    donneesGraph[i][13]
+);
 const dateExcel = donneesGraph[i][0];
 
 let date = "";
