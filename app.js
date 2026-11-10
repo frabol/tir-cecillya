@@ -1,4 +1,5 @@
 let scoresExcel = [];
+let entrainementsExcel = [];
 
 async function chargerCalendrier() {
 
@@ -21,11 +22,25 @@ const donneesGraph =
     );
 
 scoresExcel = [];
+ entrainementsExcel = [];       
 
 for (let i = 1; i < donneesGraph.length; i++) {
 
     const score = donneesGraph[i][1];
+    const entrainement = donneesGraph[i][13];
+    const valeurEntrainement =
+    Number(entrainement);
 
+if (
+    !isNaN(valeurEntrainement) &&
+    valeurEntrainement >= 300
+) {
+
+    entrainementsExcel.push(
+        valeurEntrainement
+    );
+
+}
     const valeur = Number(score);
 
     if (
@@ -210,7 +225,39 @@ function afficherStats() {
                 "9"
             ],
 
-            datasets: [{
+       datasets: [
+
+{
+    label: "Compétitions",
+
+    data: scores,
+
+    borderColor: "#17365D",
+
+    backgroundColor:
+    "rgba(23,54,93,0.2)",
+
+    fill: false,
+
+    tension: 0.3
+},
+
+{
+    label: "Entraînements",
+
+    data: entrainementsExcel,
+
+    borderColor: "#28a745",
+
+    backgroundColor:
+    "rgba(40,167,69,0.2)",
+
+    fill: false,
+
+    tension: 0.3
+}
+
+]
 
                 label: "Progression",
 
