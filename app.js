@@ -65,7 +65,7 @@ style="padding:10px;border-bottom:1px solid #ddd;">
 chargerCalendrier();
 function afficherToutes() {
 
-  location.reload();
+    chargerCalendrier();
 
 }
 
