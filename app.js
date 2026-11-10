@@ -29,6 +29,7 @@ datesMatchs = [];
 datesEntrainements = [];
         
 for (let i = 1; i < donneesGraph.length; i++) {
+    console.log(donneesGraph[i]);
     console.log(
     "Date:",
     donneesGraph[i][0],
@@ -264,8 +265,7 @@ const moyenneEntrainement =
         <p>📅 Dates matchs :
 <b>${datesMatchs.length}</b></p>
 
-<p>📅 Dates entraînements :
-<b>${datesEntrainements.length}</b></p>
+
         <canvas id="graphiqueScores"></canvas>
 
     `;
