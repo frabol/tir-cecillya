@@ -118,7 +118,7 @@ function afficherResultats() {
 
 function afficherStats() {
 
-    const scores = [
+  const scores = [
         604.1,
         407,
         600.3,
@@ -134,10 +134,11 @@ function afficherStats() {
 
     const dernier = scores[scores.length - 1];
 
-    const moyenne = (
-        scores.reduce((a, b) => a + b, 0)
-        / scores.length
-    ).toFixed(1);
+    const moyenne =
+        (
+            scores.reduce((a, b) => a + b, 0)
+            / scores.length
+        ).toFixed(1);
 
     document.getElementById("etat").innerHTML = `
 
@@ -151,5 +152,47 @@ function afficherStats() {
 
         <p>📋 Nombre de résultats : <b>${scores.length}</b></p>
 
+        <canvas id="graphiqueScores"></canvas>
+
     `;
+
+    const ctx =
+        document.getElementById("graphiqueScores");
+
+    new Chart(ctx, {
+
+        type: "line",
+
+        data: {
+
+            labels: [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+            ],
+
+            datasets: [{
+
+                label: "Progression",
+
+                data: scores,
+
+                borderColor: "#17365D",
+
+                backgroundColor:
+                "rgba(23,54,93,0.2)",
+
+                fill: true,
+
+                tension: 0.3
+
+            }]
+        }
+    });
 }
