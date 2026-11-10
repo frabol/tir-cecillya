@@ -1,6 +1,7 @@
 let scoresExcel = [];
 let entrainementsExcel = [];
-let datesExcel = [];
+let datesMatchs = [];
+let datesEntrainements = [];
 
 async function chargerCalendrier() {
 
@@ -24,7 +25,8 @@ const donneesGraph =
 
 scoresExcel = [];
 entrainementsExcel = [];       
-datesExcel = [];
+datesMatchs = [];
+datesEntrainements = [];
         
 for (let i = 1; i < donneesGraph.length; i++) {
 const dateExcel = donneesGraph[i][0];
@@ -58,6 +60,16 @@ if (
     valeurEntrainement >= 300
 ) {
 
+    if (date) {
+        datesEntrainements.push(date);
+    }
+
+    entrainementsExcel.push(
+        valeurEntrainement
+    );
+
+}
+
     entrainementsExcel.push(
         valeurEntrainement
     );
@@ -69,9 +81,9 @@ if (
         !isNaN(valeur) &&
         valeur >= 300
     ) {
-    if (date) {
-        datesExcel.push(date);
-    }
+   if (date) {
+    datesMatchs.push(date);
+}
        if (valeur < 500) {
 
     scoresExcel.push(
@@ -247,7 +259,11 @@ const moyenneEntrainement =
         <p>📋 Nombre de résultats : <b>${scores.length}</b></p>
         <p>🏋️ Nombre d'entraînements :
         <b>${entrainementsExcel.length}</b></p>
-        
+        <p>📅 Dates matchs :
+<b>${datesMatchs.length}</b></p>
+
+<p>📅 Dates entraînements :
+<b>${datesEntrainements.length}</b></p>
         <canvas id="graphiqueScores"></canvas>
 
     `;
@@ -264,10 +280,9 @@ console.log("Entrainements", entrainementsExcel);
 
     data: {
 
-        labels: datesExcel.map(d =>
+labels: datesEntrainements.map(d =>
     String(d).substring(0, 5)
 ),
-
         datasets: [
 
         {
