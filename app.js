@@ -183,6 +183,17 @@ function afficherStats() {
     const dernier = scores[scores.length - 1];
 
     const moyenne =
+        const meilleurEntrainement =
+    Math.max(...entrainementsExcel);
+
+const moyenneEntrainement =
+(
+    entrainementsExcel.reduce(
+        (a, b) => a + b,
+        0
+    )
+    / entrainementsExcel.length
+).toFixed(1);
         (
             scores.reduce((a, b) => a + b, 0)
             / scores.length
@@ -206,73 +217,62 @@ function afficherStats() {
 
     const ctx =
         document.getElementById("graphiqueScores");
+new Chart(ctx, {
 
-    new Chart(ctx, {
+    type: "line",
 
-        type: "line",
+    data: {
 
-        data: {
+        labels: scores.map((_, i) => i + 1),
 
-            labels: [
-                "1",
-                "2",
-                "3",
-                "4",
-                "5",
-                "6",
-                "7",
-                "8",
-                "9"
-            ],
+        datasets: [
 
-       datasets: [
+        {
+            label: "Compétitions",
 
-{
-    label: "Compétitions",
+            data: scores,
 
-    data: scores,
+            borderColor: "#17365D",
 
-    borderColor: "#17365D",
+            backgroundColor:
+            "rgba(23,54,93,0.2)",
 
-    backgroundColor:
-    "rgba(23,54,93,0.2)",
+            fill: false,
 
-    fill: false,
+            tension: 0.3
+        },
 
-    tension: 0.3
-},
+        {
+            label: "Entraînements",
 
-{
-    label: "Entraînements",
+            data: entrainementsExcel,
 
-    data: entrainementsExcel,
+            borderColor: "#28a745",
 
-    borderColor: "#28a745",
+            backgroundColor:
+            "rgba(40,167,69,0.2)",
 
-    backgroundColor:
-    "rgba(40,167,69,0.2)",
+            fill: false,
 
-    fill: false,
-
-    tension: 0.3
-}
-
-]
-
-                label: "Progression",
-
-                data: scores,
-
-                borderColor: "#17365D",
-
-                backgroundColor:
-                "rgba(23,54,93,0.2)",
-
-                fill: true,
-
-                tension: 0.3
-
-            }]
+            tension: 0.3
         }
-    });
-}
+
+        ]
+    },
+
+    options: {
+
+        responsive: true,
+
+        plugins: {
+
+            legend: {
+                display: true
+            }
+
+        }
+
+    }
+
+});
+   
