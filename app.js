@@ -214,6 +214,12 @@ const moyenneEntrainement =
 
         <p>📊 Moyenne : <b>${moyenne}</b></p>
 
+        <p>🏋️ Meilleur entraînement :
+<b>${meilleurEntrainement}</b></p>
+ 
+<p>📈 Moyenne entraînement :
+<b>${moyenneEntrainement}</b></p>
+
         <p>📋 Nombre de résultats : <b>${scores.length}</b></p>
 
         <canvas id="graphiqueScores"></canvas>
