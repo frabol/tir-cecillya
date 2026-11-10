@@ -33,7 +33,17 @@ for (let i = 1; i < donneesGraph.length; i++) {
         valeur >= 300
     ) {
 
-        scoresExcel.push(valeur);
+       if (valeur < 500) {
+
+    scoresExcel.push(
+        Number((valeur * 60 / 40).toFixed(1))
+    );
+
+} else {
+
+    scoresExcel.push(valeur);
+
+}
 
     }
 }
