@@ -142,6 +142,7 @@ document.getElementById("etat").innerHTML = `
 }
 
 function afficherStats() {
+    
  // Scores présents dans ton fichier Excel
 
     const scores = [
