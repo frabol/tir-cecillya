@@ -29,7 +29,11 @@ datesMatchs = [];
 datesEntrainements = [];
         
 for (let i = 1; i < donneesGraph.length; i++) {
-    console.log(donneesGraph[i]);
+ console.log(
+    "Ligne",
+    i,
+    donneesGraph[i]
+);
     console.log(
     "Date:",
     donneesGraph[i][0],
