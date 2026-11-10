@@ -62,3 +62,26 @@ async function chargerCalendrier() {
 }
 
 chargerCalendrier();
+function afficherToutes() {
+
+    alert("Toutes les compétitions");
+
+}
+
+function afficherAVenir() {
+
+    alert("Compétitions à venir");
+
+}
+
+function afficherResultats() {
+
+    alert("Résultats");
+
+}
+
+function afficherStats() {
+
+    alert("Statistiques");
+
+}
