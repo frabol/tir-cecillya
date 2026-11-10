@@ -1,2 +1,2 @@
 Version stable v1.3
-Menu + statistiques
+Graphique Chart.js opérationnel
