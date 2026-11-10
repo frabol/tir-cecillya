@@ -1,5 +1,6 @@
 let scoresExcel = [];
 let entrainementsExcel = [];
+let datesExcel = [];
 
 async function chargerCalendrier() {
 
@@ -22,10 +23,11 @@ const donneesGraph =
     );
 
 scoresExcel = [];
- entrainementsExcel = [];       
-
+entrainementsExcel = [];       
+datesExcel = [];
+        
 for (let i = 1; i < donneesGraph.length; i++) {
-
+const date = donneesGraph[i][0];
     if (!donneesGraph[i]) continue;
 
     const score = donneesGraph[i][1];
@@ -49,7 +51,9 @@ if (
         !isNaN(valeur) &&
         valeur >= 300
     ) {
-
+    if (date) {
+        datesExcel.push(date);
+    }
        if (valeur < 500) {
 
     scoresExcel.push(
@@ -238,7 +242,9 @@ new Chart(ctx, {
 
     data: {
 
-        labels: scores.map((_, i) => i + 1),
+        labels: datesExcel.map(d =>
+    String(d).substring(0, 5)
+),
 
         datasets: [
 
