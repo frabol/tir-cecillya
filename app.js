@@ -27,14 +27,12 @@ for (let i = 1; i < donneesGraph.length; i++) {
     const score = donneesGraph[i][1];
 
     if (
-        score !== undefined &&
-        !isNaN(score)
-    ) {
+    !isNaN(valeur) &&
+    valeur > 100
+) {
 
-        scoresExcel.push(
-            Number(score)
-        );
-    }
+    scoresExcel.push(valeur);
+
 }
 
         const sheet = workbook.Sheets["Calendrier 2026-2027"];
