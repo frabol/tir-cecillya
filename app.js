@@ -26,6 +26,8 @@ scoresExcel = [];
 
 for (let i = 1; i < donneesGraph.length; i++) {
 
+    if (!donneesGraph[i]) continue;
+
     const score = donneesGraph[i][1];
     const entrainement = donneesGraph[i][13];
     const valeurEntrainement =
