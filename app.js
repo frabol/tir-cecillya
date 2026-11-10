@@ -178,12 +178,17 @@ function afficherStats() {
     return;
 }
 
-    const meilleur = Math.max(...scores);
+  const meilleur = Math.max(...scores);
 
-    const dernier = scores[scores.length - 1];
+const dernier = scores[scores.length - 1];
 
-    const moyenne =
-        const meilleurEntrainement =
+const moyenne =
+(
+    scores.reduce((a, b) => a + b, 0)
+    / scores.length
+).toFixed(1);
+
+const meilleurEntrainement =
     Math.max(...entrainementsExcel);
 
 const moyenneEntrainement =
