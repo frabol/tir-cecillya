@@ -64,13 +64,50 @@ async function chargerCalendrier() {
 chargerCalendrier();
 function afficherToutes() {
 
-    alert("Toutes les compétitions");
+   const cartes =
+        document.querySelectorAll(".competition");
+
+    cartes.forEach(carte => {
+
+        carte.style.display = "block";
+
+    });
 
 }
 
 function afficherAVenir() {
 
-    alert("Compétitions à venir");
+    const cartes =
+        document.querySelectorAll(".competition");
+
+    cartes.forEach(carte => {
+
+        const texte =
+            carte.innerText.toLowerCase();
+
+        if (
+            texte.includes("novembre") ||
+            texte.includes("décembre") ||
+            texte.includes("janvier") ||
+            texte.includes("février") ||
+            texte.includes("mars") ||
+            texte.includes("avril") ||
+            texte.includes("mai") ||
+            texte.includes("juin") ||
+            texte.includes("juillet") ||
+            texte.includes("août") ||
+            texte.includes("septembre 2027")
+        ) {
+
+            carte.style.display = "block";
+
+        } else {
+
+            carte.style.display = "none";
+
+        }
+
+    });
 
 }
 
