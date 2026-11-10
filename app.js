@@ -36,7 +36,8 @@ async function chargerCalendrier() {
 
 
                 html += `
-                <div style="padding:10px;border-bottom:1px solid #ddd;">
+              <div class="competition"
+style="padding:10px;border-bottom:1px solid #ddd;">
                     <b>${date || ""}</b><br>
                     ${evenement}<br>
                     📍 ${lieu || "-"}<br>
