@@ -315,3 +315,27 @@ new Chart(ctx, {
 
 });
 }
+function rechercherCompetition() {
+
+    const filtre =
+        document
+        .getElementById("recherche")
+        .value
+        .toLowerCase();
+
+    const cartes =
+        document.querySelectorAll(".competition");
+
+    cartes.forEach(carte => {
+
+        const texte =
+            carte.innerText.toLowerCase();
+
+        carte.style.display =
+            texte.includes(filtre)
+            ? "block"
+            : "none";
+
+    });
+
+}
