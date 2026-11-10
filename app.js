@@ -39,7 +39,7 @@ for (let i = 1; i < donneesGraph.length; i++) {
     donneesGraph[i][13]
 );
 const dateMatchExcel =
-    donneesGraph[i][9];
+    donneesGraph[i][0];
 
 const dateEntrainementExcel =
     donneesGraph[i][15];
