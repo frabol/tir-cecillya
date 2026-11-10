@@ -337,5 +337,4 @@ function rechercherCompetition() {
             : "none";
 
     });
-
 }
