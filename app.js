@@ -2,9 +2,9 @@ async function chargerCalendrier() {
 
     try {
 
-       const response = await fetch(
-    "Calendrier_Ligue_Tir_NPdC_2026_2027_dernier.xlsx?v=" + Date.now()
-);
+        const response = await fetch(
+            "Calendrier_Ligue_Tir_NPdC_2026_2027_dernier.xlsx?v=" + Date.now()
+        );
 
         const data = await response.arrayBuffer();
 
@@ -16,7 +16,7 @@ async function chargerCalendrier() {
             header: 1
         });
 
-        let html = "<h3>📅 Compétitions trouvées</h3>";
+        let html = "<h3>📅 Compétitions à venir</h3>";
 
         let compteur = 0;
 
@@ -33,15 +33,17 @@ async function chargerCalendrier() {
 
             if (evenement && statut === "À venir") {
 
-
-
                 html += `
-              <div class="competition"
-style="padding:10px;border-bottom:1px solid #ddd;">
+                <div class="competition"
+                style="padding:10px;border-bottom:1px solid #ddd;">
+
                     <b>${date || ""}</b><br>
+
                     ${evenement}<br>
+
                     📍 ${lieu || "-"}<br>
-✅ ${statut}
+
+                    ✅ ${statut}
 
                 </div>
                 `;
@@ -54,7 +56,8 @@ style="padding:10px;border-bottom:1px solid #ddd;">
 
         document.getElementById("etat").innerHTML = html;
 
-    } catch (erreur) {
+    }
+    catch (erreur) {
 
         document.getElementById("etat").innerHTML =
             "❌ Erreur : " + erreur.message;
@@ -63,51 +66,28 @@ style="padding:10px;border-bottom:1px solid #ddd;">
 }
 
 chargerCalendrier();
+
+
+
 function afficherToutes() {
 
     chargerCalendrier();
 
 }
 
+
+
 function afficherAVenir() {
 
-    const cartes =
-        document.querySelectorAll(".competition");
-
-    cartes.forEach(carte => {
-
-        const texte =
-            carte.innerText.toLowerCase();
-
-        if (
-            texte.includes("novembre") ||
-            texte.includes("décembre") ||
-            texte.includes("janvier") ||
-            texte.includes("février") ||
-            texte.includes("mars") ||
-            texte.includes("avril") ||
-            texte.includes("mai") ||
-            texte.includes("juin") ||
-            texte.includes("juillet") ||
-            texte.includes("août") ||
-            texte.includes("septembre 2027")
-        ) {
-
-            carte.style.display = "block";
-
-        } else {
-
-            carte.style.display = "none";
-
-        }
-
-    });
+    chargerCalendrier();
 
 }
 
+
+
 function afficherResultats() {
 
-document.getElementById("etat").innerHTML = `
+    document.getElementById("etat").innerHTML = `
 
     <h2>🏆 Résultats</h2>
 
@@ -128,16 +108,15 @@ document.getElementById("etat").innerHTML = `
 
     <div class="competition">
         <b>Entraînement</b><br>
-        617.5
+        Score : 617.5
     </div>
 
     `;
-
 }
 
+
+
 function afficherStats() {
-    
- // Scores présents dans ton fichier Excel
 
     const scores = [
         604.1,
@@ -155,23 +134,22 @@ function afficherStats() {
 
     const dernier = scores[scores.length - 1];
 
-    const moyenne =
-        (
-            scores.reduce((a, b) => a + b, 0)
-            / scores.length
-        ).toFixed(1);
+    const moyenne = (
+        scores.reduce((a, b) => a + b, 0)
+        / scores.length
+    ).toFixed(1);
 
     document.getElementById("etat").innerHTML = `
 
-    <h2>📈 Statistiques</h2>
+        <h2>📈 Statistiques</h2>
 
-    <p>🏆 Meilleur score : <b>${meilleur}</b></p>
+        <p>🏆 Meilleur score : <b>${meilleur}</b></p>
 
-    <p>🎯 Dernier score : <b>${dernier}</b></p>
+        <p>🎯 Dernier score : <b>${dernier}</b></p>
 
-    <p>📊 Moyenne : <b>${moyenne}</b></p>
+        <p>📊 Moyenne : <b>${moyenne}</b></p>
 
-    <p>📋 Nombre de résultats : <b>${scores.length}</b></p>
+        <p>📋 Nombre de résultats : <b>${scores.length}</b></p>
 
     `;
 }
