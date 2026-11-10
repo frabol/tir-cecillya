@@ -26,18 +26,19 @@ for (let i = 1; i < donneesGraph.length; i++) {
 
     const score = donneesGraph[i][1];
 
-const valeur = Number(score);
+    const valeur = Number(score);
 
-if (
-    !isNaN(valeur) &&
-    valeur >= 300
-) {
+    if (
+        !isNaN(valeur) &&
+        valeur >= 300
+    ) {
 
-    scoresExcel.push(valeur);
+        scoresExcel.push(valeur);
 
+    }
 }
-        const sheet = workbook.Sheets["Calendrier 2026-2027"];
 
+const sheet = workbook.Sheets["Calendrier 2026-2027"];
         const lignes = XLSX.utils.sheet_to_json(sheet, {
             header: 1
         });
