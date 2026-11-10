@@ -64,14 +64,7 @@ async function chargerCalendrier() {
 chargerCalendrier();
 function afficherToutes() {
 
-   const cartes =
-        document.querySelectorAll(".competition");
-
-    cartes.forEach(carte => {
-
-        carte.style.display = "block";
-
-    });
+   chargerCalendrier();
 
 }
 
