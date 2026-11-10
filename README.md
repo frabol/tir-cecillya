@@ -1,2 +1,2 @@
-Version stable v1.5
-Double courbe compétitions et entraînements
+Version stable v1.6
+Dates réelles + double courbe
