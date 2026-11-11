@@ -258,31 +258,39 @@ function afficherAVenir() {
 
 function afficherResultats() {
 
-    document.getElementById("etat").innerHTML = `
+    let historique =
+        JSON.parse(
+            localStorage.getItem("scores")
+        ) || [];
 
-    <h2>🏆 Résultats</h2>
+    let html =
+        "<h2>🏆 Résultats</h2>";
 
-    <div class="competition">
-        <b>Tournoi Nord 10m 1er tour</b><br>
-        Score : 604.1
-    </div>
+    historique.forEach(score => {
 
-    <div class="competition">
-        <b>Tournoi du Hainaut</b><br>
-        Score : 407
-    </div>
+        html += `
+            <div class="competition">
 
-    <div class="competition">
-        <b>Nord 10m 2ème tour</b><br>
-        Score : 600.3
-    </div>
+                <b>${score.date}</b><br>
 
-    <div class="competition">
-        <b>Entraînement</b><br>
-        Score : 617.5
-    </div>
+                ${
+                    score.type === "match"
+                    ? "🏆 Compétition"
+                    : "🏋️ Entraînement"
+                }
 
-    `;
+                <br>
+
+                Score :
+                <b>${score.score}</b>
+
+            </div>
+        `;
+
+    });
+
+    document.getElementById("etat").innerHTML =
+        html;
 }
 
 function afficherAjoutScore() {
