@@ -65,18 +65,18 @@ let dateEntrainement = "";
 
 if (dateMatchExcel) {
 
-    const d = new Date(
-        dateMatchExcel
-    );
+    const morceaux =
+        String(dateMatchExcel).split("-");
 
-    dateMatch =
-        d.toLocaleDateString(
-            "fr-FR",
-            {
-                day: "2-digit",
-                month: "2-digit"
-            }
-        );
+    if (morceaux.length === 3) {
+
+        dateMatch =
+            morceaux[2] +
+            "/" +
+            morceaux[1];
+
+    }
+
 }
 
 /* Date entraînement */
@@ -85,13 +85,13 @@ if (
     typeof dateEntrainementExcel === "number"
 ) {
 
-    const d = new Date(
+    const jsDate = new Date(
         (dateEntrainementExcel - 25569)
         * 86400 * 1000
     );
 
     dateEntrainement =
-        d.toLocaleDateString(
+        jsDate.toLocaleDateString(
             "fr-FR",
             {
                 day: "2-digit",
