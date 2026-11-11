@@ -399,7 +399,9 @@ labels: labels,
     pointBackgroundColor: "#28a745",
     pointBorderColor: "#ffffff",
     pointBorderWidth: 2
+        ]        
 },
+            
 options: {
 
     responsive: true,
