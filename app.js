@@ -280,89 +280,33 @@ function afficherAVenir() {
 }
 
 function afficherResultats() {
- 
-let html = "<h2>🏆 Résultats</h2>";
- 
-html += "<h3>📊 Résultats Excel</h3>";
- 
-for (let i = 0; i < datesMatchs.length; i++) {
- 
-html += `
-<div class="competition">
- 
-<b>${datesMatchs[i]}</b><br>
- 
-🏆 Compétition<br>
- 
-Score :
-<b>${scoresExcel[i]}</b>
- 
-</div>
-`;
-}
- 
-for (let i = 0; i < datesEntrainements.length; i++) {
- 
-html += `
-<div class="competition">
- 
-<b>${datesEntrainements[i]}</b><br>
- 
-🏋️ Entraînement<br>
- 
-Score :
-<b>${entrainementsExcel[i]}</b>
- 
-</div>
-`;
-}
- 
-let historique =
-JSON.parse(
-localStorage.getItem("scores")
-) || [];
- 
-if (historique.length > 0) {
 
-    html += `
-        <h3>➕ Scores ajoutés</h3>
-    `;
+    let html = "<h2>🏆 Résultats</h2>";
 
-    historique.forEach((score, index) => {
+    for (let i = 0; i < datesMatchs.length; i++) {
 
         html += `
             <div class="competition">
-
-                <b>${score.date}</b><br>
-
-                ${
-                    score.type === "match"
-                    ? "🏆 Compétition"
-                    : "🏋️ Entraînement"
-                }
-
-                <br>
-
-                Score :
-                <b>${score.score}</b>
-
-                <br><br>
-
-                <button
-                    onclick="supprimerScore(${index})"
-                >
-                    🗑️ Supprimer
-                </button>
-
+                <b>${datesMatchs[i]}</b><br>
+                🏆 Compétition<br>
+                Score : <b>${scoresExcel[i]}</b>
             </div>
         `;
-    });
+    }
+
+    for (let i = 0; i < datesEntrainements.length; i++) {
+
+        html += `
+            <div class="competition">
+                <b>${datesEntrainements[i]}</b><br>
+                🏋️ Entraînement<br>
+                Score : <b>${entrainementsExcel[i]}</b>
+            </div>
+        `;
+    }
+
+    document.getElementById("etat").innerHTML = html;
 }
-
-document.getElementById("etat").innerHTML = html;
-
-}
-
 
 
 function afficherAjoutScore() {
@@ -452,9 +396,9 @@ entrainementsExcel.push(score);
 }
  
 alert("✅ Score enregistré");
- 
-afficherResultats();
 
+chargerCalendrier();
+afficherResultats();
 }
 
 function voirScores() {
