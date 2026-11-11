@@ -152,10 +152,11 @@ const sheet = workbook.Sheets["Calendrier 2026-2027"];
             header: 1
         });
 
-        let html = "<h3>📅 Compétitions à venir</h3>";
+        let html = "";
 
         let compteur = 0;
         let moisCourant = "";
+       
         for (let i = 4; i < lignes.length; i++) {
 
             const ligne = lignes[i];
