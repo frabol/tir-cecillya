@@ -334,11 +334,25 @@ function enregistrerScore() {
             document.getElementById("valeurScore").value
         );
 
-    alert(
-        "Date : " + date +
-        "\nType : " + type +
-        "\nScore : " + score
+    const nouveauScore = {
+        date,
+        type,
+        score
+    };
+
+    let scoresAjoutes =
+        JSON.parse(
+            localStorage.getItem("scoresAjoutes")
+        ) || [];
+
+    scoresAjoutes.push(nouveauScore);
+
+    localStorage.setItem(
+        "scoresAjoutes",
+        JSON.stringify(scoresAjoutes)
     );
+
+    alert("✅ Score enregistré");
 
 }
 
