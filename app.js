@@ -433,28 +433,27 @@ function enregistrerScore() {
         JSON.stringify(historique)
     );
 
-alert("✅ Score enregistré");
-
-afficherResultats();
-
-    if (type === "match") {
-
-    datesMatchs.push(
-        date.split("-").reverse().join("/")
-    );
-
-    scoresExcel.push(score);
-
+if (type === "match") {
+ 
+datesMatchs.push(
+date.split("-").reverse().join("/")
+);
+ 
+scoresExcel.push(score);
+ 
 } else {
-
-    datesEntrainements.push(
-        date.split("-").reverse().join("/")
-    );
-
-    entrainementsExcel.push(score);
-
+ 
+datesEntrainements.push(
+date.split("-").reverse().join("/")
+);
+ 
+entrainementsExcel.push(score);
+ 
 }
-
+ 
+alert("✅ Score enregistré");
+ 
+afficherResultats();
 
 }
 
