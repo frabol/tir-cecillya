@@ -400,30 +400,26 @@ labels: labels,
     pointBorderColor: "#ffffff",
     pointBorderWidth: 2
 },
+options: {
 
- options: {
+    responsive: true,
+
     plugins: {
+
         legend: {
             display: true
         },
+
         tooltip: {
             enabled: true
         }
+
     }
+
 }
-        responsive: true,
-
-        plugins: {
-
-            legend: {
-                display: true
-            }
-
-        }
-
-    }
 
 });
+
 }
 function rechercherCompetition() {
 
