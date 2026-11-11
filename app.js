@@ -335,27 +335,26 @@ function enregistrerScore() {
         );
 
     const nouveauScore = {
-        date,
-        type,
-        score
+        date: date,
+        type: type,
+        score: score
     };
 
-    let scoresAjoutes =
+    let historique =
         JSON.parse(
-            localStorage.getItem("scoresAjoutes")
+            localStorage.getItem("scores")
         ) || [];
 
-    scoresAjoutes.push(nouveauScore);
+    historique.push(nouveauScore);
 
     localStorage.setItem(
-        "scoresAjoutes",
-        JSON.stringify(scoresAjoutes)
+        "scores",
+        JSON.stringify(historique)
     );
 
     alert("✅ Score enregistré");
 
 }
-
 function afficherStats() {
 
   const scores = scoresExcel;
