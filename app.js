@@ -285,15 +285,59 @@ function afficherResultats() {
     `;
 }
 
-function ajouterScore() {
+function afficherAjoutScore() {
+
+    document.getElementById("etat").innerHTML = `
+
+        <h2>➕ Nouveau score</h2>
+
+        <p>Date :</p>
+        <input type="date" id="dateScore">
+
+        <p>Type :</p>
+        <select id="typeScore">
+            <option value="entrainement">
+                Entraînement
+            </option>
+            <option value="match">
+                Compétition
+            </option>
+        </select>
+
+        <p>Score :</p>
+        <input
+            type="number"
+            step="0.1"
+            id="valeurScore"
+            placeholder="Ex : 617.5"
+        >
+
+        <br><br>
+
+        <button onclick="enregistrerScore()">
+            💾 Enregistrer
+        </button>
+
+    `;
+}
+
+function enregistrerScore() {
+
+    const date =
+        document.getElementById("dateScore").value;
+
+    const type =
+        document.getElementById("typeScore").value;
+
+    const score =
+        Number(
+            document.getElementById("valeurScore").value
+        );
 
     alert(
-        "Ouvrez le fichier Excel pour ajouter un résultat."
-    );
-
-    window.open(
-        "Calendrier_Ligue_Tir_NPdC_2026_2027_dernier.xlsx",
-        "_blank"
+        "Date : " + date +
+        "\nType : " + type +
+        "\nScore : " + score
     );
 
 }
