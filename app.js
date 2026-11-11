@@ -29,28 +29,12 @@ datesMatchs = [];
 datesEntrainements = [];
         
 for (let i = 1; i < donneesGraph.length; i++) {
- console.log(
-    "Ligne",
-    i,
-    donneesGraph[i]
-);
-    console.log(
-    "Date:",
-    donneesGraph[i][0],
-    "Score:",
-    donneesGraph[i][1],
-    "Entrainement:",
-    donneesGraph[i][13]
-);
+
 /* MATCHS : J / K */
 
 const dateMatchExcel =
     donneesGraph[i][9];
-console.log(
-    "Date match brute :",
-    dateMatchExcel,
-    typeof dateMatchExcel
-);
+
 
 const score =
     donneesGraph[i][10];
@@ -95,14 +79,7 @@ if (dateMatchExcel) {
     }
 
 }
-console.log(
-    "dateMatchExcel =",
-    dateMatchExcel
-);
-    console.log(
-    "dateMatch =",
-    dateMatch
-);
+
 /* Date entraînement */
 
 if (
@@ -145,17 +122,7 @@ if (
     );
 
 }
-    console.log(
-    "Match",
-    dateMatch,
-    score
-);
 
-console.log(
-    "Entrainement",
-    dateEntrainement,
-    entrainement
-);
     const valeur = Number(score);
 
     if (
@@ -352,10 +319,7 @@ const moyenneEntrainement =
 
     const ctx =
         document.getElementById("graphiqueScores");
-   console.log("Dates matchs", datesMatchs);
-console.log("Dates entraînements", datesEntrainements);
-console.log("Matchs", scoresExcel);
-console.log("Entrainements", entrainementsExcel);
+
     new Chart(ctx, {
 
     type: "line",
