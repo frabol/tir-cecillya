@@ -343,9 +343,43 @@ cursor:pointer;
  
 });
 }
- 
-document.getElementById("etat").innerHTML =
-html;
+  }
+
+        let historique =
+            JSON.parse(
+                localStorage.getItem("scores")
+            ) || [];
+
+        historique.forEach(item => {
+
+            const date =
+                item.date
+                    .split("-")
+                    .reverse()
+                    .join("/");
+
+            if (item.type === "match") {
+
+                datesMatchs.push(date);
+
+                scoresExcel.push(
+                    Number(item.score)
+                );
+
+            } else {
+
+                datesEntrainements.push(date);
+
+                entrainementsExcel.push(
+                    Number(item.score)
+                );
+
+            }
+
+        });
+
+        document.getElementById("etat").innerHTML = html;
+
 }
 
 Résultat :
