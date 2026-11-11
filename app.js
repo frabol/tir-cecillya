@@ -380,7 +380,7 @@ cursor:pointer;
 
         document.getElementById("etat").innerHTML = html;
 
-}
+
 
 Résultat :
 
