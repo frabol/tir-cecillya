@@ -46,9 +46,10 @@ for (let i = 1; i < donneesGraph.length; i++) {
 
 const dateMatchExcel =
     donneesGraph[i][9];
-    console.log(
+console.log(
     "Date match brute :",
-    dateMatchExcel
+    dateMatchExcel,
+    typeof dateMatchExcel
 );
 
 const score =
