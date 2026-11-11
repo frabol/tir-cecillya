@@ -515,8 +515,15 @@ const moyenneEntrainement =
 
         <p>📊 Moyenne : <b>${moyenne}</b></p>
 
-        <p>🏋️ Meilleur entraînement :
-<b>${meilleurEntrainement}</b></p>
+       <p style="
+    color:gold;
+    font-size:20px;
+    font-weight:bold;
+">
+🏆 Record personnel :
+<b>${meilleurEntrainement}</b>
+</p>
+        
  
 <p>📈 Moyenne entraînement :
 <b>${moyenneEntrainement}</b></p>
