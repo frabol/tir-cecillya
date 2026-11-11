@@ -323,56 +323,47 @@ localStorage.getItem("scores")
 ) || [];
  
 if (historique.length > 0) {
- 
-html += `
-<h3>➕ Scores ajoutés</h3>
-`;
- 
-historique.forEach((score, index) => {
- 
-html += `
-<div class="competition">
- 
-<b>${score.date}</b><br>
- 
-${
-score.type === "match"
-? "🏆 Compétition"
-: "🏋️ Entraînement"
+
+    html += `
+        <h3>➕ Scores ajoutés</h3>
+    `;
+
+    historique.forEach((score, index) => {
+
+        html += `
+            <div class="competition">
+
+                <b>${score.date}</b><br>
+
+                ${
+                    score.type === "match"
+                    ? "🏆 Compétition"
+                    : "🏋️ Entraînement"
+                }
+
+                <br>
+
+                Score :
+                <b>${score.score}</b>
+
+                <br><br>
+
+                <button
+                    onclick="supprimerScore(${index})"
+                >
+                    🗑️ Supprimer
+                </button>
+
+            </div>
+        `;
+    });
 }
- 
-<br>
- 
-Score :
-<b>${score.score}</b>
- 
-<br><br>
- 
-<button
-onclick="supprimerScore(${index})"
-style="
-background:#dc3545;
-color:white;
-border:none;
-padding:5px 10px;
-border-radius:5px;
-cursor:pointer;
-"
->
-🗑️ Supprimer
-</button>
- 
-</div>
-`;
- 
-});
+
+document.getElementById("etat").innerHTML = html;
+
 }
-  }
-
-      
 
 
-Résultat :
 
 function afficherAjoutScore() {
 
@@ -442,9 +433,9 @@ function enregistrerScore() {
         JSON.stringify(historique)
     );
 
-  alert("✅ Score enregistré");
+alert("✅ Score enregistré");
 
-afficherStats();
+afficherResultats();
 
     if (type === "match") {
 
