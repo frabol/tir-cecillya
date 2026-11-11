@@ -146,7 +146,32 @@ if (dateMatch) {
 
     }
 }
+let historique =
+    JSON.parse(
+        localStorage.getItem("scores")
+    ) || [];
 
+historique.forEach(item => {
+
+    const date =
+        item.date
+            .split("-")
+            .reverse()
+            .join("/");
+
+    if (item.type === "match") {
+
+        datesMatchs.push(date);
+        scoresExcel.push(Number(item.score));
+
+    } else {
+
+        datesEntrainements.push(date);
+        entrainementsExcel.push(Number(item.score));
+
+    }
+
+});
 const sheet = workbook.Sheets["Calendrier 2026-2027"];
         const lignes = XLSX.utils.sheet_to_json(sheet, {
             header: 1
@@ -197,7 +222,6 @@ if (mois && mois !== moisCourant) {
         </h3>
     `;
 }
-            console.log("Mois =", ligne[0]);
          if (
     evenement &&
     (
@@ -345,41 +369,7 @@ cursor:pointer;
 }
   }
 
-        let historique =
-            JSON.parse(
-                localStorage.getItem("scores")
-            ) || [];
-
-        historique.forEach(item => {
-
-            const date =
-                item.date
-                    .split("-")
-                    .reverse()
-                    .join("/");
-
-            if (item.type === "match") {
-
-                datesMatchs.push(date);
-
-                scoresExcel.push(
-                    Number(item.score)
-                );
-
-            } else {
-
-                datesEntrainements.push(date);
-
-                entrainementsExcel.push(
-                    Number(item.score)
-                );
-
-            }
-
-        });
-
-        document.getElementById("etat").innerHTML = html;
-
+      
 
 
 Résultat :
