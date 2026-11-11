@@ -258,36 +258,40 @@ function afficherAVenir() {
 
 function afficherResultats() {
 
-    let historique =
-        JSON.parse(
-            localStorage.getItem("scores")
-        ) || [];
-
     let html =
         "<h2>🏆 Résultats</h2>";
 
-    historique.forEach(score => {
+    for (let i = 0; i < datesMatchs.length; i++) {
 
         html += `
             <div class="competition">
 
-                <b>${score.date}</b><br>
+                <b>${datesMatchs[i]}</b><br>
 
-                ${
-                    score.type === "match"
-                    ? "🏆 Compétition"
-                    : "🏋️ Entraînement"
-                }
-
-                <br>
+                🏆 Compétition<br>
 
                 Score :
-                <b>${score.score}</b>
+                <b>${scoresExcel[i]}</b>
 
             </div>
         `;
+    }
 
-    });
+    for (let i = 0; i < datesEntrainements.length; i++) {
+
+        html += `
+            <div class="competition">
+
+                <b>${datesEntrainements[i]}</b><br>
+
+                🏋️ Entraînement<br>
+
+                Score :
+                <b>${entrainementsExcel[i]}</b>
+
+            </div>
+        `;
+    }
 
     document.getElementById("etat").innerHTML =
         html;
