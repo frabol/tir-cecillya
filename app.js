@@ -378,13 +378,13 @@ labels: labels,
             fill: false ,
 
             tension: 0.3 ,
-             spanGaps: false
+             spanGaps: true
         },
 
         {
             label: "Entraînements",
 
-          data: serieEntrainements, 
+          data: serieEntrainements , 
 
             borderColor: "#28a745",
 
@@ -393,7 +393,7 @@ labels: labels,
             fill:  false,
 
             tension: 0.3 ,
-             spanGaps: false
+             spanGaps: true
         }
 
         ]
