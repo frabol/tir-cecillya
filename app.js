@@ -3,7 +3,7 @@ let entrainementsExcel = [];
 let datesMatchs = [];
 let datesEntrainements = [];
 
-async function chargerCalendrier() {
+async function chargerCalendrier(filtre = "avenir") {
 
     try {
 
@@ -167,7 +167,13 @@ const sheet = workbook.Sheets["Calendrier 2026-2027"];
             const lieu = ligne[3];
             const statut = ligne[5];
 
-            if (evenement && statut === "À venir") {
+         if (
+    evenement &&
+    (
+        filtre === "toutes" ||
+        statut === "À venir"
+    )
+) {
 
                 html += `
                 <div class="competition"
@@ -206,7 +212,7 @@ chargerCalendrier();
 
 function afficherToutes() {
 
-    chargerCalendrier();
+    chargerCalendrier("toutes");
 
 }
 
@@ -214,10 +220,9 @@ function afficherToutes() {
 
 function afficherAVenir() {
 
-    chargerCalendrier();
+    chargerCalendrier("avenir");
 
 }
-
 
 
 function afficherResultats() {
