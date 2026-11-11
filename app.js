@@ -401,13 +401,14 @@ labels: labels,
     pointBorderWidth: 2
 },
 
-    options: {
-plugins: {
-    legend: {
-        display: true
-    },
-    tooltip: {
-        enabled: true
+ options: {
+    plugins: {
+        legend: {
+            display: true
+        },
+        tooltip: {
+            enabled: true
+        }
     }
 }
         responsive: true,
