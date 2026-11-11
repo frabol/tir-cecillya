@@ -168,7 +168,7 @@ const sheet = workbook.Sheets["Calendrier 2026-2027"];
             const statut = ligne[5];
             const mois = ligne[0];
 
-const mois = ligne[0];
+
 
 if (mois && mois !== moisCourant) {
 
