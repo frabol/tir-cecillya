@@ -152,10 +152,20 @@ const sheet = workbook.Sheets["Calendrier 2026-2027"];
             header: 1
         });
 
-        let html = "";
+        let html = `
+<h3 style="
+    background:#17365D;
+    color:white;
+    padding:8px;
+    margin-top:15px;
+    border-radius:5px;
+">
+    📅 Septembre 2026
+</h3>
+`;
 
-        let compteur = 0;
-        let moisCourant = "";
+let compteur = 0;
+let moisCourant = "Septembre 2026";
        
         for (let i = 4; i < lignes.length; i++) {
 
