@@ -333,6 +333,29 @@ labels.sort((a, b) => {
          - new Date(2026, mb - 1, jb);
 
 });
+    const serieMatchs =
+    labels.map(date => {
+
+        const index =
+            datesMatchs.indexOf(date);
+
+        return index >= 0
+            ? scoresExcel[index]
+            : null;
+
+    });
+
+const serieEntrainements =
+    labels.map(date => {
+
+        const index =
+            datesEntrainements.indexOf(date);
+
+        return index >= 0
+            ? entrainementsExcel[index]
+            : null;
+
+    });
     new Chart(ctx, {
 
     type: "line",
@@ -345,7 +368,7 @@ labels: labels,
         {
             label: "Compétitions",
 
-            data: scores,
+         data: serieMatchs,
 
             borderColor: "#17365D",
 
@@ -360,7 +383,7 @@ labels: labels,
         {
             label: "Entraînements",
 
-            data: entrainementsExcel,
+          data: serieEntrainements, 
 
             borderColor: "#28a745",
 
