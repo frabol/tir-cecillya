@@ -172,6 +172,12 @@ historique.forEach(item => {
     }
 
 });
+console.log("Après fusion");
+console.log("Matchs :", datesMatchs);
+console.log("Scores :", scoresExcel);
+console.log("Entrainements :", datesEntrainements);
+console.log("Scores entrainements :", entrainementsExcel);
+        
 const sheet = workbook.Sheets["Calendrier 2026-2027"];
         const lignes = XLSX.utils.sheet_to_json(sheet, {
             header: 1
