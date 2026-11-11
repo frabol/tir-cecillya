@@ -456,7 +456,6 @@ function enregistrerScore() {
 
 afficherStats();
 
-    voirScores();
     if (type === "match") {
 
     datesMatchs.push(
