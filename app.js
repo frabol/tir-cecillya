@@ -157,7 +157,23 @@ const sheet = workbook.Sheets["Calendrier 2026-2027"];
         let compteur = 0;
 
         for (let i = 4; i < lignes.length; i++) {
+const mois = ligne[0];
 
+if (mois) {
+
+    html += `
+    <h3 style="
+        background:#17365D;
+        color:white;
+        padding:8px;
+        margin-top:15px;
+        border-radius:5px;
+    ">
+        📅 ${mois}
+    </h3>
+    `;
+
+}
             const ligne = lignes[i];
 
             if (!ligne) continue;
