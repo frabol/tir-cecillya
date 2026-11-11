@@ -377,30 +377,74 @@ function voirScores() {
 
     } else {
 
-        historique.forEach(item => {
+       historique.forEach((item, index) => {
 
-            html += `
-                <div class="competition">
-                    <b>${item.date}</b><br>
+    html += `
+        <div class="competition">
 
-                    ${
-                        item.type === "match"
-                        ? "🏆 Compétition"
-                        : "🏋️ Entraînement"
-                    }
-                    <br>
+            <b>${item.date}</b><br>
 
-                    Score :
-                    <b>${item.score}</b>
-                </div>
-            `;
+            ${
+                item.type === "match"
+                ? "🏆 Compétition"
+                : "🏋️ Entraînement"
+            }
+            <br>
 
-        });
+            Score :
+            <b>${item.score}</b>
 
+            <br><br>
+
+            <button
+                onclick="supprimerScore(${index})"
+                style="
+                    background:#dc3545;
+                    color:white;
+                    border:none;
+                    padding:5px 10px;
+                    border-radius:5px;
+                    cursor:pointer;
+                "
+            >
+                🗑️ Supprimer
+            </button>
+
+        </div>
+    `;
+
+});
+        
     }
 
     document.getElementById("etat").innerHTML =
         html;
+
+}
+
+function supprimerScore(index) {
+
+    if (
+        !confirm(
+            "Supprimer ce score ?"
+        )
+    ) {
+        return;
+    }
+
+    let historique =
+        JSON.parse(
+            localStorage.getItem("scores")
+        ) || [];
+
+    historique.splice(index, 1);
+
+    localStorage.setItem(
+        "scores",
+        JSON.stringify(historique)
+    );
+
+    voirScores();
 
 }
 
