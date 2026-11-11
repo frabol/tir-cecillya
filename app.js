@@ -321,6 +321,7 @@ function afficherAjoutScore() {
     `;
 }
 
+
 function enregistrerScore() {
 
     const date =
@@ -335,9 +336,9 @@ function enregistrerScore() {
         );
 
     const nouveauScore = {
-        date: date,
-        type: type,
-        score: score
+        date,
+        type,
+        score
     };
 
     let historique =
@@ -354,7 +355,55 @@ function enregistrerScore() {
 
     alert("✅ Score enregistré");
 
+    voirScores();
+
 }
+
+function voirScores() {
+
+    let historique =
+        JSON.parse(
+            localStorage.getItem("scores")
+        ) || [];
+
+    let html =
+        "<h2>📋 Scores saisis</h2>";
+
+    if (historique.length === 0) {
+
+        html += `
+            <p>Aucun score enregistré.</p>
+        `;
+
+    } else {
+
+        historique.forEach(item => {
+
+            html += `
+                <div class="competition">
+                    <b>${item.date}</b><br>
+
+                    ${
+                        item.type === "match"
+                        ? "🏆 Compétition"
+                        : "🏋️ Entraînement"
+                    }
+                    <br>
+
+                    Score :
+                    <b>${item.score}</b>
+                </div>
+            `;
+
+        });
+
+    }
+
+    document.getElementById("etat").innerHTML =
+        html;
+
+}
+
 function afficherStats() {
 
   const scores = scoresExcel;
