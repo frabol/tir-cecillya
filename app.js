@@ -319,14 +319,27 @@ const moyenneEntrainement =
 
     const ctx =
         document.getElementById("graphiqueScores");
+const labels = [
+    ...datesMatchs,
+    ...datesEntrainements
+];
 
+labels.sort((a, b) => {
+
+    const [ja, ma] = a.split("/");
+    const [jb, mb] = b.split("/");
+
+    return new Date(2026, ma - 1, ja)
+         - new Date(2026, mb - 1, jb);
+
+});
     new Chart(ctx, {
 
     type: "line",
 
     data: {
 
-labels: datesEntrainements,
+labels: labels,
         datasets: [
 
         {
