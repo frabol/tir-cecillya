@@ -155,7 +155,7 @@ const sheet = workbook.Sheets["Calendrier 2026-2027"];
         let html = "<h3>📅 Compétitions à venir</h3>";
 
         let compteur = 0;
-
+        let moisCourant = "";
         for (let i = 4; i < lignes.length; i++) {
 
             const ligne = lignes[i];
@@ -168,21 +168,25 @@ const sheet = workbook.Sheets["Calendrier 2026-2027"];
             const statut = ligne[5];
             const mois = ligne[0];
 
-if (mois) {
+const mois = ligne[0];
+
+if (mois && mois !== moisCourant) {
+
+    moisCourant = mois;
 
     html += `
-    <h3 style="
-        background:#17365D;
-        color:white;
-        padding:8px;
-        margin-top:15px;
-        border-radius:5px;
-    ">
-        📅 ${mois}
-    </h3>
+        <h3 style="
+            background:#17365D;
+            color:white;
+            padding:8px;
+            margin-top:15px;
+            border-radius:5px;
+        ">
+            📅 ${mois}
+        </h3>
     `;
-
 }
+            console.log("Mois =", ligne[0]);
          if (
     evenement &&
     (
