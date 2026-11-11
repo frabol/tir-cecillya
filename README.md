@@ -1,4 +1,3 @@
-Commit :
-Version stable v1.7
-Statistiques et graphique validés
-Dates matchs et entraînements corrigées
+Version stable v1.8
+Axe chronologique automatique
+Compétitions et entraînements alignés sur les dates Excel
