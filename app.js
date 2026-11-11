@@ -353,7 +353,9 @@ function enregistrerScore() {
         JSON.stringify(historique)
     );
 
-    alert("✅ Score enregistré");
+  alert("✅ Score enregistré");
+
+afficherStats();
 
     voirScores();
     if (type === "match") {
