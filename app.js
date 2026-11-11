@@ -356,6 +356,24 @@ function enregistrerScore() {
     alert("✅ Score enregistré");
 
     voirScores();
+    if (type === "match") {
+
+    datesMatchs.push(
+        date.split("-").reverse().join("/")
+    );
+
+    scoresExcel.push(score);
+
+} else {
+
+    datesEntrainements.push(
+        date.split("-").reverse().join("/")
+    );
+
+    entrainementsExcel.push(score);
+
+}
+
 
 }
 
