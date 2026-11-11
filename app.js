@@ -377,7 +377,7 @@ labels: labels,
 
             fill: false ,
 
-            tension: 0.3
+            tension: 0.3 ,
              spanGaps: false
         },
 
@@ -392,7 +392,7 @@ labels: labels,
             "rgba(40,167,69,0.2)",
             fill:  false,
 
-            tension: 0.3
+            tension: 0.3 ,
              spanGaps: false
         }
 
