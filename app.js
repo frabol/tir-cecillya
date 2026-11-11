@@ -341,8 +341,10 @@ const moyenneEntrainement =
         <p>🏋️ Nombre d'entraînements :
         <b>${entrainementsExcel.length}</b></p>
         <p>📅 Dates matchs :
-<b>${datesMatchs.length}</b></p>
+<b>${datesMatchs.join(" - ")}</b></p>
 
+<p>📅 Dates entraînements :
+<b>${datesEntrainements.join(" - ")}</b></p>
 
         <canvas id="graphiqueScores"></canvas>
 
@@ -360,9 +362,7 @@ console.log("Entrainements", entrainementsExcel);
 
     data: {
 
-labels: datesMatchs.map(d =>
-    String(d).substring(0, 5)
-),
+labels: datesEntrainements,
         datasets: [
 
         {
