@@ -192,7 +192,7 @@ const sheet = workbook.Sheets["Calendrier 2026-2027"];
 
                 compteur++;
 
-                if (compteur >= 20) break;
+              
             }
         }
 
