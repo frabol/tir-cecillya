@@ -70,20 +70,39 @@ let dateEntrainement = "";
 
 if (dateMatchExcel) {
 
-    const morceaux =
-        String(dateMatchExcel).split("-");
+    if (typeof dateMatchExcel === "number") {
 
-    if (morceaux.length === 3) {
+        const jsDate = new Date(
+            (dateMatchExcel - 25569)
+            * 86400 * 1000
+        );
 
         dateMatch =
-            morceaux[2] +
-            "/" +
-            morceaux[1];
+            jsDate.toLocaleDateString(
+                "fr-FR",
+                {
+                    day: "2-digit",
+                    month: "2-digit"
+                }
+            );
+
+    }
+    else {
+
+        dateMatch =
+            String(dateMatchExcel);
 
     }
 
 }
-
+console.log(
+    "dateMatchExcel =",
+    dateMatchExcel
+);
+    console.log(
+    "dateMatch =",
+    dateMatch
+);
 /* Date entraînement */
 
 if (
