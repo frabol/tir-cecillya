@@ -1,3 +1,4 @@
-Version stable v1.6
-Lecture Excel J/K et P/Q fonctionnelle
-Statistiques opérationnelles
+Commit :
+Version stable v1.7
+Statistiques et graphique validés
+Dates matchs et entraînements corrigées
