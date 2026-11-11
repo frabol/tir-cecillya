@@ -365,42 +365,51 @@ const serieEntrainements =
 labels: labels,
         datasets: [
 
-        {
-            label: "Compétitions",
+       {
+    label: "Compétitions",
+    data: serieMatchs,
 
-         data: serieMatchs,
+    borderColor: "#17365D",
+    backgroundColor: "rgba(23,54,93,0.2)",
 
-            borderColor: "#17365D",
+    fill: false,
+    tension: 0.3,
+    spanGaps: true,
 
-            backgroundColor:
-            "rgba(23,54,93,0.2)",
+    pointRadius: 8,
+    pointHoverRadius: 12,
+    pointBackgroundColor: "#17365D",
+    pointBorderColor: "#ffffff",
+    pointBorderWidth: 2
+},
 
-            fill: false ,
+       {
+    label: "Entraînements",
+    data: serieEntrainements,
 
-            tension: 0.3 ,
-             spanGaps: true
-        },
+    borderColor: "#28a745",
+    backgroundColor: "rgba(40,167,69,0.2)",
 
-        {
-            label: "Entraînements",
+    fill: false,
+    tension: 0.3,
+    spanGaps: true,
 
-          data: serieEntrainements , 
-
-            borderColor: "#28a745",
-
-            backgroundColor:
-            "rgba(40,167,69,0.2)",
-            fill:  false,
-
-            tension: 0.3 ,
-             spanGaps: true
-        }
-
-        ]
-    },
+    pointRadius: 8,
+    pointHoverRadius: 12,
+    pointBackgroundColor: "#28a745",
+    pointBorderColor: "#ffffff",
+    pointBorderWidth: 2
+},
 
     options: {
-
+plugins: {
+    legend: {
+        display: true
+    },
+    tooltip: {
+        enabled: true
+    }
+}
         responsive: true,
 
         plugins: {
