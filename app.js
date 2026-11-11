@@ -383,42 +383,45 @@ labels: labels,
     pointBorderWidth: 2
 },
 
-       {
-    label: "Entraînements",
-    data: serieEntrainements,
+     {
+            label: "Entraînements",
+            data: serieEntrainements,
 
-    borderColor: "#28a745",
-    backgroundColor: "rgba(40,167,69,0.2)",
+            borderColor: "#28a745",
+            backgroundColor: "rgba(40,167,69,0.2)",
 
-    fill: false,
-    tension: 0.3,
-    spanGaps: true,
+            fill: false,
+            tension: 0.3,
+            spanGaps: true,
 
-    pointRadius: 8,
-    pointHoverRadius: 12,
-    pointBackgroundColor: "#28a745",
-    pointBorderColor: "#ffffff",
-    pointBorderWidth: 2
-     
-},
-            
-options: {
+            pointRadius: 8,
+            pointHoverRadius: 12,
+            pointBackgroundColor: "#28a745",
+            pointBorderColor: "#ffffff",
+            pointBorderWidth: 2
+        }
 
-    responsive: true,
+        ]
 
-    plugins: {
+    },
 
-        legend: {
-            display: true
-        },
+    options: {
 
-        tooltip: {
-            enabled: true
+        responsive: true,
+
+        plugins: {
+
+            legend: {
+                display: true
+            },
+
+            tooltip: {
+                enabled: true
+            }
+
         }
 
     }
-
-}
 
 });
 
