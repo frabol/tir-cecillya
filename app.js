@@ -285,7 +285,18 @@ function afficherResultats() {
     `;
 }
 
+function ajouterScore() {
 
+    alert(
+        "Ouvrez le fichier Excel pour ajouter un résultat."
+    );
+
+    window.open(
+        "Calendrier_Ligue_Tir_NPdC_2026_2027_dernier.xlsx",
+        "_blank"
+    );
+
+}
 
 function afficherStats() {
 
