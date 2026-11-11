@@ -375,9 +375,10 @@ labels: labels,
             backgroundColor:
             "rgba(23,54,93,0.2)",
 
-            fill: true ,
+            fill: false ,
 
             tension: 0.3
+             spanGaps: false
         },
 
         {
@@ -389,9 +390,10 @@ labels: labels,
 
             backgroundColor:
             "rgba(40,167,69,0.2)",
-            fill: true ,
+            fill:  false,
 
             tension: 0.3
+             spanGaps: false
         }
 
         ]
