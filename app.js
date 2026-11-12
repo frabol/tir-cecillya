@@ -519,31 +519,61 @@ chargerCalendrier().then(() => {
 
 function afficherStats() {
 
-const scores = [
-    ...scoresExcel,
-    ...entrainementsExcel
-];
+    const scores = [
+        ...scoresExcel,
+        ...entrainementsExcel
+    ];
 
-const meilleurCompetition =
-    scoresExcel.length > 0
-    ? Math.max(...scoresExcel)
-    : 0;
+    const meilleurCompetition =
+        scoresExcel.length > 0
+        ? Math.max(...scoresExcel)
+        : 0;
 
-if (scores.length === 0) {
+    if (scores.length === 0) {
 
-    document.getElementById("etat").innerHTML =
-        "Aucun score trouvé.";
+        document.getElementById("etat").innerHTML =
+            "Aucun score trouvé.";
 
-    return;
-}
+        return;
+    }
 
-const dernier = scores[scores.length - 1];
+    const dernier =
+        entrainementsExcel.length > 0
+            ? entrainementsExcel[
+                entrainementsExcel.length - 1
+              ]
+            : (
+                scoresExcel.length > 0
+                ? scoresExcel[
+                    scoresExcel.length - 1
+                  ]
+                : 0
+            );
 
-const moyenne =
-(
-    scores.reduce((a, b) => a + b, 0)
-    / scores.length
-).toFixed(1);
+    const moyenne =
+    (
+        scores.reduce((a, b) => a + b, 0)
+        / scores.length
+    ).toFixed(1);
+
+    const meilleurEntrainement =
+        entrainementsExcel.length > 0
+        ? Math.max(...entrainementsExcel)
+        : 0;
+
+    const moyenneEntrainement =
+        entrainementsExcel.length > 0
+        ? (
+            entrainementsExcel.reduce(
+                (a, b) => a + b,
+                0
+            ) / entrainementsExcel.length
+          ).toFixed(1)
+        : 0;
+
+    const totalResultats =
+        scoresExcel.length +
+        entrainementsExcel.length;
     
     document.getElementById("etat").innerHTML = `
 
