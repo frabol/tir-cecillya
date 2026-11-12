@@ -866,7 +866,68 @@ function exporterScores() {
     alert("✅ Export terminé");
 
 }
+function exporterExcel() {
 
+    const historique =
+        JSON.parse(
+            localStorage.getItem("scores")
+        ) || [];
+
+    if (historique.length === 0) {
+
+        alert(
+            "Aucun score à exporter."
+        );
+
+        return;
+
+    }
+
+   const donnees = historique.map(item => ({
+
+    Date: item.date,
+
+    Type:
+        item.type === "match"
+        ? "Compétition"
+        : "Entraînement",
+
+    Score: Number(item.score)
+
+}));
+
+donnees.unshift({
+
+    Date: "Export Tir Cécillya",
+    Type: "",
+    Score: ""
+
+});
+
+    const feuille =
+        XLSX.utils.json_to_sheet(
+            donnees
+        );
+
+    const classeur =
+        XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        classeur,
+        feuille,
+        "Scores"
+    );
+
+    XLSX.writeFile(
+        classeur,
+        "scores_cecillya.xlsx"
+    );
+
+    alert(
+        "✅ Export Excel terminé"
+    );
+
+}
 function importerScores(event) {
 
     const fichier = event.target.files[0];
