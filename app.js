@@ -1295,6 +1295,29 @@ function afficherTop10() {
     const top10 = tousLesScores
         .sort((a, b) => b.score - a.score)
         .slice(0, 10);
+    let html = `
+<h2>🥇 Top 10 des meilleurs scores</h2>
+
+<div class="podium">
+
+    <div class="second">
+        🥈<br>
+        ${top10[1] ? top10[1].score : "-"}
+    </div>
+
+    <div class="first">
+        🥇<br>
+        ${top10[0] ? top10[0].score : "-"}
+    </div>
+
+    <div class="third">
+        🥉<br>
+        ${top10[2] ? top10[2].score : "-"}
+    </div>
+
+</div>
+`;
+    
 const record =
     top10.length > 0
     ? top10[0].score
