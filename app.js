@@ -891,9 +891,19 @@ return;
  
 }
  
+let historique =
+    JSON.parse(
+        localStorage.getItem("scores")
+    ) || [];
+
+historique = [
+    ...historique,
+    ...donnees
+];
+
 localStorage.setItem(
-"scores",
-JSON.stringify(donnees)
+    "scores",
+    JSON.stringify(historique)
 );
  
 alert(
