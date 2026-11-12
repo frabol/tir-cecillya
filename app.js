@@ -840,7 +840,6 @@ function exporterScores() {
     alert("✅ Export terminé");
 
 }
-Résultat
 
 function importerScores(event) {
 
