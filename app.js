@@ -190,7 +190,6 @@ const sheet = workbook.Sheets["Calendrier 2026-2027"];
 </h3>
 `;
 
-let compteur = 0;
 let moisCourant = "Septembre 2026";
        
         for (let i = 4; i < lignes.length; i++) {
