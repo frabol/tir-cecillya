@@ -1202,51 +1202,30 @@ async function synchroniserScores() {
 
     if (error) {
 
-        console.error(
-            "Erreur Supabase :",
-            error
+        console.error(error);
+
+        alert(
+            "❌ " + error.message
         );
 
         return;
 
     }
 
-    const locaux =
-        JSON.parse(
-            localStorage.getItem("scores")
-        ) || [];
-
-    const fusion =
-        [...locaux];
-
-    data.forEach(item => {
-
-        const existe =
-            fusion.some(score =>
-
-                score.date === item.date &&
-                score.type === item.type &&
-                Number(score.score) === Number(item.score)
-
-            );
-
-        if (!existe) {
-
-            fusion.push({
-
-                date: item.date,
-                type: item.type,
-                score: Number(item.score)
-
-            });
-
-        }
-
-    });
+    const historique = data.map(item => ({
+        date: item.date,
+        type: item.type,
+        score: Number(item.score)
+    }));
 
     localStorage.setItem(
         "scores",
-        JSON.stringify(fusion)
+        JSON.stringify(historique)
+    );
+
+    console.log(
+        "✅ Scores récupérés :",
+        historique.length
     );
 
 }
@@ -1254,9 +1233,14 @@ async function synchroniserEtRecharger() {
 
     await synchroniserScores();
 
+    scoresExcel = [];
+    entrainementsExcel = [];
+    datesMatchs = [];
+    datesEntrainements = [];
+
     await chargerCalendrier();
 
-    afficherTableauDeBord();
+    afficherResultats();
 
     alert(
         "✅ Synchronisation terminée"
