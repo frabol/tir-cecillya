@@ -1429,9 +1429,7 @@ const moyenneTop10 =
         ) / top10.length
       ).toFixed(1)
     : 0;
-    let html = `
-    <h2>🥇 Top 10 des meilleurs scores</h2>
-
+ html += `
     <div class="card">
 
         <p style="
