@@ -794,85 +794,54 @@ function rechercherCompetition() {
 }
 
 function exporterScores() {
- 
-let resultats = [];
- 
-for (let i = 0; i < datesMatchs.length; i++) {
- 
-resultats.push({
-date: datesMatchs[i],
-type: "Compétition",
-score: scoresExcel[i]
-});
- 
-}
- 
-for (let i = 0; i < datesEntrainements.length; i++) {
- 
-resultats.push({
-date: datesEntrainements[i],
-type: "Entraînement",
-score: entrainementsExcel[i]
-});
- 
-}
- 
-if (resultats.length === 0) {
- 
-alert("Aucun score à exporter.");
- 
-return;
- 
-}
- 
-resultats.sort((a, b) => {
- 
-const [ja, ma] = a.date.split("/");
-const [jb, mb] = b.date.split("/");
- 
-return new Date(2026, ma - 1, ja)
-- new Date(2026, mb - 1, jb);
- 
-});
- 
-const contenu =
-JSON.stringify(
-resultats,
-null,
-2
-);
- 
-const blob =
-new Blob(
-[contenu],
-{
-type: "application/json"
-}
-);
- 
-const url =
-URL.createObjectURL(blob);
- 
-const lien =
-document.createElement("a");
- 
-lien.href = url;
- 
-lien.download =
-"scores_cecillya.json";
- 
-document.body.appendChild(lien);
- 
-lien.click();
- 
-document.body.removeChild(lien);
- 
-URL.revokeObjectURL(url);
- 
-alert("✅ Export terminé");
- 
+
+    const historique =
+        JSON.parse(
+            localStorage.getItem("scores")
+        ) || [];
+
+    if (historique.length === 0) {
+
+        alert("Aucun score à exporter.");
+
+        return;
+
+    }
+
+    const contenu =
+        JSON.stringify(
+            historique,
+            null,
+            2
+        );
+
+    const blob = new Blob(
+        [contenu],
+        {
+            type: "application/json"
+        }
+    );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const lien =
+        document.createElement("a");
+
+    lien.href = url;
+    lien.download = "scores_cecillya.json";
+
+    document.body.appendChild(lien);
+    lien.click();
+    document.body.removeChild(lien);
+
+    URL.revokeObjectURL(url);
+
+    alert("✅ Export terminé");
+
 }
 Résultat
+
 function importerScores(event) {
 
     const fichier = event.target.files[0];
