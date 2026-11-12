@@ -915,10 +915,35 @@ function importerScores(event) {
                     localStorage.getItem("scores")
                 ) || [];
 
-            historique = [
-                ...historique,
-                ...donnees
-            ];
+           const existants =
+    new Set(
+        historique.map(item =>
+            item.date +
+            "|" +
+            item.type +
+            "|" +
+            item.score
+        )
+    );
+
+const nouveaux = donnees.filter(item => {
+
+    const cle =
+        item.date +
+        "|" +
+        item.type +
+        "|" +
+        item.score;
+
+    return !existants.has(cle);
+
+});
+
+historique = [
+    ...historique,
+    ...nouveaux
+];
+
 
             localStorage.setItem(
                 "scores",
