@@ -279,10 +279,14 @@ function afficherAVenir() {
 }
 
 function afficherResultats() {
-let html = "<h2>🏆 Résultats</h2>";
 
-html += "<h3>🏆 Compétitions</h3>";
-    
+    let html = "<h2>🏆 Résultats</h2>";
+
+    html += "<h3>🏆 Compétitions</h3>";
+
+    if (datesMatchs.length === 0) {
+        html += "<p>Aucune compétition enregistrée.</p>";
+    }
 
     for (let i = 0; i < datesMatchs.length; i++) {
 
@@ -294,7 +298,13 @@ html += "<h3>🏆 Compétitions</h3>";
             </div>
         `;
     }
-html += "<h3>🏋️ Entraînements</h3>";
+
+    html += "<h3>🏋️ Entraînements</h3>";
+
+    if (datesEntrainements.length === 0) {
+        html += "<p>Aucun entraînement enregistré.</p>";
+    }
+
     for (let i = 0; i < datesEntrainements.length; i++) {
 
         html += `
@@ -308,7 +318,6 @@ html += "<h3>🏋️ Entraînements</h3>";
 
     document.getElementById("etat").innerHTML = html;
 }
-
 
 function afficherAjoutScore() {
 
@@ -487,12 +496,9 @@ function supprimerScore(index) {
         JSON.stringify(historique)
     );
 
-chargerCalendrier();
-
-setTimeout(() => {
+chargerCalendrier().then(() => {
     afficherResultats();
-}, 500);
-
+});
 }
 
 function afficherStats() {
