@@ -245,7 +245,6 @@ if (mois && mois !== moisCourant) {
                 </div>
                 `;
 
-                compteur++;
 
               
             }
@@ -307,12 +306,7 @@ function afficherResultats() {
 
     document.getElementById("etat").innerHTML = html;
 }
-console.log(
-    datesMatchs.length,
-    scoresExcel.length,
-    datesEntrainements.length,
-    entrainementsExcel.length
-);
+
 
 function afficherAjoutScore() {
 
