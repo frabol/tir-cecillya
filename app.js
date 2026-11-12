@@ -1179,19 +1179,7 @@ function afficherTableauDeBord() {
     `;
 }
 async function synchroniserScores() {
-async function synchroniserEtRecharger() {
 
-    await synchroniserScores();
-
-    await chargerCalendrier();
-
-    afficherTableauDeBord();
-
-    alert(
-        "✅ Synchronisation terminée"
-    );
-
-}
     const { data, error } =
         await supabaseClient
             .from("scores")
@@ -1247,4 +1235,16 @@ async function synchroniserEtRecharger() {
     );
 
 }
+async function synchroniserEtRecharger() {
 
+    await synchroniserScores();
+
+    await chargerCalendrier();
+
+    afficherTableauDeBord();
+
+    alert(
+        "✅ Synchronisation terminée"
+    );
+
+}
