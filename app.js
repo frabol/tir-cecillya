@@ -518,8 +518,11 @@ chargerCalendrier().then(() => {
 }
 
 function afficherStats() {
-
-  const scores = scoresExcel;
+    
+const scores = [
+    ...scoresExcel,
+    ...entrainementsExcel
+];
     if (scores.length === 0) {
 
     document.getElementById("etat").innerHTML =
@@ -553,7 +556,10 @@ const moyenneEntrainement =
       ).toFixed(1)
     : 0;
        
-
+const totalResultats =
+    scoresExcel.length +
+    entrainementsExcel.length;
+    
     document.getElementById("etat").innerHTML = `
 
         <h2>📈 Statistiques</h2>
@@ -577,7 +583,8 @@ const moyenneEntrainement =
 <p>📈 Moyenne entraînement :
 <b>${moyenneEntrainement}</b></p>
 
-        <p>📋 Nombre de résultats : <b>${scores.length}</b></p>
+      <p>📋 Nombre total de résultats :
+<b>${totalResultats}</b></p> 
         <p>🏋️ Nombre d'entraînements :
         <b>${entrainementsExcel.length}</b></p>
         <p>📅 Dates matchs :
