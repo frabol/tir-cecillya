@@ -773,3 +773,53 @@ function rechercherCompetition() {
 
     });
 }
+
+function exporterScores() {
+
+    const historique =
+        JSON.parse(
+            localStorage.getItem("scores")
+        ) || [];
+
+    if (historique.length === 0) {
+
+        alert("Aucun score à exporter.");
+
+        return;
+    }
+
+    const contenu =
+        JSON.stringify(
+            historique,
+            null,
+            2
+        );
+
+    const blob =
+        new Blob(
+            [contenu],
+            {
+                type: "application/json"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const lien =
+        document.createElement("a");
+
+    lien.href = url;
+
+    lien.download =
+        "scores_cecillya.json";
+
+    document.body.appendChild(lien);
+
+    lien.click();
+
+    document.body.removeChild(lien);
+
+    URL.revokeObjectURL(url);
+
+}
