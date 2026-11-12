@@ -273,7 +273,9 @@ if (mois && mois !== moisCourant) {
     }
 }
 
-chargerCalendrier();
+chargerCalendrier().then(() => {
+    afficherTableauDeBord();
+});
 
 
 function afficherToutes() {
