@@ -1295,10 +1295,14 @@ async function synchroniserEtRecharger(
 
     await synchroniserScores();
 
+    scoresExcel = [];
+    entrainementsExcel = [];
+    datesMatchs = [];
+    datesEntrainements = [];
+
     await chargerCalendrier();
 
     if (!silencieux) {
-
 
         alert(
             "✅ Synchronisation terminée"
