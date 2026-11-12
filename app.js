@@ -414,7 +414,21 @@ if (!date || isNaN(score)) {
             localStorage.getItem("scores")
         ) || [];
 
-    historique.push(nouveauScore);
+ const existe = historique.some(item =>
+    item.date === date &&
+    item.type === type &&
+    Number(item.score) === score
+);
+
+if (existe) {
+
+    alert("⚠️ Ce score existe déjà.");
+
+    return;
+
+}
+
+historique.push(nouveauScore);
 
     localStorage.setItem(
         "scores",
