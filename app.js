@@ -519,10 +519,11 @@ chargerCalendrier().then(() => {
 
 function afficherStats() {
     
-const scores = [
-    ...scoresExcel,
-    ...entrainementsExcel
-];
+const meilleurCompetition =
+    scoresExcel.length > 0
+    ? Math.max(...scoresExcel)
+    : 0;
+    
     if (scores.length === 0) {
 
     document.getElementById("etat").innerHTML =
@@ -564,8 +565,8 @@ const totalResultats =
 
         <h2>📈 Statistiques</h2>
 
-        <p>🏆 Meilleur score : <b>${meilleur}</b></p>
-
+        <p>🏆 Meilleure compétition :
+<b>${meilleurCompetition}</b></p>
         <p>🎯 Dernier score : <b>${dernier}</b></p>
 
         <p>📊 Moyenne : <b>${moyenne}</b></p>
