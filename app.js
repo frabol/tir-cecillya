@@ -482,8 +482,13 @@ if (error) {
         error
     );
 
-}
+    alert(
+        "❌ Erreur Supabase : " +
+        error.message
+    );
 
+    return;
+}
 const morceaux = date.split("-");
 
 const dateFormatee =
