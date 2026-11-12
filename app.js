@@ -179,8 +179,11 @@ const sheet = workbook.Sheets["Calendrier 2026-2027"];
         });
 
         let html = `
+<h2>📅 Calendrier de la saison</h2>
+
 <h3 style="
     background:#17365D;
+    
     color:white;
     padding:8px;
     margin-top:15px;
