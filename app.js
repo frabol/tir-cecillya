@@ -279,8 +279,10 @@ function afficherAVenir() {
 }
 
 function afficherResultats() {
+let html = "<h2>🏆 Résultats</h2>";
 
-    let html = "<h2>🏆 Résultats</h2>";
+html += "<h3>🏆 Compétitions</h3>";
+    
 
     for (let i = 0; i < datesMatchs.length; i++) {
 
@@ -292,7 +294,7 @@ function afficherResultats() {
             </div>
         `;
     }
-
+html += "<h3>🏋️ Entraînements</h3>";
     for (let i = 0; i < datesEntrainements.length; i++) {
 
         html += `
@@ -485,7 +487,11 @@ function supprimerScore(index) {
         JSON.stringify(historique)
     );
 
-    voirScores();
+chargerCalendrier();
+
+setTimeout(() => {
+    afficherResultats();
+}, 500);
 
 }
 
