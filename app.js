@@ -308,7 +308,12 @@ function afficherResultats() {
 
     document.getElementById("etat").innerHTML = html;
 }
-
+console.log(
+    datesMatchs.length,
+    scoresExcel.length,
+    datesEntrainements.length,
+    entrainementsExcel.length
+);
 
 function afficherAjoutScore() {
 
@@ -378,29 +383,28 @@ function enregistrerScore() {
         JSON.stringify(historique)
     );
 
+const morceaux = date.split("-");
+
+const dateFormatee =
+    morceaux[2] + "/" + morceaux[1];
+
 if (type === "match") {
- 
-datesMatchs.push(
-date.split("-").reverse().join("/")
-);
- 
-scoresExcel.push(score);
- 
+
+    datesMatchs.push(dateFormatee);
+
+    scoresExcel.push(score);
+
 } else {
- 
-datesEntrainements.push(
-date.split("-").reverse().join("/")
-);
- 
-entrainementsExcel.push(score);
- 
+
+    datesEntrainements.push(dateFormatee);
+
+    entrainementsExcel.push(score);
+
 }
  
 alert("✅ Score enregistré");
 
-setTimeout(() => {
-    afficherResultats();
-}, 500);
+afficherResultats();
 }
 
 function voirScores() {
