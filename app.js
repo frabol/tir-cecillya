@@ -970,3 +970,102 @@ historique = Array.from(
     lecteur.readAsText(fichier);
 
 }
+function afficherTableauDeBord() {
+
+    const tousLesScores = [
+        ...scoresExcel,
+        ...entrainementsExcel
+    ];
+
+    const moyenne =
+        tousLesScores.length > 0
+        ? (
+            tousLesScores.reduce(
+                (a, b) => a + b,
+                0
+            ) / tousLesScores.length
+        ).toFixed(1)
+        : 0;
+
+    const record =
+        tousLesScores.length > 0
+        ? Math.max(...tousLesScores)
+        : 0;
+
+    const dernier =
+        tousLesScores.length > 0
+        ? tousLesScores[tousLesScores.length - 1]
+        : 0;
+
+    const prochaineCompetition =
+        document.querySelector(".competition b")
+        ? document.querySelector(".competition b")
+            .innerText
+        : "Non trouvée";
+
+    document.getElementById("etat").innerHTML = `
+
+        <h2>🏠 Tableau de bord</h2>
+
+        <div style="
+            display:grid;
+            grid-template-columns:
+                repeat(auto-fit,minmax(220px,1fr));
+            gap:10px;
+        ">
+
+            <div class="card">
+                <h3>🎯 Dernier score</h3>
+                <p style="
+                    font-size:28px;
+                    font-weight:bold;
+                ">
+                    ${dernier}
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>🏆 Record personnel</h3>
+                <p style="
+                    font-size:28px;
+                    font-weight:bold;
+                    color:gold;
+                ">
+                    ${record}
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>📈 Moyenne saison</h3>
+                <p style="
+                    font-size:28px;
+                    font-weight:bold;
+                ">
+                    ${moyenne}
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>📋 Résultats</h3>
+                <p style="
+                    font-size:28px;
+                    font-weight:bold;
+                ">
+                    ${tousLesScores.length}
+                </p>
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h3>📅 Prochaine compétition</h3>
+
+            <p>
+                ${prochaineCompetition}
+            </p>
+
+        </div>
+
+    `;
+}
