@@ -864,3 +864,58 @@ alert("✅ Export terminé");
  
 }
 Résultat
+function importerScores(event) {
+ 
+const fichier = event.target.files[0];
+ 
+if (!fichier) {
+return;
+}
+ 
+const lecteur = new FileReader();
+ 
+lecteur.onload = function(e) {
+ 
+try {
+ 
+const donnees =
+JSON.parse(e.target.result);
+ 
+if (!Array.isArray(donnees)) {
+ 
+alert(
+"❌ Fichier invalide."
+);
+ 
+return;
+ 
+}
+ 
+localStorage.setItem(
+"scores",
+JSON.stringify(donnees)
+);
+ 
+alert(
+"✅ Scores importés avec succès."
+);
+ 
+chargerCalendrier().then(() => {
+afficherResultats();
+});
+ 
+}
+ 
+catch (erreur) {
+ 
+alert(
+"❌ Erreur lors de l'import."
+);
+ 
+}
+ 
+};
+ 
+lecteur.readAsText(fichier);
+ 
+}
