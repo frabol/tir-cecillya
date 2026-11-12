@@ -1391,65 +1391,68 @@ function afficherTop10() {
     const top10 = tousLesScores
         .sort((a, b) => b.score - a.score)
         .slice(0, 10);
+
+    const record =
+        top10.length > 0
+        ? top10[0].score
+        : 0;
+
+    const moyenneTop10 =
+        top10.length > 0
+        ? (
+            top10.reduce(
+                (total, item) =>
+                    total + item.score,
+                0
+            ) / top10.length
+        ).toFixed(1)
+        : 0;
+
     let html = `
-<h2>🥇 Top 10 des meilleurs scores</h2>
 
-<div class="podium">
+        <h2>🥇 Top 10 des meilleurs scores</h2>
 
-    <div class="second">
-        🥈<br>
-        ${top10[1] ? top10[1].score : "-"}
-    </div>
+        <div class="podium">
 
-    <div class="first">
-        🥇<br>
-        ${top10[0] ? top10[0].score : "-"}
-    </div>
+            <div class="second">
+                🥈<br>
+                ${top10[1] ? top10[1].score : "-"}
+            </div>
 
-    <div class="third">
-        🥉<br>
-        ${top10[2] ? top10[2].score : "-"}
-    </div>
+            <div class="first">
+                🥇<br>
+                ${top10[0] ? top10[0].score : "-"}
+            </div>
 
-</div>
-`;
-    
-const record =
-    top10.length > 0
-    ? top10[0].score
-    : 0;
+            <div class="third">
+                🥉<br>
+                ${top10[2] ? top10[2].score : "-"}
+            </div>
 
-const moyenneTop10 =
-    top10.length > 0
-    ? (
-        top10.reduce(
-            (total, item) =>
-                total + item.score,
-            0
-        ) / top10.length
-      ).toFixed(1)
-    : 0;
- html += `
-    <div class="card">
+        </div>
 
-        <p style="
-            color:gold;
-            font-size:24px;
-            font-weight:bold;
-        ">
-            🏆 Record personnel :
-            ${record}
-        </p>
+        <div class="card">
 
-        <p style="
-            font-size:18px;
-        ">
-            📈 Moyenne du Top 10 :
-            <b>${moyenneTop10}</b>
-        </p>
+            <p style="
+                color:gold;
+                font-size:24px;
+                font-weight:bold;
+            ">
+                🏆 Record personnel :
+                ${record}
+            </p>
 
-    </div>
-`;
+            <p style="
+                font-size:18px;
+            ">
+                📈 Moyenne du Top 10 :
+                <b>${moyenneTop10}</b>
+            </p>
+
+        </div>
+
+    `;
+
     top10.forEach((item, index) => {
 
         const emoji =
@@ -1459,6 +1462,7 @@ const moyenneTop10 =
             "🎯";
 
         html += `
+
             <div class="competition">
 
                 <h3>
@@ -1472,6 +1476,7 @@ const moyenneTop10 =
                 📅 ${item.date}
 
             </div>
+
         `;
 
     });
