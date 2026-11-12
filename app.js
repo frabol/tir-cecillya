@@ -895,15 +895,29 @@ function exporterExcel() {
     Score: Number(item.score)
 
 }));
-
 donnees.unshift({
 
-    Date: "Export Tir Cécillya",
-    Type: "",
+    Date: new Date().toLocaleDateString("fr-FR"),
+
+    Type: "Export Tir Cécillya",
+
     Score: ""
 
 });
+donnees.sort((a, b) => {
 
+    if (
+        a.Type === "Export Tir Cécillya"
+    ) return -1;
+
+    if (
+        b.Type === "Export Tir Cécillya"
+    ) return 1;
+
+    return String(a.Date)
+        .localeCompare(String(b.Date));
+
+});
     const feuille =
         XLSX.utils.json_to_sheet(
             donnees
