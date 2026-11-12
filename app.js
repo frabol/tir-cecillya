@@ -464,15 +464,25 @@ historique.push(nouveauScore);
         "scores",
         JSON.stringify(historique)
     );
-await supabaseClient
-    .from("scores")
-    .insert([
-        {
-            date,
-            type,
-            score
-        }
-    ]);
+const { error } =
+    await supabaseClient
+        .from("scores")
+        .insert([
+            {
+                date,
+                type,
+                score
+            }
+        ]);
+
+if (error) {
+
+    console.error(
+        "Erreur Supabase :",
+        error
+    );
+
+}
 
 const morceaux = date.split("-");
 
