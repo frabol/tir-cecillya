@@ -630,67 +630,30 @@ function afficherStats() {
         ...entrainementsExcel
     ];
 
-    const meilleurCompetition =
-        scoresExcel.length > 0
-        ? Math.max(...scoresExcel)
-        : 0;
-
     if (scores.length === 0) {
 
         document.getElementById("etat").innerHTML =
             "Aucun score trouvé.";
 
         return;
+
     }
 
-    const tousLesScores = [];
-
-/* Compétitions */
-for (let i = 0; i < datesMatchs.length; i++) {
-
-    tousLesScores.push({
-        date: datesMatchs[i],
-        score: scoresExcel[i]
-    });
-
-}
-
-/* Entraînements */
-for (let i = 0; i < datesEntrainements.length; i++) {
-
-    tousLesScores.push({
-        date: datesEntrainements[i],
-        score: entrainementsExcel[i]
-    });
-
-}
-
-/* Tri chronologique */
-tousLesScores.sort((a, b) => {
-
-    const [ja, ma] = a.date.split("/");
-    const [jb, mb] = b.date.split("/");
-
-    return new Date(2026, ma - 1, ja)
-         - new Date(2026, mb - 1, jb);
-
-});
-
-const dernier =
-    tousLesScores.length > 0
-    ? tousLesScores[tousLesScores.length - 1].score
-    : 0;
-
-    const moyenne =
-    (
-        scores.reduce((a, b) => a + b, 0)
-        / scores.length
-    ).toFixed(1);
+    const meilleurCompetition =
+        scoresExcel.length > 0
+        ? Math.max(...scoresExcel)
+        : 0;
 
     const meilleurEntrainement =
         entrainementsExcel.length > 0
         ? Math.max(...entrainementsExcel)
         : 0;
+
+    const moyenne =
+        (
+            scores.reduce((a, b) => a + b, 0)
+            / scores.length
+        ).toFixed(1);
 
     const moyenneEntrainement =
         entrainementsExcel.length > 0
@@ -699,51 +662,120 @@ const dernier =
                 (a, b) => a + b,
                 0
             ) / entrainementsExcel.length
-          ).toFixed(1)
+        ).toFixed(1)
         : 0;
 
     const totalResultats =
         scoresExcel.length +
         entrainementsExcel.length;
-    
+
+    const tousLesScores = [];
+
+    for (let i = 0; i < datesMatchs.length; i++) {
+
+        tousLesScores.push({
+            date: datesMatchs[i],
+            score: scoresExcel[i]
+        });
+
+    }
+
+    for (let i = 0; i < datesEntrainements.length; i++) {
+
+        tousLesScores.push({
+            date: datesEntrainements[i],
+            score: entrainementsExcel[i]
+        });
+
+    }
+
+    tousLesScores.sort((a, b) => {
+
+        const [ja, ma] = a.date.split("/");
+        const [jb, mb] = b.date.split("/");
+
+        return new Date(2026, ma - 1, ja)
+             - new Date(2026, mb - 1, jb);
+
+    });
+
+    const dernier =
+        tousLesScores.length > 0
+        ? tousLesScores[tousLesScores.length - 1].score
+        : 0;
+
     document.getElementById("etat").innerHTML = `
 
         <h2>📈 Statistiques</h2>
 
+        <div style="
+            display:grid;
+            grid-template-columns:
+                repeat(auto-fit,minmax(220px,1fr));
+            gap:15px;
+        ">
+
+            <div class="card">
+                <h3>🎯 Dernier score</h3>
+                <p style="
+                    font-size:32px;
+                    font-weight:bold;
+                ">
+                    ${dernier}
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>🏆 Record personnel</h3>
+                <p style="
+                    font-size:32px;
+                    font-weight:bold;
+                    color:gold;
+                ">
+                    ${meilleurEntrainement}
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>📊 Moyenne</h3>
+                <p style="
+                    font-size:32px;
+                    font-weight:bold;
+                ">
+                    ${moyenne}
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>📋 Résultats</h3>
+                <p style="
+                    font-size:32px;
+                    font-weight:bold;
+                ">
+                    ${totalResultats}
+                </p>
+            </div>
+
+        </div>
+
         <p>🏆 Meilleure compétition :
-<b>${meilleurCompetition}</b></p>
+        <b>${meilleurCompetition}</b></p>
 
-<p>🎯 Dernier score :
-<b>${dernier}</b></p>
-
-<p>📊 Moyenne :
-<b>${moyenne}</b></p>
-
-<p style="
-    color:gold;
-    font-size:20px;
-    font-weight:bold;
-">
-🏆 Record personnel :
-<b>${meilleurEntrainement}</b>
-</p>
-
-<p>📈 Moyenne entraînement :
-<b>${moyenneEntrainement}</b></p>
-
-<p>📋 Nombre total de résultats :
-<b>${totalResultats}</b></p>
+        <p>📈 Moyenne entraînement :
+        <b>${moyenneEntrainement}</b></p>
 
         <p>🏋️ Nombre d'entraînements :
         <b>${entrainementsExcel.length}</b></p>
+
         <p>📅 Dates matchs :
-<b>${datesMatchs.join(" - ")}</b></p>
+        <b>${datesMatchs.join(" - ")}</b></p>
 
-<p>📅 Dates entraînements :
-<b>${datesEntrainements.join(" - ")}</b></p>
-<hr>
+        <p>📅 Dates entraînements :
+        <b>${datesEntrainements.join(" - ")}</b></p>
 
-<h3>📊 Évolution des performances</h3>
+        <hr>
+
+        <h3>📊 Évolution des performances</h3>
 
         <canvas id="graphiqueScores"></canvas>
 
@@ -751,190 +783,108 @@ const dernier =
 
     const ctx =
         document.getElementById("graphiqueScores");
-const labels =
-    [...new Set([
-        ...datesMatchs,
-        ...datesEntrainements
-    ])];
 
-labels.sort((a, b) => {
+    const labels =
+        [...new Set([
+            ...datesMatchs,
+            ...datesEntrainements
+        ])];
 
-    const [ja, ma] = a.split("/");
-    const [jb, mb] = b.split("/");
+    labels.sort((a, b) => {
 
-    return new Date(2026, ma - 1, ja)
-         - new Date(2026, mb - 1, jb);
+        const [ja, ma] = a.split("/");
+        const [jb, mb] = b.split("/");
 
-});
+        return new Date(2026, ma - 1, ja)
+             - new Date(2026, mb - 1, jb);
+
+    });
+
     const serieMatchs =
-    labels.map(date => {
+        labels.map(date => {
 
-        const index =
-            datesMatchs.indexOf(date);
+            const index =
+                datesMatchs.indexOf(date);
 
-        return index >= 0
-            ? scoresExcel[index]
-            : null;
+            return index >= 0
+                ? scoresExcel[index]
+                : null;
 
-    });
+        });
 
-const serieEntrainements =
-    labels.map(date => {
+    const serieEntrainements =
+        labels.map(date => {
 
-        const index =
-            datesEntrainements.indexOf(date);
+            const index =
+                datesEntrainements.indexOf(date);
 
-        return index >= 0
-            ? entrainementsExcel[index]
-            : null;
+            return index >= 0
+                ? entrainementsExcel[index]
+                : null;
 
-    });
-  new Chart(ctx, {
+        });
 
-    type: "line",
+    new Chart(ctx, {
 
-    data: {
+        type: "line",
 
-        labels: labels,
+        data: {
 
-        datasets: [
+            labels,
 
-            {
-                label: "Compétitions",
+            datasets: [
 
-                data: serieMatchs,
-
-                borderColor: "#17365D",
-
-                borderWidth: 4,
-
-                backgroundColor:
-                    "rgba(23,54,93,0.2)",
-
-                fill: false,
-
-                tension: 0.4,
-
-                spanGaps: true,
-
-                pointRadius: 10,
-
-                pointHoverRadius: 15,
-
-                pointBackgroundColor:
-                    "#17365D",
-
-                pointBorderColor:
-                    "#ffffff",
-
-                pointBorderWidth: 2
-            },
-
-            {
-                label: "Entraînements",
-
-                data: serieEntrainements,
-
-                borderColor: "#28a745",
-
-                borderWidth: 4,
-
-                backgroundColor:
-                    "rgba(40,167,69,0.2)",
-
-                fill: false,
-
-                tension: 0.4,
-
-                spanGaps: true,
-
-                pointRadius: 10,
-
-                pointHoverRadius: 15,
-
-                pointBackgroundColor:
-                    "#28a745",
-
-                pointBorderColor:
-                    "#ffffff",
-
-                pointBorderWidth: 2
-            }
-
-        ]
-
-    },
-
-    options: {
-
-        responsive: true,
-
-        maintainAspectRatio: false,
-
-        plugins: {
-
-            legend: {
-
-                display: true,
-
-                labels: {
-
-                    font: {
-
-                        size: 14,
-
-                        weight: "bold"
-
-                    }
-
-                }
-
-            },
-
-            tooltip: {
-
-                enabled: true,
-
-                backgroundColor:
-                    "#17365D",
-
-                titleFont: {
-
-                    size: 14
-
+                {
+                    label: "Compétitions",
+                    data: serieMatchs,
+                    borderColor: "#17365D",
+                    backgroundColor:
+                        "rgba(23,54,93,0.20)",
+                    borderWidth: 4,
+                    tension: 0.4,
+                    spanGaps: true,
+                    pointRadius: 8,
+                    pointHoverRadius: 12
                 },
 
-                bodyFont: {
-
-                    size: 14
-
+                {
+                    label: "Entraînements",
+                    data: serieEntrainements,
+                    borderColor: "#28a745",
+                    backgroundColor:
+                        "rgba(40,167,69,0.20)",
+                    borderWidth: 4,
+                    tension: 0.4,
+                    spanGaps: true,
+                    pointRadius: 8,
+                    pointHoverRadius: 12
                 }
 
-            }
+            ]
 
         },
 
-        scales: {
+        options: {
 
-            y: {
+            responsive: true,
 
-                beginAtZero: false,
+            maintainAspectRatio: false,
 
-                grid: {
+            plugins: {
 
-                    color:
-                        "rgba(0,0,0,0.05)"
+                legend: {
 
-                }
+                    labels: {
 
-            },
+                        font: {
 
-            x: {
+                            size: 14,
 
-                grid: {
+                            weight: "bold"
 
-                    color:
-                        "rgba(0,0,0,0.05)"
+                        }
+
+                    }
 
                 }
 
@@ -942,9 +892,8 @@ const serieEntrainements =
 
         }
 
-    }
+    });
 
-});
 }
 
 function rechercherCompetition() {
