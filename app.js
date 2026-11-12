@@ -537,18 +537,43 @@ function afficherStats() {
         return;
     }
 
-    const dernier =
-        entrainementsExcel.length > 0
-            ? entrainementsExcel[
-                entrainementsExcel.length - 1
-              ]
-            : (
-                scoresExcel.length > 0
-                ? scoresExcel[
-                    scoresExcel.length - 1
-                  ]
-                : 0
-            );
+    const tousLesScores = [];
+
+/* Compétitions */
+for (let i = 0; i < datesMatchs.length; i++) {
+
+    tousLesScores.push({
+        date: datesMatchs[i],
+        score: scoresExcel[i]
+    });
+
+}
+
+/* Entraînements */
+for (let i = 0; i < datesEntrainements.length; i++) {
+
+    tousLesScores.push({
+        date: datesEntrainements[i],
+        score: entrainementsExcel[i]
+    });
+
+}
+
+/* Tri chronologique */
+tousLesScores.sort((a, b) => {
+
+    const [ja, ma] = a.date.split("/");
+    const [jb, mb] = b.date.split("/");
+
+    return new Date(2026, ma - 1, ja)
+         - new Date(2026, mb - 1, jb);
+
+});
+
+const dernier =
+    tousLesScores.length > 0
+    ? tousLesScores[tousLesScores.length - 1].score
+    : 0;
 
     const moyenne =
     (
