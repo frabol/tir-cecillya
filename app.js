@@ -294,7 +294,16 @@ if (
 }
 
 async function initialiserApplication() {
+const theme =
+    localStorage.getItem("theme");
 
+if (theme === "dark") {
+
+    document.body.classList.add(
+        "dark"
+    );
+
+}
     await synchroniserScores();
 
     await chargerCalendrier();
