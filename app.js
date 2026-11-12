@@ -1,4 +1,4 @@
-
+let pageActuelle = "tableau";
 let scoresExcel = [];
 let entrainementsExcel = [];
 let datesMatchs = [];
@@ -336,7 +336,8 @@ function afficherAVenir() {
 }
 
 function afficherResultats() {
-
+    
+     pageActuelle = "resultats";
     let html = "<h2>🏆 Résultats</h2>";
 
     let resultats = [];
@@ -624,7 +625,8 @@ async function supprimerScore(index) {
 }
 
 function afficherStats() {
-
+    
+    pageActuelle = "stats";
     const scores = [
         ...scoresExcel,
         ...entrainementsExcel
@@ -1159,7 +1161,8 @@ historique = Array.from(
 
 }
 function afficherTableauDeBord() {
-
+    
+    pageActuelle = "tableau";
     const tousLesScores = [
         ...scoresExcel,
         ...entrainementsExcel
@@ -1302,6 +1305,25 @@ async function synchroniserEtRecharger(
 
     await chargerCalendrier();
 
+    switch(pageActuelle) {
+
+        case "stats":
+            afficherStats();
+            break;
+
+        case "resultats":
+            afficherResultats();
+            break;
+
+        case "top10":
+            afficherTop10();
+            break;
+
+        default:
+            afficherTableauDeBord();
+
+    }
+
     if (!silencieux) {
 
         alert(
@@ -1313,7 +1335,8 @@ async function synchroniserEtRecharger(
 }
 
 function afficherTop10() {
-
+    
+    pageActuelle = "top10";
     const tousLesScores = [];
 
     for (let i = 0; i < datesMatchs.length; i++) {
