@@ -152,11 +152,20 @@ let historique =
     ) || [];
 
 historique.forEach(item => {
+    
+let date = item.date;
 
-    const morceaux = item.date.split("-");
+if (item.date.includes("-")) {
 
-const date =
-    morceaux[2] + "/" + morceaux[1];
+    const morceaux =
+        item.date.split("-");
+
+    date =
+        morceaux[2] +
+        "/" +
+        morceaux[1];
+
+}
 
     if (item.type === "match") {
 
@@ -865,67 +874,81 @@ alert("✅ Export terminé");
 }
 Résultat
 function importerScores(event) {
- 
-const fichier = event.target.files[0];
- 
-if (!fichier) {
-return;
-}
- 
-const lecteur = new FileReader();
- 
-lecteur.onload = function(e) {
- 
-try {
- 
-const donnees =
-JSON.parse(e.target.result);
- 
-if (!Array.isArray(donnees)) {
- 
-alert(
-"❌ Fichier invalide."
-);
- 
-return;
- 
-}
- 
-let historique =
-    JSON.parse(
-        localStorage.getItem("scores")
-    ) || [];
 
-historique = [
-    ...historique,
-    ...donnees
-];
+    const fichier = event.target.files[0];
 
-localStorage.setItem(
-    "scores",
-    JSON.stringify(historique)
-);
- 
-alert(
-"✅ Scores importés avec succès."
-);
- 
-chargerCalendrier().then(() => {
-afficherResultats();
-});
- 
-}
- 
-catch (erreur) {
- 
-alert(
-"❌ Erreur lors de l'import."
-);
- 
-}
- 
-};
- 
-lecteur.readAsText(fichier);
- 
+    if (!fichier) {
+        return;
+    }
+
+    const lecteur = new FileReader();
+
+    lecteur.onload = function(e) {
+
+        try {
+
+            const donnees =
+                JSON.parse(e.target.result);
+
+            if (!Array.isArray(donnees)) {
+
+                alert("❌ Fichier invalide.");
+
+                return;
+
+            }
+
+            donnees.forEach(item => {
+
+                if (item.type === "Compétition") {
+                    item.type = "match";
+                }
+
+                if (item.type === "Entraînement") {
+                    item.type = "entrainement";
+                }
+
+            });
+
+            let historique =
+                JSON.parse(
+                    localStorage.getItem("scores")
+                ) || [];
+
+            historique = [
+                ...historique,
+                ...donnees
+            ];
+
+            localStorage.setItem(
+                "scores",
+                JSON.stringify(historique)
+            );
+
+            alert(
+                "✅ " +
+                donnees.length +
+                " score(s) importé(s)."
+            );
+
+            chargerCalendrier().then(() => {
+                afficherResultats();
+            });
+
+        }
+
+        catch (erreur) {
+
+            console.error(erreur);
+
+            alert(
+                "❌ Erreur lors de l'import."
+            );
+
+        }
+
+    };
+
+    lecteur.readAsText(fichier);
+
 }
