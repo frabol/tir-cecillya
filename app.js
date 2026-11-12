@@ -4,7 +4,17 @@ let entrainementsExcel = [];
 let datesMatchs = [];
 let datesEntrainements = [];
 let prochaineCompetition = "";
+const supabaseUrl =
+    "https://tfotbvxoozlbfdzmifdu.supabase.co";
 
+const supabaseKey =
+    "sb_publishable_X-6C7DV9K8B7AiUlnpqAvw_KYEaUOKl";
+
+const supabaseClient =
+    window.supabase.createClient(
+        supabaseUrl,
+        supabaseKey
+    );
 async function chargerCalendrier(filtre = "avenir") {
 
     try {
@@ -283,9 +293,17 @@ if (
     }
 }
 
-chargerCalendrier().then(() => {
+async function initialiserApplication() {
+
+    await synchroniserScores();
+
+    await chargerCalendrier();
+
     afficherTableauDeBord();
-});
+
+}
+
+initialiserApplication();
 
 
 function afficherToutes() {
@@ -396,7 +414,7 @@ function afficherAjoutScore() {
 }
 
 
-function enregistrerScore() {
+async function enregistrerScore() {
 
     const date =
         document.getElementById("dateScore").value;
@@ -446,6 +464,15 @@ historique.push(nouveauScore);
         "scores",
         JSON.stringify(historique)
     );
+await supabaseClient
+    .from("scores")
+    .insert([
+        {
+            date,
+            type,
+            score
+        }
+    ]);
 
 const morceaux = date.split("-");
 
@@ -1151,3 +1178,61 @@ function afficherTableauDeBord() {
 
     `;
 }
+async function synchroniserScores() {
+
+    const { data, error } =
+        await supabaseClient
+            .from("scores")
+            .select("*");
+
+    if (error) {
+
+        console.error(
+            "Erreur Supabase :",
+            error
+        );
+
+        return;
+
+    }
+
+    const locaux =
+        JSON.parse(
+            localStorage.getItem("scores")
+        ) || [];
+
+    const fusion =
+        [...locaux];
+
+    data.forEach(item => {
+
+        const existe =
+            fusion.some(score =>
+
+                score.date === item.date &&
+                score.type === item.type &&
+                Number(score.score) === Number(item.score)
+
+            );
+
+        if (!existe) {
+
+            fusion.push({
+
+                date: item.date,
+                type: item.type,
+                score: Number(item.score)
+
+            });
+
+        }
+
+    });
+
+    localStorage.setItem(
+        "scores",
+        JSON.stringify(fusion)
+    );
+
+}
+
