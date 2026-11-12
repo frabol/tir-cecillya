@@ -1485,3 +1485,22 @@ function afficherTop10() {
         html;
 
 }
+function toggleTheme() {
+ 
+document.body.classList.toggle(
+"dark"
+);
+ 
+const modeSombre =
+document.body.classList.contains(
+"dark"
+);
+ 
+localStorage.setItem(
+"theme",
+modeSombre
+? "dark"
+: "light"
+);
+ 
+}
