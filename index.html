@@ -23,26 +23,63 @@
     <style>
 
         body{
-            margin:0;
-            font-family:Arial,sans-serif;
-            background:#f0f4f8;
-        }
+    margin:0;
+
+    font-family:
+        'Segoe UI',
+        Arial,
+        sans-serif;
+
+    background:
+        linear-gradient(
+            180deg,
+            #eef4ff,
+            #f5f7fa
+        );
+}
 
         header{
-            background:#17365D;
-            padding:20px;
-            text-align:center;
-            color:white;
-        }
 
-        .card{
-            background:white;
-            margin:15px auto;
-            padding:15px;
-            border-radius:12px;
-            box-shadow:0 2px 8px rgba(0,0,0,0.15);
-            max-width:1400px;
-        }
+    background:
+        linear-gradient(
+            135deg,
+            #17365D,
+            #2563eb
+        );
+
+    padding:25px;
+
+    text-align:center;
+
+    color:white;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,0.15);
+
+}
+
+      .card{
+    background:white;
+    margin:15px auto;
+    padding:20px;
+    border-radius:18px;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.08);
+
+    max-width:1400px;
+
+    transition:all 0.3s ease;
+}
+
+.card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 12px 25px rgba(0,0,0,0.12);
+
+}
 
         h2{
             margin-top:0;
