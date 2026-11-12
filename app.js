@@ -791,6 +791,7 @@ labels: labels,
     data: serieMatchs,
 
     borderColor: "#17365D",
+    borderWidth: 4,
     backgroundColor: "rgba(23,54,93,0.2)",
 
     fill: false,
@@ -809,6 +810,7 @@ labels: labels,
             data: serieEntrainements,
 
             borderColor: "#28a745",
+            borderWidth: 4,
             backgroundColor: "rgba(40,167,69,0.2)",
 
             fill: false,
@@ -830,15 +832,29 @@ labels: labels,
 
         responsive: true,
 
-        plugins: {
+       plugins: {
 
-            legend: {
-                display: true
-            },
+    legend: {
 
-            tooltip: {
-                enabled: true
+        display: true,
+
+        labels: {
+
+            font: {
+
+                size: 14
+
             }
+
+        }
+
+    },
+
+    tooltip: {
+
+        enabled: true
+
+    }
 
         }
 
