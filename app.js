@@ -786,52 +786,77 @@ const serieEntrainements =
             : null;
 
     });
-    new Chart(ctx, {
+  new Chart(ctx, {
 
     type: "line",
 
     data: {
 
-labels: labels,
+        labels: labels,
+
         datasets: [
 
-       {
-    label: "Compétitions",
-    data: serieMatchs,
+            {
+                label: "Compétitions",
 
-    borderColor: "#17365D",
-    borderWidth: 4,
-    backgroundColor: "rgba(23,54,93,0.2)",
+                data: serieMatchs,
 
-    fill: false,
-    tension: 0.3,
-    spanGaps: true,
+                borderColor: "#17365D",
 
-    pointRadius: 8,
-    pointHoverRadius: 12,
-    pointBackgroundColor: "#17365D",
-    pointBorderColor: "#ffffff",
-    pointBorderWidth: 2
-},
+                borderWidth: 4,
 
-     {
-            label: "Entraînements",
-            data: serieEntrainements,
+                backgroundColor:
+                    "rgba(23,54,93,0.2)",
 
-            borderColor: "#28a745",
-            borderWidth: 4,
-            backgroundColor: "rgba(40,167,69,0.2)",
+                fill: false,
 
-            fill: false,
-            tension: 0.3,
-            spanGaps: true,
+                tension: 0.4,
 
-            pointRadius: 8,
-            pointHoverRadius: 12,
-            pointBackgroundColor: "#28a745",
-            pointBorderColor: "#ffffff",
-            pointBorderWidth: 2
-        }
+                spanGaps: true,
+
+                pointRadius: 10,
+
+                pointHoverRadius: 15,
+
+                pointBackgroundColor:
+                    "#17365D",
+
+                pointBorderColor:
+                    "#ffffff",
+
+                pointBorderWidth: 2
+            },
+
+            {
+                label: "Entraînements",
+
+                data: serieEntrainements,
+
+                borderColor: "#28a745",
+
+                borderWidth: 4,
+
+                backgroundColor:
+                    "rgba(40,167,69,0.2)",
+
+                fill: false,
+
+                tension: 0.4,
+
+                spanGaps: true,
+
+                pointRadius: 10,
+
+                pointHoverRadius: 15,
+
+                pointBackgroundColor:
+                    "#28a745",
+
+                pointBorderColor:
+                    "#ffffff",
+
+                pointBorderWidth: 2
+            }
 
         ]
 
@@ -841,36 +866,82 @@ labels: labels,
 
         responsive: true,
 
-       plugins: {
+        maintainAspectRatio: false,
 
-    legend: {
+        plugins: {
 
-        display: true,
+            legend: {
 
-        labels: {
+                display: true,
 
-            font: {
+                labels: {
 
-                size: 14
+                    font: {
+
+                        size: 14,
+
+                        weight: "bold"
+
+                    }
+
+                }
+
+            },
+
+            tooltip: {
+
+                enabled: true,
+
+                backgroundColor:
+                    "#17365D",
+
+                titleFont: {
+
+                    size: 14
+
+                },
+
+                bodyFont: {
+
+                    size: 14
+
+                }
 
             }
 
-        }
+        },
 
-    },
+        scales: {
 
-    tooltip: {
+            y: {
 
-        enabled: true
+                beginAtZero: false,
 
-    }
+                grid: {
+
+                    color:
+                        "rgba(0,0,0,0.05)"
+
+                }
+
+            },
+
+            x: {
+
+                grid: {
+
+                    color:
+                        "rgba(0,0,0,0.05)"
+
+                }
+
+            }
 
         }
 
     }
 
 });
-
 }
 
 function rechercherCompetition() {
