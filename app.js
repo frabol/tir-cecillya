@@ -741,7 +741,9 @@ const dernier =
 
 <p>📅 Dates entraînements :
 <b>${datesEntrainements.join(" - ")}</b></p>
+<hr>
 
+<h3>📊 Évolution des performances</h3>
 
         <canvas id="graphiqueScores"></canvas>
 
