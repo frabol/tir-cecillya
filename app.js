@@ -733,6 +733,15 @@ const dernier =
 <p>📅 Dates entraînements :
 <b>${datesEntrainements.join(" - ")}</b></p>
 
+#graphiqueScores{
+
+    background:white;
+
+    border-radius:15px;
+
+    padding:10px;
+
+}
         <canvas id="graphiqueScores"></canvas>
 
     `;
