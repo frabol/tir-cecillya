@@ -2,7 +2,7 @@
 <html lang="fr">
 
 <head>
-
+<link rel="icon" type="image/png" href="icon-192.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -106,34 +106,31 @@ justify-content:center;
 
 <div class="competition">
 
-<div class="date">14/11/2026</div>
+    <div class="date">14/11/2026</div>
 
-Tournoi Nord 10m 3ème tour
-<br>
-Suivant Zones
-
-</div>
+    Tournoi Nord 10m 3ème tour
+    <br>
+    Suivant Zones
 
 </div>
 
+<div class="card">
+
+    <div id="etat">
+        Chargement...
+    </div>
+
+</div>
 
 <script>
 
 if ('serviceWorker' in navigator) {
-
-navigator.serviceWorker.register('service-worker.js');
-
+    navigator.serviceWorker.register('service-worker.js');
 }
 
 </script>
-<div class="card">
-  <div id="etat">
-    Chargement...
-  </div>
-</div>
 
 <script src="app.js"></script>
 
 </body>
-
 </html>
