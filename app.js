@@ -387,7 +387,13 @@ function enregistrerScore() {
         Number(
             document.getElementById("valeurScore").value
         );
+if (!date || isNaN(score)) {
 
+    alert("Veuillez saisir une date et un score.");
+
+    return;
+
+}
     const nouveauScore = {
         date,
         type,
@@ -645,10 +651,11 @@ const dernier =
 
     const ctx =
         document.getElementById("graphiqueScores");
-const labels = [
-    ...datesMatchs,
-    ...datesEntrainements
-];
+const labels =
+    [...new Set([
+        ...datesMatchs,
+        ...datesEntrainements
+    ])];
 
 labels.sort((a, b) => {
 
