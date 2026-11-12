@@ -518,7 +518,12 @@ chargerCalendrier().then(() => {
 }
 
 function afficherStats() {
-    
+
+const scores = [
+    ...scoresExcel,
+    ...entrainementsExcel
+];
+
 const meilleurCompetition =
     scoresExcel.length > 0
     ? Math.max(...scoresExcel)
