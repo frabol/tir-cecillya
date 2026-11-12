@@ -3,128 +3,132 @@
 
 <head>
 
-<link rel="icon" type="image/png" href="icon-192.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="theme-color" content="#17365D">
+    <meta name="theme-color" content="#17365D">
 
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Tir Cécillya">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Tir Cécillya">
 
-<link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
 
-<title>Tir Cécillya</title>
+    <title>Tir Cécillya</title>
 
-<link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json">
 
+    <style>
 
-<style>
+        body{
+            margin:0;
+            font-family:Arial,sans-serif;
+            background:#f0f4f8;
+        }
 
-body{
-margin:0;
-font-family:Arial,sans-serif;
-background:#f0f4f8;
-}
+        header{
+            background:#17365D;
+            padding:20px;
+            text-align:center;
+            color:white;
+        }
 
-header{
-background:#17365D;
-padding:20px;
-text-align:center;
-color:white;
-}
+        .card{
+            background:white;
+            margin:15px auto;
+            padding:15px;
+            border-radius:12px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.15);
+            max-width:1400px;
+        }
 
-.card{
-    background:white;
-    margin:15px auto;
-    padding:15px;
-    border-radius:12px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.15);
-    max-width:1400px;
-}
+        h2{
+            margin-top:0;
+        }
 
-h2{
-margin-top:0;
-}
+        .competition{
+            padding:10px;
+            border-bottom:1px solid #ddd;
+        }
 
-.competition{
-padding:10px;
-border-bottom:1px solid #ddd;
-}
+        .date{
+            font-weight:bold;
+            color:#17365D;
+        }
 
-.date{
-font-weight:bold;
-color:#17365D;
-}
+        button{
+            cursor:pointer;
+        }
 
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
- 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+        input,
+        button,
+        select{
+            padding:8px;
+            border-radius:6px;
+        }
+
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
 
 <header>
 
-<h1>Tir Cécillya</h1>
+    <h1>Tir Cécillya</h1>
 
-<p>Calendrier Ligue Tir NPdC</p>
+    <p>Calendrier Ligue Tir NPdC</p>
 
 </header>
-  <div style="
-display:flex;
-gap:5px;
-flex-wrap:wrap;
-padding:10px;
-justify-content:center;
+
+<div style="
+    display:flex;
+    gap:5px;
+    flex-wrap:wrap;
+    padding:10px;
+    justify-content:center;
 ">
-<input
-    type="text"
-    id="recherche"
-    placeholder="🔍 Rechercher une compétition ou un lieu"
-    onkeyup="rechercherCompetition()">
 
-<button onclick="afficherToutes()">
-📅 Toutes
-</button>
+    <input
+        type="text"
+        id="recherche"
+        placeholder="🔍 Rechercher une compétition ou un lieu"
+        onkeyup="rechercherCompetition()"
+    >
 
-<button onclick="afficherAVenir()">
-✅ À venir
-</button>
+    <button onclick="afficherToutes()">
+        📅 Toutes
+    </button>
 
-<button onclick="afficherResultats()">
-🏆 Résultats
-</button>
+    <button onclick="afficherAVenir()">
+        ✅ À venir
+    </button>
 
-<button onclick="afficherStats()">
-📈 Statistiques
-</button>
-    
-<button onclick="afficherAjoutScore()">
-➕ Ajouter un score
-</button>
-    
-<button onclick="voirScores()">
-📋 Scores saisis
-</button>
+    <button onclick="afficherResultats()">
+        🏆 Résultats
+    </button>
+
+    <button onclick="afficherStats()">
+        📈 Statistiques
+    </button>
+
+    <button onclick="afficherAjoutScore()">
+        ➕ Ajouter un score
+    </button>
+
+    <button onclick="voirScores()">
+        📋 Scores saisis
+    </button>
 
     <button onclick="exporterScores()">
-    📥 Exporter les scores
-</button>
-    
-</div>
-
-<div class="competition">
-
-    <div class="date">14/11/2026</div>
-
-    Tournoi Nord 10m 3ème tour
-    <br>
-    Suivant Zones
+        📥 Exporter les scores
+    </button>
 
 </div>
 
@@ -139,7 +143,9 @@ justify-content:center;
 <script>
 
 if ('serviceWorker' in navigator) {
+
     navigator.serviceWorker.register('service-worker.js');
+
 }
 
 </script>
