@@ -576,13 +576,9 @@ function voirScores() {
 
 }
 
-function supprimerScore(index) {
+async function supprimerScore(index) {
 
-    if (
-        !confirm(
-            "Supprimer ce score ?"
-        )
-    ) {
+    if (!confirm("Supprimer ce score ?")) {
         return;
     }
 
@@ -591,6 +587,16 @@ function supprimerScore(index) {
             localStorage.getItem("scores")
         ) || [];
 
+    const scoreASupprimer =
+        historique[index];
+
+    await supabaseClient
+        .from("scores")
+        .delete()
+        .eq("date", scoreASupprimer.date)
+        .eq("type", scoreASupprimer.type)
+        .eq("score", scoreASupprimer.score);
+
     historique.splice(index, 1);
 
     localStorage.setItem(
@@ -598,9 +604,8 @@ function supprimerScore(index) {
         JSON.stringify(historique)
     );
 
-chargerCalendrier().then(() => {
-    afficherResultats();
-});
+    await synchroniserEtRecharger();
+
 }
 
 function afficherStats() {
