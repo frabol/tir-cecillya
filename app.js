@@ -301,10 +301,15 @@ async function initialiserApplication() {
 
     afficherTableauDeBord();
 
+    setInterval(() => {
+    synchroniserEtRecharger(true);
+}, 30000);
+
 }
-
 initialiserApplication();
-
+etInterval(() => {
+    synchroniserEtRecharger(true);
+}, 30000);
 
 function afficherToutes() {
 
@@ -1234,22 +1239,23 @@ async function synchroniserScores() {
     );
 
 }
-async function synchroniserEtRecharger() {
+async function synchroniserEtRecharger(
+    silencieux = false
+) {
 
     await synchroniserScores();
 
-    scoresExcel = [];
-    entrainementsExcel = [];
-    datesMatchs = [];
-    datesEntrainements = [];
-
     await chargerCalendrier();
 
-    afficherResultats();
+    afficherTableauDeBord();
 
-    alert(
-        "✅ Synchronisation terminée"
-    );
+    if (!silencieux) {
+
+        alert(
+            "✅ Synchronisation terminée"
+        );
+
+    }
 
 }
 function afficherTop10() {
