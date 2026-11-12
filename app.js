@@ -1252,3 +1252,61 @@ async function synchroniserEtRecharger() {
     );
 
 }
+function afficherTop10() {
+ 
+let historique =
+JSON.parse(
+localStorage.getItem("scores")
+) || [];
+ 
+if (historique.length === 0) {
+ 
+document.getElementById("etat").innerHTML =
+"<h2>🥇 Top 10</h2><p>Aucun score.</p>";
+ 
+return;
+ 
+}
+ 
+const top10 = [...historique]
+.sort((a, b) =>
+Number(b.score) - Number(a.score)
+)
+.slice(0, 10);
+ 
+let html =
+"<h2>🥇 Top 10 des meilleurs scores</h2>";
+ 
+top10.forEach((item, index) => {
+ 
+const emoji =
+index === 0 ? "🥇" :
+index === 1 ? "🥈" :
+index === 2 ? "🥉" :
+"🎯";
+ 
+html += `
+<div class="competition">
+<h3>
+${emoji} #${index + 1}
+</h3>
+ 
+<b>${item.score}</b><br>
+ 
+${
+item.type === "match"
+? "🏆 Compétition"
+: "🏋️ Entraînement"
+}
+<br>
+ 
+📅 ${item.date}
+</div>
+`;
+ 
+});
+ 
+document.getElementById("etat").innerHTML =
+html;
+ 
+}
