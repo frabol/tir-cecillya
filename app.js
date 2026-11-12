@@ -544,51 +544,35 @@ const moyenne =
     scores.reduce((a, b) => a + b, 0)
     / scores.length
 ).toFixed(1);
-
-const meilleurEntrainement =
-    entrainementsExcel.length > 0
-    ? Math.max(...entrainementsExcel)
-    : 0;
-
-const moyenneEntrainement =
-    entrainementsExcel.length > 0
-    ? (
-        entrainementsExcel.reduce(
-            (a, b) => a + b,
-            0
-        ) / entrainementsExcel.length
-      ).toFixed(1)
-    : 0;
-       
-const totalResultats =
-    scoresExcel.length +
-    entrainementsExcel.length;
     
     document.getElementById("etat").innerHTML = `
 
         <h2>📈 Statistiques</h2>
 
         <p>🏆 Meilleure compétition :
-        <b>${meilleurCompetition}</b></p>
-        
-        <p>🎯 Dernier score : <b>${dernier}</b></p>
+<b>${meilleurCompetition}</b></p>
 
-        <p>📊 Moyenne : <b>${moyenne}</b></p>
+<p>🎯 Dernier score :
+<b>${dernier}</b></p>
 
-       <p style="
+<p>📊 Moyenne :
+<b>${moyenne}</b></p>
+
+<p style="
     color:gold;
     font-size:20px;
     font-weight:bold;
 ">
 🏆 Record personnel :
 <b>${meilleurEntrainement}</b>
-</p>  
- 
+</p>
+
 <p>📈 Moyenne entraînement :
 <b>${moyenneEntrainement}</b></p>
 
-      <p>📋 Nombre total de résultats :
-<b>${totalResultats}</b></p> 
+<p>📋 Nombre total de résultats :
+<b>${totalResultats}</b></p>
+
         <p>🏋️ Nombre d'entraînements :
         <b>${entrainementsExcel.length}</b></p>
         <p>📅 Dates matchs :
