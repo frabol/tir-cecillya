@@ -282,41 +282,57 @@ function afficherResultats() {
 
     let html = "<h2>🏆 Résultats</h2>";
 
-    html += "<h3>🏆 Compétitions</h3>";
-
-    if (datesMatchs.length === 0) {
-        html += "<p>Aucune compétition enregistrée.</p>";
-    }
+    let resultats = [];
 
     for (let i = 0; i < datesMatchs.length; i++) {
 
-        html += `
-            <div class="competition">
-                <b>${datesMatchs[i]}</b><br>
-                🏆 Compétition<br>
-                Score : <b>${scoresExcel[i]}</b>
-            </div>
-        `;
-    }
+        resultats.push({
+            date: datesMatchs[i],
+            type: "🏆 Compétition",
+            score: scoresExcel[i]
+        });
 
-    html += "<h3>🏋️ Entraînements</h3>";
-
-    if (datesEntrainements.length === 0) {
-        html += "<p>Aucun entraînement enregistré.</p>";
     }
 
     for (let i = 0; i < datesEntrainements.length; i++) {
 
-        html += `
-            <div class="competition">
-                <b>${datesEntrainements[i]}</b><br>
-                🏋️ Entraînement<br>
-                Score : <b>${entrainementsExcel[i]}</b>
-            </div>
-        `;
+        resultats.push({
+            date: datesEntrainements[i],
+            type: "🏋️ Entraînement",
+            score: entrainementsExcel[i]
+        });
+
     }
 
-    document.getElementById("etat").innerHTML = html;
+    resultats.sort((a, b) => {
+
+        const [ja, ma] = a.date.split("/");
+        const [jb, mb] = b.date.split("/");
+
+        return new Date(2026, ma - 1, ja)
+             - new Date(2026, mb - 1, jb);
+
+    });
+
+    resultats.forEach(item => {
+
+        html += `
+            <div class="competition">
+
+                <b>${item.date}</b><br>
+
+                ${item.type}<br>
+
+                Score :
+                <b>${item.score}</b>
+
+            </div>
+        `;
+
+    });
+
+    document.getElementById("etat").innerHTML =
+        html;
 }
 
 function afficherAjoutScore() {
