@@ -1288,10 +1288,44 @@ function afficherTop10() {
     const top10 = tousLesScores
         .sort((a, b) => b.score - a.score)
         .slice(0, 10);
+const record =
+    top10.length > 0
+    ? top10[0].score
+    : 0;
 
-    let html =
-        "<h2>🥇 Top 10 des meilleurs scores</h2>";
+const moyenneTop10 =
+    top10.length > 0
+    ? (
+        top10.reduce(
+            (total, item) =>
+                total + item.score,
+            0
+        ) / top10.length
+      ).toFixed(1)
+    : 0;
+    let html = `
+    <h2>🥇 Top 10 des meilleurs scores</h2>
 
+    <div class="card">
+
+        <p style="
+            color:gold;
+            font-size:24px;
+            font-weight:bold;
+        ">
+            🏆 Record personnel :
+            ${record}
+        </p>
+
+        <p style="
+            font-size:18px;
+        ">
+            📈 Moyenne du Top 10 :
+            <b>${moyenneTop10}</b>
+        </p>
+
+    </div>
+`;
     top10.forEach((item, index) => {
 
         const emoji =
