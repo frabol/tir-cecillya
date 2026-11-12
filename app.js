@@ -1288,6 +1288,7 @@ async function synchroniserScores() {
     );
 
 }
+
 async function synchroniserEtRecharger(
     silencieux = false
 ) {
@@ -1296,9 +1297,8 @@ async function synchroniserEtRecharger(
 
     await chargerCalendrier();
 
-    afficherTableauDeBord();
-
     if (!silencieux) {
+
 
         alert(
             "✅ Synchronisation terminée"
@@ -1307,6 +1307,7 @@ async function synchroniserEtRecharger(
     }
 
 }
+
 function afficherTop10() {
 
     const tousLesScores = [];
