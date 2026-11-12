@@ -307,7 +307,8 @@ async function initialiserApplication() {
 
 }
 initialiserApplication();
-etInterval(() => {
+
+setInterval(() => {
     synchroniserEtRecharger(true);
 }, 30000);
 
