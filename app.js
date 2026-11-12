@@ -1,7 +1,9 @@
+
 let scoresExcel = [];
 let entrainementsExcel = [];
 let datesMatchs = [];
 let datesEntrainements = [];
+let prochaineCompetition = "";
 
 async function chargerCalendrier(filtre = "avenir") {
 
@@ -203,7 +205,7 @@ const sheet = workbook.Sheets["Calendrier 2026-2027"];
 `;
 
 let moisCourant = "Septembre 2026";
-       
+prochaineCompetition = "";     
         for (let i = 4; i < lignes.length; i++) {
 
             const ligne = lignes[i];
@@ -241,7 +243,15 @@ if (mois && mois !== moisCourant) {
         statut === "À venir"
     )
 ) {
+if (
+    statut === "À venir" &&
+    !prochaineCompetition
+) {
 
+    prochaineCompetition =
+        `${date} - ${evenement}`;
+
+}
                 html += `
                 <div class="competition"
                 style="padding:10px;border-bottom:1px solid #ddd;">
@@ -999,11 +1009,6 @@ function afficherTableauDeBord() {
         ? tousLesScores[tousLesScores.length - 1]
         : 0;
 
-    const prochaineCompetition =
-        document.querySelector(".competition b")
-        ? document.querySelector(".competition b")
-            .innerText
-        : "Non trouvée";
 
     document.getElementById("etat").innerHTML = `
 
@@ -1063,9 +1068,9 @@ function afficherTableauDeBord() {
 
             <h3>📅 Prochaine compétition</h3>
 
-            <p>
-                ${prochaineCompetition}
-            </p>
+        <p>
+    ${prochaineCompetition || "Aucune compétition"}
+</p>
 
         </div>
 
