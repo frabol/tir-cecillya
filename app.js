@@ -944,17 +944,28 @@ historique = [
     ...nouveaux
 ];
 
-
+historique = Array.from(
+    new Map(
+        historique.map(item => [
+            item.date +
+            "|" +
+            item.type +
+            "|" +
+            item.score,
+            item
+        ])
+    ).values()
+);
             localStorage.setItem(
                 "scores",
                 JSON.stringify(historique)
             );
 
-            alert(
-                "✅ " +
-                donnees.length +
-                " score(s) importé(s)."
-            );
+           alert(
+    "✅ " +
+    nouveaux.length +
+    " nouveau(x) score(s) importé(s)."
+);
 
             chargerCalendrier().then(() => {
                 afficherResultats();
