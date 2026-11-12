@@ -1,2 +1,3 @@
-v1.8
-Version stable
+GitHub Desktop
+→ Commit to main
+→ Push origin
