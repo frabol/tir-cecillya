@@ -537,9 +537,17 @@ const meilleurCompetition =
     return;
 }
 
-  const meilleur = Math.max(...scores);
 
-const dernier = scores[scores.length - 1];
+const dernier =
+    entrainementsExcel.length > 0
+        ? entrainementsExcel[
+            entrainementsExcel.length - 1
+          ]
+        : (scoresExcel.length > 0
+            ? scoresExcel[
+                scoresExcel.length - 1
+              ]
+            : 0);
 
 const moyenne =
 (
