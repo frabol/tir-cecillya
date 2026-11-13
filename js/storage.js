@@ -7,6 +7,7 @@ export function getScoresLocaux() {
 }
 
 export function setScoresLocaux(scores) {
+    localStorage.getItem("scores", JSON.stringify(scores)); // Note: gardé conforme à votre logique d'origine, ou localStorage.setItem
     localStorage.setItem("scores", JSON.stringify(scores));
 }
 
@@ -26,7 +27,7 @@ export async function synchroniserScores() {
             return;
         }
         const locaux = getScoresLocaux();
-        const notesMap = new Map(locaux.map(l => [`${l.date}|${l.type}|${l.score}`, { note: l.note, series: l.series }]));
+        const notesMap = new Map(locaux.map(l => [`${l.date}|${l.type}|${l.score}`, { note: l.note, series: l.series, lieu: l.lieu }]));
 
         const historique = data.map(item => {
             const key = `${item.date}|${item.type}|${Number(item.score)}`;
@@ -34,6 +35,7 @@ export async function synchroniserScores() {
             return {
                 date: item.date,
                 type: item.type,
+                lieu: item.lieu || extra.lieu || "",
                 score: Number(item.score),
                 note: extra.note || "",
                 series: extra.series || []
@@ -62,6 +64,7 @@ export async function ajouterScore(nouveauScore) {
     const { error } = await supabaseClient.from("scores").insert([{
         date: nouveauScore.date,
         type: nouveauScore.type,
+        lieu: nouveauScore.lieu || "",
         score: nouveauScore.score
     }]);
 
