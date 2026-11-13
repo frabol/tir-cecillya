@@ -38,6 +38,52 @@ const supabaseUrl = "https://tfotbvxoozlbfdzmifdu.supabase.co";
 const supabaseKey = "sb_publishable_X-6C7DV9K8B7AiUlnpqAvw_KYEaUOKl";
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+// --- EXPORT AGENDA (.ICS) ---
+function exporterEvenementICS(titre, dateBrute, moisBrut, lieu) {
+    const moisMap = {
+        "septembre": "09", "octobre": "10", "novembre": "11", "décembre": "12",
+        "janvier": "01", "février": "02", "mars": "03", "avril": "04",
+        "mai": "05", "juin": "06", "juillet": "07", "août": "08"
+    };
+    const mStr = String(moisBrut || "").toLowerCase();
+    let moisNum = "09";
+    for (const [k, v] of Object.entries(moisMap)) {
+        if (mStr.includes(k)) { moisNum = v; break; }
+    }
+    const anneeMatch = mStr.match(/20\d{2}/);
+    const annee = anneeMatch ? anneeMatch[0] : (Number(moisNum) >= 9 ? "2026" : "2027");
+    const jourMatch = String(dateBrute || "").match(/\d{1,2}/);
+    const jour = jourMatch ? jourMatch[0].padStart(2, "0") : "01";
+
+    const dateDebut = `${annee}${moisNum}${jour}`;
+    const icsContent = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Tir Cecillya//Calendrier Ligue NPdC//FR",
+        "BEGIN:VEVENT",
+        `UID:tir-cecillya-${dateDebut}-${Date.now()}@npdc`,
+        `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z`,
+        `DTSTART;VALUE=DATE:${dateDebut}`,
+        `SUMMARY:${titre.replace(/[,;]/g, " ")}`,
+        `LOCATION:${(lieu || "Lieu non spécifié").replace(/[,;]/g, " ")}`,
+        "DESCRIPTION:Compétition Ligue de Tir Nord-Pas-de-Calais (Tir Cécillya)",
+        "END:VEVENT",
+        "END:VCALENDAR"
+    ].join("
+");
+
+    const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `competition_${dateDebut}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    afficherToast("📅 Événement téléchargé pour votre agenda !");
+}
+
 async function chargerCalendrier(filtre = "avenir", afficher = true) {
     if (afficher) pageActuelle = "calendrier";
 
@@ -250,7 +296,11 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
 
                 const texteComplet = `${date || ""} ${evenement} ${lieu || ""}`.toLowerCase();
                 const estAvenir = (statut === "À venir");
-                
+                const evSafe = String(evenement).replace(/'/g, "\'");
+                const lieuSafe = String(lieu || "Lieu non spécifié").replace(/'/g, "\'");
+                const dateSafe = String(date || "").replace(/'/g, "\'");
+                const moisSafe = String(moisCourant || "").replace(/'/g, "\'");
+
                 html += `
                     <div class="competition competition-card" data-texte="${texteComplet}">
                         <div class="competition-left">
@@ -264,7 +314,8 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
                                 </div>
                             </div>
                         </div>
-                        <div>
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            ${estAvenir ? `<button class="btn" style="padding:6px 10px!important; font-size:12px!important;" onclick="exporterEvenementICS('${evSafe}', '${dateSafe}', '${moisSafe}', '${lieuSafe}')" title="Ajouter à mon agenda">📆 Agenda</button>` : ""}
                             <span class="competition-badge-status ${estAvenir ? 'status-avenir' : 'status-passe'}">
                                 ${estAvenir ? '✅ À venir' : '📌 Passé'}
                             </span>
@@ -398,7 +449,7 @@ function afficherResultats() {
     document.getElementById("etat").innerHTML = html;
 }
 
-// --- MODE STAND DE TIR : SAISIE ÉCLAIR ---
+// --- MODE STAND DE TIR : SAISIE ÉCLAIR & SÉRIES DE 10 PLOMBS ---
 function ajusterScoreRapide(delta) {
     const input = document.getElementById("valeurScore");
     if (!input) return;
@@ -407,14 +458,41 @@ function ajusterScoreRapide(delta) {
     input.value = val.toFixed(1);
 }
 
+function recalculerTotalSeries() {
+    let somme = 0;
+    let auMoinsUne = false;
+    for (let i = 1; i <= 6; i++) {
+        const el = document.getElementById(`serie_${i}`);
+        if (el && el.value !== "") {
+            somme += parseFloat(el.value) || 0;
+            auMoinsUne = true;
+        }
+    }
+    if (auMoinsUne) {
+        const inputTotal = document.getElementById("valeurScore");
+        if (inputTotal) inputTotal.value = (Math.round(somme * 10) / 10).toFixed(1);
+    }
+}
+
 function afficherAjoutScore() {
     const aujourdhui = new Date().toISOString().split("T")[0];
     const tousLesScores = [...scoresExcel, ...entrainementsExcel];
     const scoreDefaut = tousLesScores.length > 0 ? tousLesScores[tousLesScores.length - 1] : 605.0;
 
+    let inputsSeriesHtml = "";
+    for (let i = 1; i <= 6; i++) {
+        inputsSeriesHtml += `
+            <div>
+                <label style="font-size:12px;">Série ${i}</label>
+                <input type="number" step="0.1" id="serie_${i}" placeholder="101.5" oninput="recalculerTotalSeries()"
+                    style="padding:8px; text-align:center; font-weight:700;">
+            </div>
+        `;
+    }
+
     document.getElementById("etat").innerHTML = `
         <h2>➕ Nouveau score — Mode Stand de Tir</h2>
-        <div style="display:flex; flex-direction:column; gap:14px; max-width:460px;">
+        <div style="display:flex; flex-direction:column; gap:14px; max-width:480px;">
             <div>
                 <label for="dateScore">📅 Date :</label><br>
                 <input type="date" id="dateScore" value="${aujourdhui}" style="margin-top:6px;">
@@ -426,8 +504,14 @@ function afficherAjoutScore() {
                     <option value="match">🏆 Compétition</option>
                 </select>
             </div>
+            <details style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:10px 12px;">
+                <summary style="cursor:pointer; font-weight:700; color:var(--blue);">🎯 Saisir le détail des 6 séries (60 coups)</summary>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-top:10px;">
+                    ${inputsSeriesHtml}
+                </div>
+            </details>
             <div>
-                <label for="valeurScore">🔢 Score (Saisie éclair) :</label><br>
+                <label for="valeurScore">🔢 Score total (Saisie éclair) :</label><br>
                 <input type="number" step="0.1" id="valeurScore" value="${scoreDefaut}" placeholder="Ex : 617.5"
                     style="margin-top:6px; font-size:26px; font-weight:800; text-align:center; padding:14px;">
                 <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:8px; margin-top:10px;">
@@ -437,6 +521,10 @@ function afficherAjoutScore() {
                     <button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(0.5)">+0.5</button>
                     <button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(1)">+1</button>
                 </div>
+            </div>
+            <div>
+                <label for="noteScore">📝 Notes techniques (plombs, dioptre, sensations) :</label><br>
+                <input type="text" id="noteScore" placeholder="Ex : Plombs R10 4.49, +2 clics haut" style="margin-top:6px;">
             </div>
             <button class="btn btn-primary" style="justify-content:center; padding:14px!important; font-size:16px!important; margin-top:6px;" onclick="enregistrerScore()">
                 💾 Enregistrer le score
@@ -449,13 +537,20 @@ async function enregistrerScore() {
     const date = document.getElementById("dateScore").value;
     const type = document.getElementById("typeScore").value;
     const score = Number(document.getElementById("valeurScore").value);
+    const note = (document.getElementById("noteScore")?.value || "").trim();
+
+    const series = [];
+    for (let i = 1; i <= 6; i++) {
+        const val = parseFloat(document.getElementById(`serie_${i}`)?.value);
+        if (!isNaN(val) && val > 0) series.push(val);
+    }
 
     if (!date || isNaN(score) || score <= 0) {
         afficherToast("⚠️ Veuillez saisir une date et un score valide.");
         return;
     }
 
-    const nouveauScore = { date, type, score };
+    const nouveauScore = { date, type, score, note, series };
     let historique = JSON.parse(localStorage.getItem("scores")) || [];
 
     const existe = historique.some(item => item.date === date && item.type === type && Number(item.score) === score);
@@ -496,6 +591,13 @@ function voirScores() {
         html += `<p>Aucun score enregistré.</p>`;
     } else {
         historique.forEach((item, index) => {
+            const detailSeries = item.series && item.series.length > 0
+                ? `<div style="font-size:0.82em; color:var(--blue); margin-top:2px;">Séries : ${item.series.join(" • ")}</div>`
+                : "";
+            const detailNote = item.note
+                ? `<div style="font-size:0.82em; color:var(--muted); font-style:italic; margin-top:2px;">📝 ${item.note}</div>`
+                : "";
+
             html += `
                 <div class="competition competition-card">
                     <div class="competition-left">
@@ -503,6 +605,8 @@ function voirScores() {
                         <div class="competition-details">
                             <div class="competition-title">${item.type === "match" ? "🏆 Compétition" : "🏋️ Entraînement"}</div>
                             <div class="competition-location">Score : <b>${item.score}</b></div>
+                            ${detailSeries}
+                            ${detailNote}
                         </div>
                     </div>
                     <div>
@@ -635,6 +739,7 @@ function afficherStats() {
     const moyNum = scores.reduce((a, b) => a + b, 0) / scores.length;
     const moyenne = moyNum.toFixed(1);
     const totalResultats = scoresExcel.length + entrainementsExcel.length;
+    const objectif = Number(localStorage.getItem("objectif_tir")) || 620;
 
     // --- STATISTIQUES AVANCÉES : FORME RÉCENTE & RÉGULARITÉ ---
     const derniers5 = scores.slice(-5);
@@ -710,7 +815,7 @@ function afficherStats() {
         </div>
 
         <hr style="margin:20px 0; border:0; border-top:1px solid var(--border);">
-        <h3>📊 Évolution des performances</h3>
+        <h3>📊 Évolution des performances & Objectif (${objectif} pts)</h3>
         <div class="chart-wrap"><canvas id="graphiqueScores"></canvas></div>
     `;
 
@@ -732,8 +837,9 @@ function afficherStats() {
     });
     const serieMatchs = events.map(e => e.type === "match" ? e.score : null);
     const serieEntrainements = events.map(e => e.type === "entrainement" ? e.score : null);
+    const serieObjectif = events.map(() => objectif);
 
-    const allScores = [...scoresExcel, ...entrainementsExcel];
+    const allScores = [...scoresExcel, ...entrainementsExcel, objectif];
     const minY = allScores.length > 0 ? Math.floor(Math.min(...allScores) / 10) * 10 - 10 : 500;
     const maxY = allScores.length > 0 ? Math.ceil(Math.max(...allScores) / 10) * 10 + 10 : 650;
 
@@ -771,6 +877,15 @@ function afficherStats() {
                     pointBackgroundColor: "#10b981",
                     pointBorderColor: "#ffffff",
                     pointBorderWidth: 2
+                },
+                {
+                    label: `Objectif (${objectif} pts)`,
+                    data: serieObjectif,
+                    borderColor: "#f5b301",
+                    borderWidth: 2,
+                    borderDash: [6, 6],
+                    pointRadius: 0,
+                    fill: false
                 }
             ]
         },
@@ -829,9 +944,11 @@ function exporterExcel() {
     const donnees = historique.map(item => ({
         Date: item.date,
         Type: item.type === "match" ? "Compétition" : "Entraînement",
-        Score: Number(item.score)
+        Score: Number(item.score),
+        Series: (item.series || []).join(" | "),
+        Notes: item.note || ""
     }));
-    donnees.unshift({ Date: new Date().toLocaleDateString("fr-FR"), Type: "Export Tir Cécillya", Score: "" });
+    donnees.unshift({ Date: new Date().toLocaleDateString("fr-FR"), Type: "Export Tir Cécillya", Score: "", Series: "", Notes: "" });
     const feuille = XLSX.utils.json_to_sheet(donnees);
     const classeur = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(classeur, feuille, "Scores");
@@ -872,7 +989,14 @@ async function synchroniserScores() {
     try {
         const { data, error } = await supabaseClient.from("scores").select("*");
         if (error) { console.error(error); return; }
-        const historique = data.map(item => ({ date: item.date, type: item.type, score: Number(item.score) }));
+        const locaux = JSON.parse(localStorage.getItem("scores")) || [];
+        const notesMap = new Map(locaux.map(l => [`${l.date}|${l.type}|${l.score}`, { note: l.note, series: l.series }]));
+
+        const historique = data.map(item => {
+            const key = `${item.date}|${item.type}|${Number(item.score)}`;
+            const extra = notesMap.get(key) || {};
+            return { date: item.date, type: item.type, score: Number(item.score), note: extra.note || "", series: extra.series || [] };
+        });
         localStorage.setItem("scores", JSON.stringify(historique));
     } catch (e) {
         console.warn("Mode hors-ligne : utilisation du cache local.");
