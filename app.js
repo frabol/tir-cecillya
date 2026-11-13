@@ -1,10 +1,11 @@
+
 let pageActuelle = "tableau";
 let scoresExcel = [];
 let entrainementsExcel = [];
 let datesMatchs = [];
 let datesEntrainements = [];
 let prochaineCompetition = "";
-let filtreDisciplineActif = "all"; // <-- Nouvel état pour le filtre discipline
+let filtreDisciplineActif = "all";
 
 // --- Correctifs visuel/graph/sync ---
 let graphiqueInstance = null;
@@ -55,11 +56,8 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
         for (let i = 1; i < donneesGraph.length; i++) {
             if (!donneesGraph[i]) continue;
 
-            /* MATCHS : J / K */
             const dateMatchExcel = donneesGraph[i][9];
             const score = donneesGraph[i][10];
-
-            /* ENTRAINEMENTS : P / Q */
             const dateEntrainementExcel = donneesGraph[i][15];
             const entrainement = donneesGraph[i][16];
 
@@ -116,7 +114,6 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
         const sheet = workbook.Sheets["Calendrier 2026-2027"];
         const lignes = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-        // Recherche de la prochaine compétition avant de générer l'affichage
         prochaineCompetition = "";
         let prochainMatchObj = null;
 
@@ -135,7 +132,7 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
             }
         }
 
-        // Construction du bloc HTML : Mise en avant + Filtres par discipline
+        // 1. Encart du Prochain Match
         let html = `<h2>📅 Calendrier de la saison</h2>`;
 
         if (prochainMatchObj) {
@@ -145,7 +142,7 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
                     color: white;
                     padding: 15px;
                     border-radius: 10px;
-                    margin-bottom: 18px;
+                    margin-bottom: 15px;
                     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
                 ">
                     <div style="font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">
@@ -161,16 +158,17 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
             `;
         }
 
-        // Barre de boutons de filtres par discipline
+        // 2. Boutons de filtres par discipline (avec Carabine 10m et 50m séparés)
         const disciplines = [
             { id: "all", label: "Tous" },
             { id: "10m", label: "10m" },
             { id: "25m", label: "25m" },
-            { id: "pistolet", label: "Pistolet (P10/PV)" },
-            { id: "carabine", label: "Carabine (C10)" }
+            { id: "50m", label: "Carabine 50m" },
+            { id: "carabine10m", label: "Carabine 10m (C10)" },
+            { id: "pistolet", label: "Pistolet (P10/PV)" }
         ];
 
-        html += `<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:15px;">`;
+        html += `<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">`;
         disciplines.forEach(d => {
             const actif = (filtreDisciplineActif === d.id);
             html += `
@@ -190,13 +188,13 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
         });
         html += `</div>`;
 
+        // 3. Liste des mois et événements
+        let moisCourant = "Septembre 2026";
         html += `
             <h3 style="background:#17365D; color:white; padding:8px; margin-top:15px; border-radius:5px;">
                 📅 Septembre 2026
             </h3>
         `;
-
-        let moisCourant = "Septembre 2026";
 
         for (let i = 4; i < lignes.length; i++) {
             const ligne = lignes[i];
@@ -218,7 +216,6 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
             }
 
             if (evenement && (filtre === "toutes" || statut === "À venir")) {
-                // On ajoute un attribut data-texte pour filtrer facilement par discipline ou recherche
                 const texteComplet = `${date || ""} ${evenement} ${lieu || ""}`.toLowerCase();
                 html += `
                     <div class="competition" data-texte="${texteComplet}"
@@ -234,7 +231,6 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
 
         if (afficher) {
             document.getElementById("etat").innerHTML = html;
-            // Réapplique le filtre discipline et la recherche textuelle s'ils sont actifs
             appliquerFiltresCalendrier();
         }
 
@@ -245,10 +241,8 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
     }
 }
 
-// --- NOUVELLES FONCTIONS DE FILTRAGE COMBINÉ (DISCIPLINE + RECHERCHE) ---
 function filtrerParDiscipline(discipline) {
     filtreDisciplineActif = discipline;
-    // Met à jour visuellement les boutons et filtre la liste
     const boutons = document.querySelectorAll("#etat button[onclick^='filtrerParDiscipline']");
     boutons.forEach(btn => {
         const estActif = btn.getAttribute("onclick").includes(`'${discipline}'`);
@@ -266,18 +260,18 @@ function appliquerFiltresCalendrier() {
     cartes.forEach(carte => {
         const texte = (carte.getAttribute("data-texte") || carte.innerText).toLowerCase();
 
-        // Correspondance avec le bouton de discipline (gère aussi les abréviations FFTir P10/PV et C10)
         let okDiscipline = true;
         if (filtreDisciplineActif === "pistolet") {
             okDiscipline = texte.includes("pistolet") || texte.includes("p10") || texte.includes("pv") || texte.includes("p std");
-        } else if (filtreDisciplineActif === "carabine") {
-            okDiscipline = texte.includes("carabine") || texte.includes("c10");
+        } else if (filtreDisciplineActif === "carabine10m") {
+            okDiscipline = (texte.includes("carabine") || texte.includes("c10")) && !texte.includes("50m");
+        } else if (filtreDisciplineActif === "50m") {
+            okDiscipline = texte.includes("50m") || texte.includes("300m");
         } else if (filtreDisciplineActif !== "all") {
             okDiscipline = texte.includes(filtreDisciplineActif);
         }
 
         const okRecherche = texte.includes(texteRecherche);
-
         carte.style.display = (okDiscipline && okRecherche) ? "block" : "none";
     });
 }
@@ -303,13 +297,8 @@ async function initialiserApplication() {
 }
 initialiserApplication();
 
-function afficherToutes() {
-    chargerCalendrier("toutes");
-}
-
-function afficherAVenir() {
-    chargerCalendrier("avenir");
-}
+function afficherToutes() { chargerCalendrier("toutes"); }
+function afficherAVenir() { chargerCalendrier("avenir"); }
 
 function afficherResultats() {
     pageActuelle = "resultats";
@@ -338,24 +327,20 @@ function afficherResultats() {
             </div>
         `;
     });
-
     document.getElementById("etat").innerHTML = html;
 }
 
 function afficherAjoutScore() {
     document.getElementById("etat").innerHTML = `
         <h2>➕ Nouveau score</h2>
-        <p>Date :</p>
-        <input type="date" id="dateScore">
+        <p>Date :</p><input type="date" id="dateScore">
         <p>Type :</p>
         <select id="typeScore">
             <option value="entrainement">Entraînement</option>
             <option value="match">Compétition</option>
         </select>
-        <p>Score :</p>
-        <input type="number" step="0.1" id="valeurScore" placeholder="Ex : 617.5">
-        <br><br>
-        <button onclick="enregistrerScore()">💾 Enregistrer</button>
+        <p>Score :</p><input type="number" step="0.1" id="valeurScore" placeholder="Ex : 617.5">
+        <br><br><button onclick="enregistrerScore()">💾 Enregistrer</button>
     `;
 }
 
@@ -372,10 +357,7 @@ async function enregistrerScore() {
     const nouveauScore = { date, type, score };
     let historique = JSON.parse(localStorage.getItem("scores")) || [];
 
-    const existe = historique.some(item =>
-        item.date === date && item.type === type && Number(item.score) === score
-    );
-
+    const existe = historique.some(item => item.date === date && item.type === type && Number(item.score) === score);
     if (existe) {
         alert("⚠️ Ce score existe déjà.");
         return;
@@ -384,12 +366,8 @@ async function enregistrerScore() {
     historique.push(nouveauScore);
     localStorage.setItem("scores", JSON.stringify(historique));
 
-    const { error } = await supabaseClient
-        .from("scores")
-        .insert([{ date, type, score }]);
-
+    const { error } = await supabaseClient.from("scores").insert([{ date, type, score }]);
     if (error) {
-        console.error("Erreur Supabase :", error);
         alert("❌ Erreur Supabase : " + error.message);
         return;
     }
@@ -438,9 +416,7 @@ async function supprimerScore(index) {
     let historique = JSON.parse(localStorage.getItem("scores")) || [];
     const scoreASupprimer = historique[index];
 
-    await supabaseClient
-        .from("scores")
-        .delete()
+    await supabaseClient.from("scores").delete()
         .eq("date", scoreASupprimer.date)
         .eq("type", scoreASupprimer.type)
         .eq("score", scoreASupprimer.score);
@@ -468,12 +444,8 @@ function afficherStats() {
     const totalResultats = scoresExcel.length + entrainementsExcel.length;
 
     const tousLesScores = [];
-    for (let i = 0; i < datesMatchs.length; i++) {
-        tousLesScores.push({ date: datesMatchs[i], score: scoresExcel[i] });
-    }
-    for (let i = 0; i < datesEntrainements.length; i++) {
-        tousLesScores.push({ date: datesEntrainements[i], score: entrainementsExcel[i] });
-    }
+    for (let i = 0; i < datesMatchs.length; i++) tousLesScores.push({ date: datesMatchs[i], score: scoresExcel[i] });
+    for (let i = 0; i < datesEntrainements.length; i++) tousLesScores.push({ date: datesEntrainements[i], score: entrainementsExcel[i] });
 
     tousLesScores.sort((a, b) => {
         const [ja, ma] = a.date.split("/");
@@ -486,28 +458,11 @@ function afficherStats() {
     document.getElementById("etat").innerHTML = `
         <h2>📈 Statistiques</h2>
         <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:15px;">
-            <div class="card">
-                <h3>🎯 Dernier score</h3>
-                <p style="font-size:32px; font-weight:bold;">${dernier}</p>
-            </div>
-            <div class="card">
-                <h3>🏆 Record personnel</h3>
-                <p style="font-size:32px; font-weight:bold; color:gold;">${meilleurEntrainement}</p>
-            </div>
-            <div class="card">
-                <h3>📊 Moyenne</h3>
-                <p style="font-size:32px; font-weight:bold;">${moyenne}</p>
-            </div>
-            <div class="card">
-                <h3>📋 Résultats</h3>
-                <p style="font-size:32px; font-weight:bold;">${totalResultats}</p>
-            </div>
+            <div class="card"><h3>🎯 Dernier score</h3><p style="font-size:32px; font-weight:bold;">${dernier}</p></div>
+            <div class="card"><h3>🏆 Record</h3><p style="font-size:32px; font-weight:bold; color:gold;">${meilleurEntrainement}</p></div>
+            <div class="card"><h3>📊 Moyenne</h3><p style="font-size:32px; font-weight:bold;">${moyenne}</p></div>
+            <div class="card"><h3>📋 Résultats</h3><p style="font-size:32px; font-weight:bold;">${totalResultats}</p></div>
         </div>
-        <p>🏆 Meilleure compétition : <b>${meilleurCompetition}</b></p>
-        <p>📈 Moyenne entraînement : <b>${moyenneEntrainement}</b></p>
-        <p>🏋️ Nombre d'entraînements : <b>${entrainementsExcel.length}</b></p>
-        <p>📅 Dates matchs : <b>${datesMatchs.join(" - ")}</b></p>
-        <p>📅 Dates entraînements : <b>${datesEntrainements.join(" - ")}</b></p>
         <hr>
         <h3>📊 Évolution des performances</h3>
         <div class="chart-wrap"><canvas id="graphiqueScores"></canvas></div>
@@ -537,41 +492,18 @@ function afficherStats() {
         data: {
             labels,
             datasets: [
-                {
-                    label: "Compétitions",
-                    data: serieMatchs,
-                    borderColor: "#17365D",
-                    backgroundColor: "rgba(23,54,93,0.20)",
-                    borderWidth: 4,
-                    tension: 0.4,
-                    spanGaps: true,
-                    pointRadius: 8,
-                    pointHoverRadius: 12
-                },
-                {
-                    label: "Entraînements",
-                    data: serieEntrainements,
-                    borderColor: "#28a745",
-                    backgroundColor: "rgba(40,167,69,0.20)",
-                    borderWidth: 4,
-                    tension: 0.4,
-                    spanGaps: true,
-                    pointRadius: 8,
-                    pointHoverRadius: 12
-                }
+                { label: "Compétitions", data: serieMatchs, borderColor: "#17365D", backgroundColor: "rgba(23,54,93,0.20)", borderWidth: 4, tension: 0.4, spanGaps: true, pointRadius: 8 },
+                { label: "Entraînements", data: serieEntrainements, borderColor: "#28a745", backgroundColor: "rgba(40,167,69,0.20)", borderWidth: 4, tension: 0.4, spanGaps: true, pointRadius: 8 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             interaction: { mode: "index", intersect: false },
-            plugins: {
-                legend: { labels: { font: { size: 14, weight: "bold" } } },
-                tooltip: { callbacks: { label: (c) => " " + c.dataset.label + " : " + c.parsed.y } }
-            },
+            plugins: { legend: { labels: { font: { size: 14, weight: "bold" } } } },
             scales: {
-                y: { suggestedMin: 550, suggestedMax: 650, grid: { color: "rgba(0,0,0,0.06)" }, ticks: { font: { size: 12 } } },
-                x: { grid: { display: false }, ticks: { maxRotation: 45, minRotation: 0, font: { size: 11 } } }
+                y: { suggestedMin: 550, suggestedMax: 650, grid: { color: "rgba(0,0,0,0.06)" } },
+                x: { grid: { display: false } }
             }
         }
     });
@@ -579,10 +511,7 @@ function afficherStats() {
 
 function exporterScores() {
     const historique = JSON.parse(localStorage.getItem("scores")) || [];
-    if (historique.length === 0) {
-        alert("Aucun score à exporter.");
-        return;
-    }
+    if (historique.length === 0) { alert("Aucun score à exporter."); return; }
     const contenu = JSON.stringify(historique, null, 2);
     const blob = new Blob([contenu], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -598,21 +527,13 @@ function exporterScores() {
 
 function exporterExcel() {
     const historique = JSON.parse(localStorage.getItem("scores")) || [];
-    if (historique.length === 0) {
-        alert("Aucun score à exporter.");
-        return;
-    }
+    if (historique.length === 0) { alert("Aucun score à exporter."); return; }
     const donnees = historique.map(item => ({
         Date: item.date,
         Type: item.type === "match" ? "Compétition" : "Entraînement",
         Score: Number(item.score)
     }));
     donnees.unshift({ Date: new Date().toLocaleDateString("fr-FR"), Type: "Export Tir Cécillya", Score: "" });
-    donnees.sort((a, b) => {
-        if (a.Type === "Export Tir Cécillya") return -1;
-        if (b.Type === "Export Tir Cécillya") return 1;
-        return String(a.Date).localeCompare(String(b.Date));
-    });
     const feuille = XLSX.utils.json_to_sheet(donnees);
     const classeur = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(classeur, feuille, "Scores");
@@ -628,10 +549,7 @@ function importerScores(event) {
     lecteur.onload = function (e) {
         try {
             const donnees = JSON.parse(e.target.result);
-            if (!Array.isArray(donnees)) {
-                alert("❌ Fichier invalide.");
-                return;
-            }
+            if (!Array.isArray(donnees)) { alert("❌ Fichier invalide."); return; }
             donnees.forEach(item => {
                 if (item.type === "Compétition") item.type = "match";
                 if (item.type === "Entraînement") item.type = "entrainement";
@@ -642,13 +560,10 @@ function importerScores(event) {
             const nouveaux = donnees.filter(item => !existants.has(item.date + "|" + item.type + "|" + item.score));
 
             historique = [...historique, ...nouveaux];
-            historique = Array.from(new Map(historique.map(item => [item.date + "|" + item.type + "|" + item.score, item])).values());
             localStorage.setItem("scores", JSON.stringify(historique));
-
             alert("✅ " + nouveaux.length + " nouveau(x) score(s) importé(s).");
             chargerCalendrier().then(() => { afficherResultats(); });
         } catch (erreur) {
-            console.error(erreur);
             alert("❌ Erreur lors de l'import.");
         }
     };
@@ -665,22 +580,10 @@ function afficherTableauDeBord() {
     document.getElementById("etat").innerHTML = `
         <h2>🏠 Tableau de bord</h2>
         <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:10px;">
-            <div class="card">
-                <h3>🎯 Dernier score</h3>
-                <p style="font-size:28px; font-weight:bold;">${dernier}</p>
-            </div>
-            <div class="card">
-                <h3>🏆 Record personnel</h3>
-                <p style="font-size:28px; font-weight:bold; color:gold;">${record}</p>
-            </div>
-            <div class="card">
-                <h3>📈 Moyenne saison</h3>
-                <p style="font-size:28px; font-weight:bold;">${moyenne}</p>
-            </div>
-            <div class="card">
-                <h3>📋 Résultats</h3>
-                <p style="font-size:28px; font-weight:bold;">${tousLesScores.length}</p>
-            </div>
+            <div class="card"><h3>🎯 Dernier score</h3><p style="font-size:28px; font-weight:bold;">${dernier}</p></div>
+            <div class="card"><h3>🏆 Record personnel</h3><p style="font-size:28px; font-weight:bold; color:gold;">${record}</p></div>
+            <div class="card"><h3>📈 Moyenne saison</h3><p style="font-size:28px; font-weight:bold;">${moyenne}</p></div>
+            <div class="card"><h3>📋 Résultats</h3><p style="font-size:28px; font-weight:bold;">${tousLesScores.length}</p></div>
         </div>
         <div class="card" style="border-left: 5px solid #2563eb;">
             <h3>📅 Prochaine compétition</h3>
@@ -691,18 +594,9 @@ function afficherTableauDeBord() {
 
 async function synchroniserScores() {
     const { data, error } = await supabaseClient.from("scores").select("*");
-    if (error) {
-        console.error(error);
-        alert("❌ " + error.message);
-        return;
-    }
-    const historique = data.map(item => ({
-        date: item.date,
-        type: item.type,
-        score: Number(item.score)
-    }));
+    if (error) { console.error(error); return; }
+    const historique = data.map(item => ({ date: item.date, type: item.type, score: Number(item.score) }));
     localStorage.setItem("scores", JSON.stringify(historique));
-    console.log("✅ Scores récupérés :", historique.length);
 }
 
 async function synchroniserEtRecharger(silencieux = false) {
@@ -715,33 +609,18 @@ async function synchroniserEtRecharger(silencieux = false) {
 
     try {
         await synchroniserScores();
-        scoresExcel = [];
-        entrainementsExcel = [];
-        datesMatchs = [];
-        datesEntrainements = [];
-
+        scoresExcel = []; entrainementsExcel = []; datesMatchs = []; datesEntrainements = [];
         const doitAfficherCalendrier = (pageActuelle !== "stats" && pageActuelle !== "resultats" && pageActuelle !== "top10" && pageActuelle !== "tableau");
         await chargerCalendrier("avenir", doitAfficherCalendrier);
 
         switch (pageActuelle) {
-            case "stats":
-                afficherStats();
-                break;
-            case "resultats":
-                afficherResultats();
-                break;
-            case "top10":
-                afficherTop10();
-                break;
-            case "calendrier":
-                break;
-            default:
-                afficherTableauDeBord();
+            case "stats": afficherStats(); break;
+            case "resultats": afficherResultats(); break;
+            case "top10": afficherTop10(); break;
+            case "calendrier": break;
+            default: afficherTableauDeBord();
         }
-
-        if (!silencieux) {
-            afficherToast("✅ Synchronisation terminée");
-        }
+        if (!silencieux) afficherToast("✅ Synchronisation terminée");
     } finally {
         syncEnCours = false;
         if (badge) { badge.textContent = "● À jour"; badge.classList.remove("syncing"); }
@@ -754,12 +633,8 @@ async function synchroniserEtRecharger(silencieux = false) {
 function afficherTop10() {
     pageActuelle = "top10";
     const tousLesScores = [];
-    for (let i = 0; i < datesMatchs.length; i++) {
-        tousLesScores.push({ date: datesMatchs[i], type: "🏆 Compétition", score: Number(scoresExcel[i]) });
-    }
-    for (let i = 0; i < datesEntrainements.length; i++) {
-        tousLesScores.push({ date: datesEntrainements[i], type: "🏋️ Entraînement", score: Number(entrainementsExcel[i]) });
-    }
+    for (let i = 0; i < datesMatchs.length; i++) tousLesScores.push({ date: datesMatchs[i], type: "🏆 Compétition", score: Number(scoresExcel[i]) });
+    for (let i = 0; i < datesEntrainements.length; i++) tousLesScores.push({ date: datesEntrainements[i], type: "🏋️ Entraînement", score: Number(entrainementsExcel[i]) });
 
     if (tousLesScores.length === 0) {
         document.getElementById("etat").innerHTML = "<h2>🥇 Top 10</h2><p>Aucun score.</p>";
@@ -785,14 +660,7 @@ function afficherTop10() {
 
     top10.forEach((item, index) => {
         const emoji = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "🎯";
-        html += `
-            <div class="competition">
-                <h3>${emoji} #${index + 1}</h3>
-                <b>${item.score}</b><br>
-                ${item.type}<br>
-                📅 ${item.date}
-            </div>
-        `;
+        html += `<div class="competition"><h3>${emoji} #${index + 1}</h3><b>${item.score}</b><br>${item.type}<br>📅 ${item.date}</div>`;
     });
 
     document.getElementById("etat").innerHTML = html;
