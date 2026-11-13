@@ -4,6 +4,11 @@ let entrainementsExcel = [];
 let datesMatchs = [];
 let datesEntrainements = [];
 let prochaineCompetition = "";
+// --- Correctifs visuel/graph/sync ---
+let graphiqueInstance = null;
+let syncEnCours = false;
+function dateFRversTS(d){ try{ const p=String(d).split("/"); if(p.length<2) return 0; const j=parseInt(p[0],10), m=parseInt(p[1],10); if(!j||!m) return 0; return new Date(2026, m-1, j).getTime(); }catch(e){ return 0; } }
+function afficherToast(msg){ let t=document.getElementById("toast-sync"); if(!t){ t=document.createElement("div"); t.id="toast-sync"; document.body.appendChild(t); } t.textContent=msg; t.classList.add("show"); clearTimeout(t._timer); t._timer=setTimeout(()=>t.classList.remove("show"), 2200); }
 const supabaseUrl =
     "https://tfotbvxoozlbfdzmifdu.supabase.co";
 
@@ -15,7 +20,7 @@ const supabaseClient =
         supabaseUrl,
         supabaseKey
     );
-async function chargerCalendrier(filtre = "avenir") {
+async function chargerCalendrier(filtre = "avenir", afficher = true) {
 
     try {
 
@@ -282,13 +287,17 @@ if (
             }
         }
 
+        if (afficher) {
         document.getElementById("etat").innerHTML = html;
+        }
 
     }
     catch (erreur) {
 
+        if (afficher) {
         document.getElementById("etat").innerHTML =
             "❌ Erreur : " + erreur.message;
+        }
 
     }
 }
@@ -306,20 +315,18 @@ if (theme === "dark") {
 }
     await synchroniserScores();
 
-    await chargerCalendrier();
+    await chargerCalendrier("avenir", true);
 
     afficherTableauDeBord();
 
-    setInterval(() => {
+    if (!window._intervalSync) {
+    window._intervalSync = setInterval(() => {
     synchroniserEtRecharger(true);
-}, 30000);
+}, 60000);
+    }
 
 }
 initialiserApplication();
-
-setInterval(() => {
-    synchroniserEtRecharger(true);
-}, 30000);
 
 function afficherToutes() {
 
@@ -779,54 +786,25 @@ function afficherStats() {
 
         <h3>📊 Évolution des performances</h3>
 
-        <canvas id="graphiqueScores"></canvas>
+        <div class="chart-wrap"><canvas id="graphiqueScores"></canvas></div>
 
     `;
+
+    if (graphiqueInstance) { try{ graphiqueInstance.destroy(); }catch(e){} graphiqueInstance = null; }
 
     const ctx =
         document.getElementById("graphiqueScores");
 
-    const labels =
-        [...new Set([
-            ...datesMatchs,
-            ...datesEntrainements
-        ])];
+    const events = [];
+    for (let i = 0; i < datesMatchs.length; i++) events.push({ date: datesMatchs[i], ts: dateFRversTS(datesMatchs[i]), score: Number(scoresExcel[i]), type: "match", idx: i });
+    for (let i = 0; i < datesEntrainements.length; i++) events.push({ date: datesEntrainements[i], ts: dateFRversTS(datesEntrainements[i]), score: Number(entrainementsExcel[i]), type: "entrainement", idx: i });
+    events.sort((a,b)=> (a.ts-b.ts) || (a.idx-b.idx));
+    const compteDate = {};
+    const labels = events.map(e=>{ compteDate[e.date]=(compteDate[e.date]||0)+1; return compteDate[e.date]>1 ? e.date+" ("+compteDate[e.date]+")" : e.date; });
+    const serieMatchs = events.map(e=> e.type==="match" ? e.score : null);
+    const serieEntrainements = events.map(e=> e.type==="entrainement" ? e.score : null);
 
-    labels.sort((a, b) => {
-
-        const [ja, ma] = a.split("/");
-        const [jb, mb] = b.split("/");
-
-        return new Date(2026, ma - 1, ja)
-             - new Date(2026, mb - 1, jb);
-
-    });
-
-    const serieMatchs =
-        labels.map(date => {
-
-            const index =
-                datesMatchs.indexOf(date);
-
-            return index >= 0
-                ? scoresExcel[index]
-                : null;
-
-        });
-
-    const serieEntrainements =
-        labels.map(date => {
-
-            const index =
-                datesEntrainements.indexOf(date);
-
-            return index >= 0
-                ? entrainementsExcel[index]
-                : null;
-
-        });
-
-    new Chart(ctx, {
+    graphiqueInstance = new Chart(ctx, {
 
         type: "line",
 
@@ -872,6 +850,8 @@ function afficherStats() {
 
             maintainAspectRatio: false,
 
+            interaction: { mode: "index", intersect: false },
+
             plugins: {
 
                 legend: {
@@ -888,7 +868,17 @@ function afficherStats() {
 
                     }
 
-                }
+                },
+
+                tooltip: { callbacks: { label: (c)=> " "+c.dataset.label+" : "+c.parsed.y } }
+
+            },
+
+            scales: {
+
+                y: { suggestedMin: 550, suggestedMax: 650, grid: { color: "rgba(0,0,0,0.06)" }, ticks: { font: { size: 12 } } },
+
+                x: { grid: { display: false }, ticks: { maxRotation: 45, minRotation: 0, font: { size: 11 } } }
 
             }
 
@@ -1296,6 +1286,14 @@ async function synchroniserEtRecharger(
     silencieux = false
 ) {
 
+    if (syncEnCours) return;
+    syncEnCours = true;
+    const badge = document.getElementById("sync-badge");
+    if (badge) { badge.textContent = "🔄 Sync…"; badge.classList.add("syncing"); }
+    const scrollY = window.scrollY;
+    const rechercheActive = document.getElementById("recherche") ? document.getElementById("recherche").value : "";
+
+    try {
     await synchroniserScores();
 
     scoresExcel = [];
@@ -1303,8 +1301,10 @@ async function synchroniserEtRecharger(
     datesMatchs = [];
     datesEntrainements = [];
 
-    await chargerCalendrier();
+    const doitAfficherCalendrier = (pageActuelle !== "stats" && pageActuelle !== "resultats" && pageActuelle !== "top10" && pageActuelle !== "tableau");
+    await chargerCalendrier("avenir", doitAfficherCalendrier);
 
+    const avant = document.getElementById("etat") ? document.getElementById("etat").innerHTML.length : 0;
     switch(pageActuelle) {
 
         case "stats":
@@ -1325,11 +1325,14 @@ async function synchroniserEtRecharger(
     }
 
     if (!silencieux) {
-
-        alert(
-            "✅ Synchronisation terminée"
-        );
-
+        afficherToast("✅ Synchronisation terminée");
+    }
+    } finally {
+    syncEnCours = false;
+    if (badge) { badge.textContent = "● À jour"; badge.classList.remove("syncing"); }
+    window.scrollTo(0, scrollY);
+    const r = document.getElementById("recherche");
+    if (r && rechercheActive) { r.value = rechercheActive; }
     }
 
 }
@@ -1469,6 +1472,11 @@ function toggleTheme() {
  
 document.body.classList.toggle(
 "dark"
+);
+ 
+document.documentElement.setAttribute(
+"data-theme",
+document.body.classList.contains("dark") ? "dark" : "light"
 );
  
 const modeSombre =
