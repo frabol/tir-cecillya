@@ -220,31 +220,23 @@ export function modifierObjectifPersonnel() {
 export function afficherResultats() {
     pageActuelle = "resultats";
     let html = "<h2>🏆 Résultats</h2>";
-    const resultats = [];
+    const historique = getScoresLocaux();
 
-    for (let i = 0; i < state.datesMatchs.length; i++) {
-        resultats.push({ date: state.datesMatchs[i], type: "🏆 Compétition", score: state.scoresExcel[i] });
-    }
-    for (let i = 0; i < state.datesEntrainements.length; i++) {
-        resultats.push({ date: state.datesEntrainements[i], type: "🏋️ Entraînement", score: state.entrainementsExcel[i] });
-    }
-
-    resultats.sort((a, b) => {
-        const [ja, ma] = a.date.split("/");
-        const [jb, mb] = b.date.split("/");
-        return new Date(2026, ma - 1, ja) - new Date(2026, mb - 1, jb);
-    });
-
-    if (resultats.length === 0) {
+    if (historique.length === 0) {
         html += `<p>Aucun résultat enregistré.</p>`;
     } else {
-        resultats.forEach(item => {
+        historique.forEach(item => {
+            const detailLieu = item.lieu 
+                ? `<div style="font-size:0.88em; color:var(--muted); margin-top:2px;">📍 ${item.lieu}</div>` 
+                : "";
+
             html += `
                 <div class="competition competition-card">
                     <div class="competition-left">
                         <div class="competition-date-badge">${item.date}</div>
                         <div class="competition-details">
-                            <div class="competition-title">${item.type}</div>
+                            <div class="competition-title">${item.type === "match" ? "🏆 Compétition" : "🏋️ Entraînement"}</div>
+                            ${detailLieu}
                         </div>
                     </div>
                     <div>
@@ -311,6 +303,10 @@ export function afficherAjoutScore() {
                     <option value="match">🏆 Compétition</option>
                 </select>
             </div>
+            <div>
+                <label for="lieuScore">📍 Lieu :</label><br>
+                <input type="text" id="lieuScore" placeholder="Ex : Maubeuge, Lille..." style="margin-top:6px;">
+            </div>
             <details style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:10px 12px;">
                 <summary style="cursor:pointer; font-weight:700; color:var(--blue);">🎯 Saisir le détail des 6 séries (60 coups)</summary>
                 <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-top:10px;">
@@ -343,6 +339,7 @@ export function afficherAjoutScore() {
 export async function enregistrerScore() {
     const date = document.getElementById("dateScore").value;
     const type = document.getElementById("typeScore").value;
+    const lieu = (document.getElementById("lieuScore")?.value || "").trim();
     const score = Number(document.getElementById("valeurScore").value);
     const note = (document.getElementById("noteScore")?.value || "").trim();
 
@@ -357,7 +354,7 @@ export async function enregistrerScore() {
         return;
     }
 
-    const res = await ajouterScore({ date, type, score, note, series });
+    const res = await ajouterScore({ date, type, lieu, score, note, series });
     if (!res.ok) {
         afficherToast("⚠️ Ce score existe déjà.");
         return;
@@ -387,6 +384,9 @@ export function voirScores() {
         html += `<p>Aucun score enregistré.</p>`;
     } else {
         historique.forEach((item, index) => {
+            const detailLieu = item.lieu 
+                ? `<div style="font-size:0.88em; color:var(--muted); margin-top:2px;">📍 ${item.lieu}</div>` 
+                : "";
             const detailSeries = item.series && item.series.length > 0
                 ? `<div style="font-size:0.82em; color:var(--blue); margin-top:2px;">Séries : ${item.series.join(" • ")}</div>`
                 : "";
@@ -400,6 +400,7 @@ export function voirScores() {
                         <div class="competition-date-badge">${item.date}</div>
                         <div class="competition-details">
                             <div class="competition-title">${item.type === "match" ? "🏆 Compétition" : "🏋️ Entraînement"}</div>
+                            ${detailLieu}
                             <div class="competition-location">Score : <b>${item.score}</b></div>
                             ${detailSeries}
                             ${detailNote}
@@ -587,11 +588,12 @@ export function exporterScoresExcel() {
     const donnees = historique.map(item => ({
         Date: item.date,
         Type: item.type === "match" ? "Compétition" : "Entraînement",
+        Lieu: item.lieu || "",
         Score: Number(item.score),
         Series: (item.series || []).join(" | "),
         Notes: item.note || ""
     }));
-    donnees.unshift({ Date: new Date().toLocaleDateString("fr-FR"), Type: "Export Tir Cécillya", Score: "", Series: "", Notes: "" });
+    donnees.unshift({ Date: new Date().toLocaleDateString("fr-FR"), Type: "Export Tir Cécillya", Lieu: "", Score: "", Series: "", Notes: "" });
     const feuille = XLSX.utils.json_to_sheet(donnees);
     const classeur = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(classeur, feuille, "Scores");
