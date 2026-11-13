@@ -429,3 +429,50 @@ body.dark .ic-gold{background:linear-gradient(135deg,#ffd84d,#f59e0b)!important;
   align-items: center;
   gap: 10px;
 }
+/* --- NOUVEAUTÉS : OBJECTIFS, ALERTES & PROGRESSION --- */
+.objective-card {
+  background: linear-gradient(135deg, #0a1931 0%, #1e3a8a 100%);
+  color: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 16px;
+  box-shadow: var(--shadow);
+}
+.progress-bar-container {
+  background: rgba(255,255,255,0.2);
+  border-radius: 999px;
+  height: 14px;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 10px;
+}
+.progress-bar-fill {
+  background: linear-gradient(90deg, #f5b301, #ffd84d);
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+.alert-competition {
+  background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%);
+  color: #fff;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  animation: pulse-alert 2s infinite;
+}
+@keyframes pulse-alert {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+.monthly-stat-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+}
