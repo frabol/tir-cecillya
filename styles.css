@@ -1,5 +1,5 @@
 
-styles-v4.css
+styles-v5-rouge.css
 
 100 %
 :root{
@@ -691,4 +691,165 @@ details summary {
   color: #ffffff !important;
   border-color: #185adb !important;
 }
-Affichage de styles-v4.css
+/* ==========================================================================
+   THÈME ROUGE CARMIN & BORDEAUX (REMPLACEMENT DU BLEU)
+   ========================================================================== */
+
+:root,
+[data-theme="light"] {
+  --navy: #3b0712;
+  --blue: #dc2626;
+  --blue-light: #ef4444;
+  --bg: #f4e8ea;
+  --card: #ffffff;
+  --text: #1f0a0e;
+  --muted: #64474c;
+  --border: #e5c6cb;
+  --shadow: 0 6px 20px rgba(59, 7, 18, 0.10);
+  --shadow-hover: 0 12px 28px rgba(59, 7, 18, 0.16);
+}
+
+[data-theme="dark"] {
+  --navy: #2a060e;
+  --blue: #ef4444;
+  --blue-light: #f87171;
+  --bg: #170a0d;
+  --card: #241015;
+  --text: #fff1f2;
+  --muted: #d1a3ab;
+  --border: #471d26;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --shadow-hover: 0 18px 45px rgba(0, 0, 0, 0.65);
+}
+
+/* Fond général */
+[data-theme="light"] body {
+  background: linear-gradient(180deg, #ebd6da 0%, #f4e8ea 35%, #f8eff1 100%) fixed !important;
+  color: var(--text) !important;
+}
+[data-theme="dark"] body,
+body.dark {
+  background: radial-gradient(1200px 400px at 50% -100px, #4c0d1b 0%, var(--bg) 60%) fixed, var(--bg) !important;
+}
+
+/* En-tête Hero en dégradé Bordeaux / Rouge Carmin */
+.hero {
+  background:
+    radial-gradient(800px 300px at 20% 0%, rgba(255, 255, 255, 0.16), transparent),
+    radial-gradient(600px 300px at 90% 20%, rgba(245, 179, 1, 0.32), transparent),
+    linear-gradient(135deg, #2b050d 0%, #7f1d1d 48%, #dc2626 100%) !important;
+}
+.hero-pill {
+  color: #3b0712 !important;
+}
+
+/* Barre d'outils & Recherche */
+[data-theme="light"] .toolbar {
+  background: #fbf4f5 !important;
+  border: 1.5px solid #e0bfc5 !important;
+}
+[data-theme="dark"] .toolbar,
+body.dark .toolbar {
+  background: rgba(36, 16, 21, 0.90) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+[data-theme="light"] .search {
+  background: #ffffff !important;
+  border: 1.5px solid #e0bfc5 !important;
+}
+
+/* Cartes & Bordures */
+[data-theme="light"] .card,
+[data-theme="light"] .kpi,
+[data-theme="light"] .competition,
+[data-theme="light"] .competition-card {
+  background: #ffffff !important;
+  border: 1.5px solid #e5c6cb !important;
+}
+[data-theme="dark"] .card,
+body.dark .card {
+  background: rgba(36, 16, 21, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.09) !important;
+}
+
+/* Boutons */
+[data-theme="light"] .btn {
+  background: #ffffff !important;
+  color: #2b050d !important;
+  border: 1.5px solid #e0bfc5 !important;
+}
+[data-theme="light"] .btn:hover {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  border-color: #dc2626 !important;
+}
+.btn-primary,
+[data-theme="light"] .btn.btn-primary {
+  background: linear-gradient(135deg, #dc2626, #991b1b) !important;
+  color: #ffffff !important;
+  border: 0 !important;
+}
+.btn.active {
+  background: #450a0a !important;
+  color: #ffffff !important;
+}
+
+/* Encarts Objectif, Prochain Match & En-têtes de mois */
+.objective-card {
+  background: linear-gradient(135deg, #3b0712 0%, #991b1b 100%) !important;
+}
+.next-match,
+.next-match-card {
+  background: linear-gradient(135deg, #3b0712 0%, #b91c1c 100%) !important;
+  border-color: #ef4444 !important;
+}
+.next-match-card h2 {
+  color: #fecaca !important;
+}
+.month-header,
+#etat h3[style] {
+  background: linear-gradient(135deg, #450a0a 0%, #b91c1c 100%) !important;
+}
+
+/* Bordure gauche de la carte Prochaine compétition */
+.card[style*="border-left: 5px solid #2563eb"] {
+  border-left: 5px solid #dc2626 !important;
+}
+
+/* Badges de dates & Filtres */
+[data-theme="light"] .competition-date-badge {
+  background: #fde8e8 !important;
+  border: 1px solid #f8b4b4 !important;
+  color: #991b1b !important;
+}
+[data-theme="dark"] .competition-date-badge {
+  color: #fca5a5 !important;
+}
+.filter-btn:hover {
+  border-color: #dc2626 !important;
+  color: #dc2626 !important;
+}
+.filter-btn.active,
+[data-theme="light"] .filter-btn.active {
+  background: linear-gradient(135deg, #dc2626, #991b1b) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35) !important;
+}
+
+/* Icônes bleues converties en Rouge Carmin */
+.ic-blue,
+[data-theme="dark"] .ic-blue {
+  background: linear-gradient(135deg, #ef4444, #991b1b) !important;
+}
+.ic-navy,
+[data-theme="dark"] .ic-navy {
+  background: linear-gradient(135deg, #450a0a, #7f1d1d) !important;
+}
+
+/* Alerte compétition (dorée/ambre pour bien contraster avec le thème rouge) */
+.alert-competition {
+  background: linear-gradient(135deg, #b45309 0%, #d97706 100%) !important;
+  box-shadow: 0 4px 15px rgba(217, 119, 6, 0.38) !important;
+}
+Affichage de styles-v5-rouge.css
