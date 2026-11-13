@@ -39,21 +39,58 @@
 </defs>
 </svg>
 
-<header class="hero">
-  <div class="hero-crest-wrap" style="margin-bottom:12px;display:flex;justify-content:center;gap:16px;align-items:center;">
-    <img src="https://s3.static-clubeo.com/1200/uploads/carabiniers-de-maubeuge/logo__saedhg.png" alt="Logo Carabiniers de Maubeuge" style="width:105px;height:105px;object-fit:contain;border-radius:50%;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.45));background:rgba(255,255,255,0.12);padding:3px;border:2px solid rgba(255,255,255,0.3)">
-    <img src="https://www.liguedetirnpdc.fr/wp-content/uploads/2021/10/Logo-Ligue-de-Tir-Small.png" alt="Écusson Ligue de Tir Nord-Pas-de-Calais" class="ligue-logo" style="width:105px;height:105px;object-fit:contain;border-radius:12px;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.45));background:rgba(255,255,255,0.08);padding:4px;">
+<header class="hero" style="position:relative; padding:45px 20px 80px;">
+  <!-- Logos latéraux pour Desktop (aux emplacements des cercles rouges) -->
+  <div style="position:absolute; left:40px; top:50%; transform:translateY(-50%); z-index:5; display:flex; flex-direction:column; align-items:center; gap:6px;" class="desktop-logo-left">
+    <img src="https://s3.static-clubeo.com/1200/uploads/carabiniers-de-maubeuge/logo__saedhg.png" alt="Logo Carabiniers de Maubeuge" style="width:155px; height:155px; object-fit:contain; border-radius:50%; filter:drop-shadow(0 10px 25px rgba(0,0,0,0.6)); background:rgba(255,255,255,0.12); padding:6px; border:3px solid rgba(255,255,255,0.45);">
+    <span style="font-size:12px; font-weight:700; color:#fff; text-shadow:0 2px 5px rgba(0,0,0,0.8); letter-spacing:0.06em; text-transform:uppercase;">Maubeuge</span>
   </div>
-  <div class="hero-badge"><span class="ic ic-gold"><svg class="svgi"><use href="#i-target"/></svg></span> Tir sportif • Carabine • Saison 2026-2027</div>
-  <div style="margin-top:10px"><span id="sync-badge">● À jour</span></div>
-  <h1>Tir <span>Cécillya</span></h1>
-  <p>Calendrier Ligue Tir Nord-Pas-de-Calais • Suivi des scores & performances</p>
-  <div class="hero-stats">
-    <div class="hero-pill"><img src="https://s3.static-clubeo.com/1200/uploads/carabiniers-de-maubeuge/logo__saedhg.png" alt="Maubeuge" style="width:20px;height:20px;object-fit:contain;border-radius:50%"> Carabiniers de Maubeuge</div>
-    <div class="hero-pill"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Compétitions & entraînements</div>
-    <div class="hero-pill"><span class="ic ic-blue"><svg class="svgi"><use href="#i-chart"/></svg></span> Stats en direct</div>
+
+  <div style="position:absolute; right:40px; top:50%; transform:translateY(-50%); z-index:5; display:flex; flex-direction:column; align-items:center; gap:6px;" class="desktop-logo-right">
+    <img src="https://www.liguedetirnpdc.fr/wp-content/uploads/2021/10/Logo-Ligue-de-Tir-Small.png" alt="Écusson Ligue de Tir Nord-Pas-de-Calais" style="width:155px; height:155px; object-fit:contain; border-radius:18px; filter:drop-shadow(0 10px 25px rgba(0,0,0,0.6)); background:rgba(255,255,255,0.08); padding:6px; border:3px solid rgba(255,255,255,0.45);">
+    <span style="font-size:12px; font-weight:700; color:#fff; text-shadow:0 2px 5px rgba(0,0,0,0.8); letter-spacing:0.06em; text-transform:uppercase;">Ligue NPdC</span>
+  </div>
+
+  <!-- Contenu central -->
+  <div style="max-width:600px; margin:0 auto; position:relative; z-index:4;">
+    <div class="hero-badge"><span class="ic ic-gold"><svg class="svgi"><use href="#i-target"/></svg></span> Tir sportif • Carabine • Saison 2026-2027</div>
+    <div style="margin-top:10px"><span id="sync-badge">● À jour</span></div>
+    <h1>Tir <span>Cécillya</span></h1>
+    <p>Calendrier Ligue Tir Nord-Pas-de-Calais • Suivi des scores & performances</p>
+    <div class="hero-stats">
+      <div class="hero-pill"><img src="https://s3.static-clubeo.com/1200/uploads/carabiniers-de-maubeuge/logo__saedhg.png" alt="Maubeuge" style="width:20px;height:20px;object-fit:contain;border-radius:50%"> Carabiniers de Maubeuge</div>
+      <div class="hero-pill"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Compétitions & entraînements</div>
+      <div class="hero-pill"><span class="ic ic-blue"><svg class="svgi"><use href="#i-chart"/></svg></span> Stats en direct</div>
+    </div>
   </div>
 </header>
+
+<style>
+@media(max-width: 1050px) {
+  .desktop-logo-left, .desktop-logo-right {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
+  }
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 16px 70px !important;
+  }
+  .hero::before {
+    content: "";
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+}
+</style>
+
 
 <div class="toolbar-wrap">
   <nav class="toolbar" aria-label="Navigation principale">
