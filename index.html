@@ -1,4 +1,7 @@
 
+index-v5.html
+
+100 %
 <!DOCTYPE html>
 <html lang="fr" data-theme="light">
 <head>
@@ -13,6 +16,47 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>.svgi{width:19px;height:19px;flex:0 0 19px}</style>
+
+<style>
+/* Grille 2 lignes de 3 pour les 6 séries + affichage complet du score sans coupure */
+#etat details > div {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  margin-top: 14px !important;
+}
+#etat details > div > div {
+  min-width: 0 !important;
+  padding: 12px 10px !important;
+  text-align: center !important;
+}
+#etat details input[type="number"],
+#etat details input[type="text"],
+input[id^="serie"],
+input[name^="serie"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  padding: 12px 6px !important;
+  font-size: 1.3rem !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+  letter-spacing: 0.02em !important;
+  box-sizing: border-box !important;
+  -moz-appearance: textfield !important;
+}
+#etat details input[type="number"]::-webkit-inner-spin-button,
+#etat details input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+@media (max-width: 400px) {
+  #etat details > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -193,4 +237,4 @@ function toggleTheme(){
 <script type="module" src="js/main.js"></script>
 </body>
 </html>
-Affichage de index.html
+Affichage de index-v5.html
