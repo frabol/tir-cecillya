@@ -1,7 +1,30 @@
-import { state, chargerDonneesExcelEtCalendrier, synchroniserEtRecharger, exporterEvenementICS } from './calendar.js';
+import { state, chargerDonneesExcelEtCalendrier, exporterEvenementICS } from './calendar.js';
 import * as ui from './ui.js';
 
-// Fonction de recherche de compétition intégrée directement pour éviter les erreurs d'import
+// Fonction de synchronisation et rechargement intégrée directement
+export async function synchroniserEtRecharger() {
+    ui.afficherToast("🔄 Synchronisation en cours...");
+    try {
+        await chargerDonneesExcelEtCalendrier("avenir");
+        ui.afficherToast("✅ Synchronisation réussie !");
+        if (ui.pageActuelle === "tableau") {
+            ui.afficherTableauDeBord();
+        } else if (ui.pageActuelle === "calendrier") {
+            ui.afficherCalendrier("avenir");
+        } else if (ui.pageActuelle === "resultats") {
+            ui.afficherResultats();
+        } else if (ui.pageActuelle === "stats") {
+            ui.afficherStats();
+        } else if (ui.pageActuelle === "top10") {
+            ui.afficherTop10();
+        }
+    } catch (e) {
+        ui.afficherToast("❌ Erreur de synchronisation");
+        console.error(e);
+    }
+}
+
+// Fonction de recherche de compétition intégrée
 export function rechercherCompetition() {
     const input = document.getElementById("recherche");
     if (!input) return;
