@@ -136,28 +136,19 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
 
         if (prochainMatchObj) {
             html += `
-                <div style="
-                    background: linear-gradient(135deg, #17365D 0%, #2563eb 100%);
-                    color: white;
-                    padding: 15px;
-                    border-radius: 10px;
-                    margin-bottom: 15px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                ">
-                    <div style="font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">
-                        🎯 Prochain Match à venir
-                    </div>
-                    <div style="font-size: 1.15em; font-weight: bold; margin: 5px 0;">
+                <div class="next-match-card">
+                    <h2>🎯 Prochain Match à venir</h2>
+                    <div style="font-size: 1.15em; font-weight: bold; margin: 5px 0; color: #fff;">
                         ${prochainMatchObj.evenement}
                     </div>
-                    <div style="font-size: 0.95em;">
+                    <div style="font-size: 0.95em; color: #cbd5e1;">
                         📅 <b>${prochainMatchObj.date || ""}</b> &nbsp;|&nbsp; 📍 ${prochainMatchObj.lieu || "-"}
                     </div>
                 </div>
             `;
         }
 
-        // 2. Boutons de filtres par discipline (avec Carabine 10m et 50m séparés)
+        // 2. Boutons de filtres par discipline
         const disciplines = [
             { id: "all", label: "Tous" },
             { id: "10m", label: "10m" },
@@ -167,32 +158,28 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
             { id: "pistolet", label: "Pistolet" }
         ];
 
-        html += `<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">`;
+        html += `
+            <div class="filters-section">
+                <h3>Filtrer par discipline</h3>
+                <div class="filter-buttons">
+        `;
         disciplines.forEach(d => {
             const actif = (filtreDisciplineActif === d.id);
             html += `
-                <button onclick="filtrerParDiscipline('${d.id}')" style="
-                    padding: 7px 14px;
-                    border-radius: 20px;
-                    border: 1px solid #17365D;
-                    background: ${actif ? '#17365D' : 'transparent'};
-                    color: ${actif ? 'white' : 'inherit'};
-                    font-weight: bold;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                ">
+                <button class="filter-btn ${actif ? 'active' : ''}" onclick="filtrerParDiscipline('${d.id}')">
                     ${d.label}
                 </button>
             `;
         });
-        html += `</div>`;
+        html += `</div></div>`;
 
-        // 3. Liste des mois et événements
+        // 3. Liste des mois et événements en cartes modernes
         let moisCourant = "Septembre 2026";
         html += `
-            <h3 style="background:#17365D; color:white; padding:8px; margin-top:15px; border-radius:5px;">
+            <div class="month-header">
                 📅 Septembre 2026
-            </h3>
+            </div>
+            <div class="calendar-grid">
         `;
 
         for (let i = 4; i < lignes.length; i++) {
@@ -208,25 +195,41 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
             if (mois && mois !== moisCourant) {
                 moisCourant = mois;
                 html += `
-                    <h3 style="background:#17365D; color:white; padding:8px; margin-top:15px; border-radius:5px;">
+                    </div>
+                    <div class="month-header" style="margin-top:30px;">
                         📅 ${mois}
-                    </h3>
+                    </div>
+                    <div class="calendar-grid">
                 `;
             }
 
             if (evenement && (filtre === "toutes" || statut === "À venir")) {
                 const texteComplet = `${date || ""} ${evenement} ${lieu || ""}`.toLowerCase();
+                const estAvenir = (statut === "À venir");
+                
                 html += `
-                    <div class="competition" data-texte="${texteComplet}"
-                        style="padding:10px; border-bottom:1px solid #ddd;">
-                        <b>${date || ""}</b><br>
-                        ${evenement}<br>
-                        📍 ${lieu || "-"}<br>
-                        ✅ ${statut}
+                    <div class="competition competition-card" data-texte="${texteComplet}">
+                        <div class="competition-left">
+                            <div class="competition-date-badge">
+                                ${date || "-"}
+                            </div>
+                            <div class="competition-details">
+                                <div class="competition-title">${evenement}</div>
+                                <div class="competition-location">
+                                    📍 ${lieu || "Lieu non spécifié"}
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="competition-badge-status ${estAvenir ? 'status-avenir' : 'status-passe'}">
+                                ${estAvenir ? '✅ À venir' : '📌 Passé'}
+                            </span>
+                        </div>
                     </div>
                 `;
             }
         }
+        html += `</div>`;
 
         if (afficher) {
             document.getElementById("etat").innerHTML = html;
@@ -242,11 +245,15 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
 
 function filtrerParDiscipline(discipline) {
     filtreDisciplineActif = discipline;
-    const boutons = document.querySelectorAll("#etat button[onclick^='filtrerParDiscipline']");
+    const boutons = document.querySelectorAll(".filter-btn");
     boutons.forEach(btn => {
-        const estActif = btn.getAttribute("onclick").includes(`'${discipline}'`);
-        btn.style.background = estActif ? "#17365D" : "transparent";
-        btn.style.color = estActif ? "white" : "inherit";
+        const onClickAttr = btn.getAttribute("onclick") || "";
+        const estActif = onClickAttr.includes(`'${discipline}'`);
+        if (estActif) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
     });
     appliquerFiltresCalendrier();
 }
@@ -275,7 +282,7 @@ function appliquerFiltresCalendrier() {
         }
 
         const okRecherche = texte.includes(texteRecherche);
-        carte.style.display = (okDiscipline && okRecherche) ? "block" : "none";
+        carte.style.display = (okDiscipline && okRecherche) ? "flex" : "none";
     });
 }
 
@@ -323,10 +330,16 @@ function afficherResultats() {
 
     resultats.forEach(item => {
         html += `
-            <div class="competition">
-                <b>${item.date}</b><br>
-                ${item.type}<br>
-                Score : <b>${item.score}</b>
+            <div class="competition competition-card">
+                <div class="competition-left">
+                    <div class="competition-date-badge">${item.date}</div>
+                    <div class="competition-details">
+                        <div class="competition-title">${item.type}</div>
+                    </div>
+                </div>
+                <div>
+                    <span class="competition-badge-status status-avenir">Score : <b>${item.score}</b></span>
+                </div>
             </div>
         `;
     });
@@ -343,7 +356,7 @@ function afficherAjoutScore() {
             <option value="match">Compétition</option>
         </select>
         <p>Score :</p><input type="number" step="0.1" id="valeurScore" placeholder="Ex : 617.5">
-        <br><br><button onclick="enregistrerScore()">💾 Enregistrer</button>
+        <br><br><button class="btn btn-primary" onclick="enregistrerScore()">💾 Enregistrer</button>
     `;
 }
 
@@ -376,302 +389,4 @@ async function enregistrerScore() {
     }
 
     const morceaux = date.split("-");
-    const dateFormatee = morceaux[2] + "/" + morceaux[1];
-
-    if (type === "match") {
-        datesMatchs.push(dateFormatee);
-        scoresExcel.push(score);
-    } else {
-        datesEntrainements.push(dateFormatee);
-        entrainementsExcel.push(score);
-    }
-
-    alert("✅ Score enregistré");
-    afficherResultats();
-}
-
-function voirScores() {
-    let historique = JSON.parse(localStorage.getItem("scores")) || [];
-    let html = "<h2>📋 Scores saisis</h2>";
-
-    if (historique.length === 0) {
-        html += `<p>Aucun score enregistré.</p>`;
-    } else {
-        historique.forEach((item, index) => {
-            html += `
-                <div class="competition">
-                    <b>${item.date}</b><br>
-                    ${item.type === "match" ? "🏆 Compétition" : "🏋️ Entraînement"}<br>
-                    Score : <b>${item.score}</b><br><br>
-                    <button onclick="supprimerScore(${index})" style="background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">
-                        🗑️ Supprimer
-                    </button>
-                </div>
-            `;
-        });
-    }
-    document.getElementById("etat").innerHTML = html;
-}
-
-async function supprimerScore(index) {
-    if (!confirm("Supprimer ce score ?")) return;
-
-    let historique = JSON.parse(localStorage.getItem("scores")) || [];
-    const scoreASupprimer = historique[index];
-
-    await supabaseClient.from("scores").delete()
-        .eq("date", scoreASupprimer.date)
-        .eq("type", scoreASupprimer.type)
-        .eq("score", scoreASupprimer.score);
-
-    historique.splice(index, 1);
-    localStorage.setItem("scores", JSON.stringify(historique));
-    await synchroniserEtRecharger();
-}
-
-function afficherStats() {
-    pageActuelle = "stats";
-    const scores = [...scoresExcel, ...entrainementsExcel];
-
-    if (scores.length === 0) {
-        document.getElementById("etat").innerHTML = "Aucun score trouvé.";
-        return;
-    }
-
-    const meilleurCompetition = scoresExcel.length > 0 ? Math.max(...scoresExcel) : 0;
-    const meilleurEntrainement = entrainementsExcel.length > 0 ? Math.max(...entrainementsExcel) : 0;
-    const moyenne = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
-    const moyenneEntrainement = entrainementsExcel.length > 0
-        ? (entrainementsExcel.reduce((a, b) => a + b, 0) / entrainementsExcel.length).toFixed(1)
-        : 0;
-    const totalResultats = scoresExcel.length + entrainementsExcel.length;
-
-    const tousLesScores = [];
-    for (let i = 0; i < datesMatchs.length; i++) tousLesScores.push({ date: datesMatchs[i], score: scoresExcel[i] });
-    for (let i = 0; i < datesEntrainements.length; i++) tousLesScores.push({ date: datesEntrainements[i], score: entrainementsExcel[i] });
-
-    tousLesScores.sort((a, b) => {
-        const [ja, ma] = a.date.split("/");
-        const [jb, mb] = b.date.split("/");
-        return new Date(2026, ma - 1, ja) - new Date(2026, mb - 1, jb);
-    });
-
-    const dernier = tousLesScores.length > 0 ? tousLesScores[tousLesScores.length - 1].score : 0;
-
-    document.getElementById("etat").innerHTML = `
-        <h2>📈 Statistiques</h2>
-        <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:15px;">
-            <div class="card"><h3>🎯 Dernier score</h3><p style="font-size:32px; font-weight:bold;">${dernier}</p></div>
-            <div class="card"><h3>🏆 Record</h3><p style="font-size:32px; font-weight:bold; color:gold;">${meilleurEntrainement}</p></div>
-            <div class="card"><h3>📊 Moyenne</h3><p style="font-size:32px; font-weight:bold;">${moyenne}</p></div>
-            <div class="card"><h3>📋 Résultats</h3><p style="font-size:32px; font-weight:bold;">${totalResultats}</p></div>
-        </div>
-        <hr>
-        <h3>📊 Évolution des performances</h3>
-        <div class="chart-wrap"><canvas id="graphiqueScores"></canvas></div>
-    `;
-
-    if (graphiqueInstance) {
-        try { graphiqueInstance.destroy(); } catch (e) {}
-        graphiqueInstance = null;
-    }
-
-    const ctx = document.getElementById("graphiqueScores");
-    const events = [];
-    for (let i = 0; i < datesMatchs.length; i++) events.push({ date: datesMatchs[i], ts: dateFRversTS(datesMatchs[i]), score: Number(scoresExcel[i]), type: "match", idx: i });
-    for (let i = 0; i < datesEntrainements.length; i++) events.push({ date: datesEntrainements[i], ts: dateFRversTS(datesEntrainements[i]), score: Number(entrainementsExcel[i]), type: "entrainement", idx: i });
-    events.sort((a, b) => (a.ts - b.ts) || (a.idx - b.idx));
-
-    const compteDate = {};
-    const labels = events.map(e => {
-        compteDate[e.date] = (compteDate[e.date] || 0) + 1;
-        return compteDate[e.date] > 1 ? e.date + " (" + compteDate[e.date] + ")" : e.date;
-    });
-    const serieMatchs = events.map(e => e.type === "match" ? e.score : null);
-    const serieEntrainements = events.map(e => e.type === "entrainement" ? e.score : null);
-
-    graphiqueInstance = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels,
-            datasets: [
-                { label: "Compétitions", data: serieMatchs, borderColor: "#17365D", backgroundColor: "rgba(23,54,93,0.20)", borderWidth: 4, tension: 0.4, spanGaps: true, pointRadius: 8 },
-                { label: "Entraînements", data: serieEntrainements, borderColor: "#28a745", backgroundColor: "rgba(40,167,69,0.20)", borderWidth: 4, tension: 0.4, spanGaps: true, pointRadius: 8 }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode: "index", intersect: false },
-            plugins: { legend: { labels: { font: { size: 14, weight: "bold" } } } },
-            scales: {
-                y: { suggestedMin: 550, suggestedMax: 650, grid: { color: "rgba(0,0,0,0.06)" } },
-                x: { grid: { display: false } }
-            }
-        }
-    });
-}
-
-function exporterScores() {
-    const historique = JSON.parse(localStorage.getItem("scores")) || [];
-    if (historique.length === 0) { alert("Aucun score à exporter."); return; }
-    const contenu = JSON.stringify(historique, null, 2);
-    const blob = new Blob([contenu], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const lien = document.createElement("a");
-    lien.href = url;
-    lien.download = "scores_cecillya.json";
-    document.body.appendChild(lien);
-    lien.click();
-    document.body.removeChild(lien);
-    URL.revokeObjectURL(url);
-    alert("✅ Export terminé");
-}
-
-function exporterExcel() {
-    const historique = JSON.parse(localStorage.getItem("scores")) || [];
-    if (historique.length === 0) { alert("Aucun score à exporter."); return; }
-    const donnees = historique.map(item => ({
-        Date: item.date,
-        Type: item.type === "match" ? "Compétition" : "Entraînement",
-        Score: Number(item.score)
-    }));
-    donnees.unshift({ Date: new Date().toLocaleDateString("fr-FR"), Type: "Export Tir Cécillya", Score: "" });
-    const feuille = XLSX.utils.json_to_sheet(donnees);
-    const classeur = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(classeur, feuille, "Scores");
-    XLSX.writeFile(classeur, "scores_cecillya.xlsx");
-    alert("✅ Export Excel terminé");
-}
-
-function importerScores(event) {
-    const fichier = event.target.files[0];
-    if (!fichier) return;
-
-    const lecteur = new FileReader();
-    lecteur.onload = function (e) {
-        try {
-            const donnees = JSON.parse(e.target.result);
-            if (!Array.isArray(donnees)) { alert("❌ Fichier invalide."); return; }
-            donnees.forEach(item => {
-                if (item.type === "Compétition") item.type = "match";
-                if (item.type === "Entraînement") item.type = "entrainement";
-            });
-
-            let historique = JSON.parse(localStorage.getItem("scores")) || [];
-            const existants = new Set(historique.map(item => item.date + "|" + item.type + "|" + item.score));
-            const nouveaux = donnees.filter(item => !existants.has(item.date + "|" + item.type + "|" + item.score));
-
-            historique = [...historique, ...nouveaux];
-            localStorage.setItem("scores", JSON.stringify(historique));
-            alert("✅ " + nouveaux.length + " nouveau(x) score(s) importé(s).");
-            chargerCalendrier().then(() => { afficherResultats(); });
-        } catch (erreur) {
-            alert("❌ Erreur lors de l'import.");
-        }
-    };
-    lecteur.readAsText(fichier);
-}
-
-function afficherTableauDeBord() {
-    pageActuelle = "tableau";
-    const tousLesScores = [...scoresExcel, ...entrainementsExcel];
-    const moyenne = tousLesScores.length > 0 ? (tousLesScores.reduce((a, b) => a + b, 0) / tousLesScores.length).toFixed(1) : 0;
-    const record = tousLesScores.length > 0 ? Math.max(...tousLesScores) : 0;
-    const dernier = tousLesScores.length > 0 ? tousLesScores[tousLesScores.length - 1] : 0;
-
-    document.getElementById("etat").innerHTML = `
-        <h2>🏠 Tableau de bord</h2>
-        <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:10px;">
-            <div class="card"><h3>🎯 Dernier score</h3><p style="font-size:28px; font-weight:bold;">${dernier}</p></div>
-            <div class="card"><h3>🏆 Record personnel</h3><p style="font-size:28px; font-weight:bold; color:gold;">${record}</p></div>
-            <div class="card"><h3>📈 Moyenne saison</h3><p style="font-size:28px; font-weight:bold;">${moyenne}</p></div>
-            <div class="card"><h3>📋 Résultats</h3><p style="font-size:28px; font-weight:bold;">${tousLesScores.length}</p></div>
-        </div>
-        <div class="card" style="border-left: 5px solid #2563eb;">
-            <h3>📅 Prochaine compétition</h3>
-            <p style="font-size:1.1em; font-weight:bold;">${prochaineCompetition || "Aucune compétition"}</p>
-        </div>
-    `;
-}
-
-async function synchroniserScores() {
-    const { data, error } = await supabaseClient.from("scores").select("*");
-    if (error) { console.error(error); return; }
-    const historique = data.map(item => ({ date: item.date, type: item.type, score: Number(item.score) }));
-    localStorage.setItem("scores", JSON.stringify(historique));
-}
-
-async function synchroniserEtRecharger(silencieux = false) {
-    if (syncEnCours) return;
-    syncEnCours = true;
-    const badge = document.getElementById("sync-badge");
-    if (badge) { badge.textContent = "🔄 Sync…"; badge.classList.add("syncing"); }
-    const scrollY = window.scrollY;
-    const rechercheActive = document.getElementById("recherche") ? document.getElementById("recherche").value : "";
-
-    try {
-        await synchroniserScores();
-        scoresExcel = []; entrainementsExcel = []; datesMatchs = []; datesEntrainements = [];
-        const doitAfficherCalendrier = (pageActuelle !== "stats" && pageActuelle !== "resultats" && pageActuelle !== "top10" && pageActuelle !== "tableau");
-        await chargerCalendrier("avenir", doitAfficherCalendrier);
-
-        switch (pageActuelle) {
-            case "stats": afficherStats(); break;
-            case "resultats": afficherResultats(); break;
-            case "top10": afficherTop10(); break;
-            case "calendrier": break;
-            default: afficherTableauDeBord();
-        }
-        if (!silencieux) afficherToast("✅ Synchronisation terminée");
-    } finally {
-        syncEnCours = false;
-        if (badge) { badge.textContent = "● À jour"; badge.classList.remove("syncing"); }
-        window.scrollTo(0, scrollY);
-        const r = document.getElementById("recherche");
-        if (r && rechercheActive) { r.value = rechercheActive; }
-    }
-}
-
-function afficherTop10() {
-    pageActuelle = "top10";
-    const tousLesScores = [];
-    for (let i = 0; i < datesMatchs.length; i++) tousLesScores.push({ date: datesMatchs[i], type: "🏆 Compétition", score: Number(scoresExcel[i]) });
-    for (let i = 0; i < datesEntrainements.length; i++) tousLesScores.push({ date: datesEntrainements[i], type: "🏋️ Entraînement", score: Number(entrainementsExcel[i]) });
-
-    if (tousLesScores.length === 0) {
-        document.getElementById("etat").innerHTML = "<h2>🥇 Top 10</h2><p>Aucun score.</p>";
-        return;
-    }
-
-    const top10 = tousLesScores.sort((a, b) => b.score - a.score).slice(0, 10);
-    const record = top10.length > 0 ? top10[0].score : 0;
-    const moyenneTop10 = top10.length > 0 ? (top10.reduce((total, item) => total + item.score, 0) / top10.length).toFixed(1) : 0;
-
-    let html = `
-        <h2>🥇 Top 10 des meilleurs scores</h2>
-        <div class="podium">
-            <div class="second">🥈<br>${top10[1] ? top10[1].score : "-"}</div>
-            <div class="first">🥇<br>${top10[0] ? top10[0].score : "-"}</div>
-            <div class="third">🥉<br>${top10[2] ? top10[2].score : "-"}</div>
-        </div>
-        <div class="card">
-            <p style="color:gold; font-size:24px; font-weight:bold;">🏆 Record personnel : ${record}</p>
-            <p style="font-size:18px;">📈 Moyenne du Top 10 : <b>${moyenneTop10}</b></p>
-        </div>
-    `;
-
-    top10.forEach((item, index) => {
-        const emoji = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "🎯";
-        html += `<div class="competition"><h3>${emoji} #${index + 1}</h3><b>${item.score}</b><br>${item.type}<br>📅 ${item.date}</div>`;
-    });
-
-    document.getElementById("etat").innerHTML = html;
-}
-
-function toggleTheme() {
-    document.body.classList.toggle("dark");
-    document.documentElement.setAttribute("data-theme", document.body.classList.contains("dark") ? "dark" : "light");
-    const modeSombre = document.body.classList.contains("dark");
-    localStorage.setItem("theme", modeSombre ? "dark" : "light");
-}
+    const date
