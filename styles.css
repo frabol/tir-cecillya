@@ -1,3 +1,7 @@
+
+styles-v3.css
+
+100 %
 :root{
   --navy:#0a1931;
   --blue:#185adb;
@@ -476,3 +480,122 @@ body.dark .ic-gold{background:linear-gradient(135deg,#ffd84d,#f59e0b)!important;
   border-bottom: 1px solid var(--border);
   font-weight: 600;
 }
+/* ==========================================================================
+   AMELIORATIONS VISUELLES & ERGONOMIE MOBILE (v3)
+   ========================================================================== */
+
+/* 1. Transitions fluides & micro-animations */
+#etat {
+  animation: fadeInView 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes fadeInView {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.btn {
+  transition: transform 0.16s ease, background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+.btn:active {
+  transform: scale(0.96) !important;
+}
+
+.kpi {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.kpi:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover) !important;
+}
+
+.monthly-stat-item {
+  transition: background-color 0.18s ease, padding-left 0.18s ease;
+  border-radius: 8px;
+}
+.monthly-stat-item:hover {
+  background: var(--bg);
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+/* 2. Harmonisation des boutons de filtres (Mode Clair & Sombre) */
+.filters-section h3 {
+  color: var(--muted);
+  font-weight: 700;
+}
+.filter-btn {
+  background-color: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13.5px;
+  transition: all 0.2s ease;
+}
+.filter-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  transform: translateY(-1px);
+}
+.filter-btn.active {
+  background: linear-gradient(135deg, var(--blue), #2f6bff);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(24, 90, 219, 0.3);
+}
+
+/* 3. Finitions Glassmorphism & Mode Sombre */
+.toolbar {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+[data-theme="dark"] .toolbar,
+body.dark .toolbar {
+  background: rgba(21, 30, 50, 0.88) !important;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+[data-theme="dark"] .card,
+body.dark .card {
+  background: rgba(21, 30, 50, 0.94) !important;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+[data-theme="dark"] .competition-card:hover,
+body.dark .competition-card:hover {
+  background: rgba(30, 41, 69, 0.95) !important;
+  border-color: var(--blue-light) !important;
+}
+
+/* 4. Ergonomie tactile (Mode Stand de Tir & Mobile) */
+details summary {
+  user-select: none;
+  padding: 4px 0;
+}
+@media (max-width: 640px) {
+  .toolbar-wrap {
+    position: sticky;
+    top: 8px;
+    z-index: 50;
+  }
+  .btn {
+    padding: 11px 14px !important;
+    min-height: 42px;
+  }
+  .competition-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 16px !important;
+  }
+  .competition-left {
+    width: 100%;
+  }
+  .competition-date-badge {
+    min-width: 74px;
+    padding: 8px 10px;
+  }
+  input[type="date"], input[type="number"], input[type="text"], select {
+    max-width: 100%;
+    font-size: 16px; /* Évite le zoom automatique sur iOS */
+  }
+}
+Affichage de styles-v3.css
