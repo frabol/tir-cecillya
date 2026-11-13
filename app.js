@@ -4,6 +4,7 @@ let entrainementsExcel = [];
 let datesMatchs = [];
 let datesEntrainements = [];
 let prochainesCompetitions = [];
+let toutesCompetitionsCalendrier = [];
 let filtreDisciplineActif = "all";
 
 // --- Correctifs visuel/graph/sync ---
@@ -113,8 +114,8 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
         const sheet = workbook.Sheets["Calendrier 2026-2027"];
         const lignes = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-        // Récupérer TOUTES les compétitions de la prochaine date "À venir"
         prochainesCompetitions = [];
+        toutesCompetitionsCalendrier = [];
         let dateProchainMatch = null;
         let moisCourantRecherche = "";
 
@@ -127,25 +128,28 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
             const evenement = ligne[2];
             const lieu = ligne[3];
             const statut = ligne[5];
+            const dateReelle = ligne[4];
 
-            if (evenement && statut === "À venir") {
-                if (!dateProchainMatch) {
-                    dateProchainMatch = `${moisCourantRecherche}|${date}`;
-                }
-                if (`${moisCourantRecherche}|${date}` === dateProchainMatch) {
-                    prochainesCompetitions.push({
-                        mois: moisCourantRecherche,
-                        date: date || "",
-                        evenement: evenement,
-                        lieu: lieu || "Lieu non spécifié"
-                    });
-                } else {
-                    break; // On s'arrête dès que la date change
+            if (evenement) {
+                toutesCompetitionsCalendrier.push({ mois: moisCourantRecherche, date, evenement, lieu, statut, dateReelle });
+
+                if (statut === "À venir") {
+                    if (!dateProchainMatch) {
+                        dateProchainMatch = `${moisCourantRecherche}|${date}`;
+                    }
+                    if (`${moisCourantRecherche}|${date}` === dateProchainMatch) {
+                        prochainesCompetitions.push({
+                            mois: moisCourantRecherche,
+                            date: date || "",
+                            evenement: evenement,
+                            lieu: lieu || "Lieu non spécifié",
+                            dateReelle: dateReelle || ""
+                        });
+                    }
                 }
             }
         }
 
-        // 1. Encart du / des Prochain(s) Match(s)
         let html = `<h2>📅 Calendrier de la saison</h2>`;
 
         if (prochainesCompetitions.length > 0) {
@@ -182,7 +186,6 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
             `;
         }
 
-        // 2. Boutons de filtres par discipline
         const disciplines = [
             { id: "all", label: "Tous" },
             { id: "10m", label: "10m" },
@@ -207,7 +210,6 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
         });
         html += `</div></div>`;
 
-        // 3. Liste des mois et événements en cartes modernes (avec mémorisation robuste du mois)
         let moisCourant = "";
         let premierMoisAffiche = false;
         let dernierMoisAffiche = "";
@@ -340,7 +342,7 @@ async function initialiserApplication() {
         document.body.classList.add("dark");
     }
     await synchroniserScores();
-    await chargerCalendrier("avenir", true);
+    await chargerCalendrier("avenir", false);
     afficherTableauDeBord();
 
     if (!window._intervalSync) {
@@ -492,6 +494,90 @@ async function supprimerScore(index) {
     await synchroniserEtRecharger();
 }
 
+function modifierObjectifPersonnel() {
+    const objectifActuel = localStorage.getItem("objectif_tir") || 620;
+    const nouvelObjectif = prompt("🎯 Entrez votre objectif personnel de score :", objectifActuel);
+    if (nouvelObjectif !== null && !isNaN(nouvelObjectif)) {
+        localStorage.setItem("objectif_tir", nouvelObjectif);
+        afficherTableauDeBord();
+        alert("✅ Objectif mis à jour !");
+    }
+}
+
+function afficherTableauDeBord() {
+    pageActuelle = "tableau";
+    const tousLesScores = [...scoresExcel, ...entrainementsExcel];
+    const moyenne = tousLesScores.length > 0 ? (tousLesScores.reduce((a, b) => a + b, 0) / tousLesScores.length).toFixed(1) : 0;
+    const record = tousLesScores.length > 0 ? Math.max(...tousLesScores) : 0;
+    const dernier = tousLesScores.length > 0 ? tousLesScores[tousLesScores.length - 1] : 0;
+    const objectif = Number(localStorage.getItem("objectif_tir")) || 620;
+
+    let pourcentageObjectif = Math.min(100, Math.round((record / objectif) * 100));
+
+    // Alerte notification compétition imminente (simulation basée sur les prochaines compétitions)
+    let alerteNotification = "";
+    if (prochainesCompetitions.length > 0) {
+        alerteNotification = `
+            <div class="alert-competition">
+                <span style="font-size: 28px;">🔔</span>
+                <div>
+                    <div style="font-weight: bold; font-size: 1.05em;">Alerte Compétition Imminente !</div>
+                    <div style="font-size: 0.95em; opacity: 0.9;">Prochain événement : <b>${prochainesCompetitions[0].evenement}</b> (${prochainesCompetitions[0].date}) à ${prochainesCompetitions[0].lieu}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    let contenuProchainesComp = `<p style="font-size:1.1em; font-weight:bold; margin:6px 0 0 0;">Aucune compétition</p>`;
+    if (prochainesCompetitions.length > 0) {
+        contenuProchainesComp = `
+            <div style="font-size: 0.9em; color: var(--blue); font-weight: 700; margin: 6px 0 10px 0;">
+                📅 ${prochainesCompetitions[0].date} (${prochainesCompetitions[0].mois})
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${prochainesCompetitions.map((c, idx) => `
+                    <div style="${idx > 0 ? 'border-top: 1px solid var(--border); padding-top: 8px;' : ''}">
+                        <div style="font-size: 1.05em; font-weight: bold;">${c.evenement}</div>
+                        <div style="font-size: 0.88em; color: var(--muted);">📍 ${c.lieu}</div>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    }
+
+    const titreCardProchaine = prochainesCompetitions.length > 1
+        ? `📅 Prochaines compétitions (${prochainesCompetitions.length})`
+        : `📅 Prochaine compétition`;
+
+    document.getElementById("etat").innerHTML = `
+        ${alerteNotification}
+        <h2>🏠 Tableau de bord</h2>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:10px;">
+            <div class="card"><h3>🎯 Dernier score</h3><p style="font-size:28px; font-weight:bold;">${dernier}</p></div>
+            <div class="card"><h3>🏆 Record personnel</h3><p style="font-size:28px; font-weight:bold; color:gold;">${record}</p></div>
+            <div class="card"><h3>📈 Moyenne saison</h3><p style="font-size:28px; font-weight:bold;">${moyenne}</p></div>
+            <div class="card"><h3>📋 Résultats</h3><p style="font-size:28px; font-weight:bold;">${tousLesScores.length}</p></div>
+        </div>
+
+        <!-- 🎯 Objectif Personnel -->
+        <div class="objective-card" onclick="modifierObjectifPersonnel()" style="cursor: pointer;" title="Cliquez pour modifier l'objectif">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; color: #ffd84d; font-size: 1.1em;">🎯 Objectif Personnel : ${objectif} pts</h3>
+                <span style="font-size: 0.85em; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 999px;">Modifier ⚙️</span>
+            </div>
+            <p style="margin: 6px 0 0 0; font-size: 0.95em; opacity: 0.9;">Record actuel : <b>${record} pts</b> (${pourcentageObjectif}% de l'objectif)</p>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: ${pourcentageObjectif}%;"></div>
+            </div>
+        </div>
+
+        <div class="card" style="border-left: 5px solid #2563eb; margin-top:16px;">
+            <h3>${titreCardProchaine}</h3>
+            ${contenuProchainesComp}
+        </div>
+    `;
+}
+
 function afficherStats() {
     pageActuelle = "stats";
     const scores = [...scoresExcel, ...entrainementsExcel];
@@ -501,31 +587,61 @@ function afficherStats() {
         return;
     }
 
-    const meilleurCompetition = scoresExcel.length > 0 ? Math.max(...scoresExcel) : 0;
     const meilleurEntrainement = entrainementsExcel.length > 0 ? Math.max(...entrainementsExcel) : 0;
     const moyenne = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
     const totalResultats = scoresExcel.length + entrainementsExcel.length;
 
-    const tousLesScores = [];
-    for (let i = 0; i < datesMatchs.length; i++) tousLesScores.push({ date: datesMatchs[i], score: scoresExcel[i] });
-    for (let i = 0; i < datesEntrainements.length; i++) tousLesScores.push({ date: datesEntrainements[i], score: entrainementsExcel[i] });
+    // --- 📈 Progression mensuelle automatique ---
+    let tousLesScoresDetailles = [];
+    for (let i = 0; i < datesMatchs.length; i++) tousLesScoresDetailles.push({ date: datesMatchs[i], score: scoresExcel[i] });
+    for (let i = 0; i < datesEntrainements.length; i++) tousLesScoresDetailles.push({ date: datesEntrainements[i], score: entrainementsExcel[i] });
 
-    tousLesScores.sort((a, b) => {
-        const [ja, ma] = a.date.split("/");
-        const [jb, mb] = b.date.split("/");
-        return new Date(2026, ma - 1, ja) - new Date(2026, mb - 1, jb);
+    let statsParMois = {};
+    tousLesScoresDetailles.forEach(item => {
+        const parts = item.date.split("/");
+        if (parts.length === 2) {
+            const moisKey = parts[1]; // Mois (ex: "09", "10", "11")
+            const nomsMois = { "09": "Septembre 2026", "10": "Octobre 2026", "11": "Novembre 2026", "12": "Décembre 2026", "01": "Janvier 2027", "02": "Février 2027", "03": "Mars 2027", "04": "Avril 2027", "05": "Mai 2027", "06": "Juin 2027" };
+            const libelleMois = nomsMois[moisKey] || `Mois ${moisKey}`;
+
+            if (!statsParMois[libelleMois]) {
+                statsParMois[libelleMois] = { somme: 0, count: 0, max: 0 };
+            }
+            statsParMois[libelleMois].somme += item.score;
+            statsParMois[libelleMois].count += 1;
+            if (item.score > statsParMois[libelleMois].max) {
+                statsParMois[libelleMois].max = item.score;
+            }
+        }
     });
 
-    const dernier = tousLesScores.length > 0 ? tousLesScores[tousLesScores.length - 1].score : 0;
+    let htmlMensuel = "";
+    for (let mois in statsParMois) {
+        let moyMois = (statsParMois[mois].somme / statsParMois[mois].count).toFixed(1);
+        htmlMensuel += `
+            <div class="monthly-stat-item">
+                <span>📅 ${mois} (${statsParMois[mois].count} tirs)</span>
+                <span>Moyenne : <b>${moyMois}</b> | Max : <b style="color:gold;">${statsParMois[mois].max}</b></span>
+            </div>
+        `;
+    }
+
+    const dernier = tousLesScoresDetailles.length > 0 ? tousLesScoresDetailles[tousLesScoresDetailles.length - 1].score : 0;
 
     document.getElementById("etat").innerHTML = `
-        <h2>📈 Statistiques</h2>
+        <h2>📈 Statistiques & Progression</h2>
         <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:15px;">
             <div class="card"><h3>🎯 Dernier score</h3><p style="font-size:32px; font-weight:bold;">${dernier}</p></div>
             <div class="card"><h3>🏆 Record</h3><p style="font-size:32px; font-weight:bold; color:gold;">${meilleurEntrainement}</p></div>
             <div class="card"><h3>📊 Moyenne</h3><p style="font-size:32px; font-weight:bold;">${moyenne}</p></div>
             <div class="card"><h3>📋 Résultats</h3><p style="font-size:32px; font-weight:bold;">${totalResultats}</p></div>
         </div>
+
+        <div class="card" style="margin-top:20px;">
+            <h3>📈 Progression mensuelle automatique</h3>
+            ${htmlMensuel || "<p>Aucune donnée mensuelle disponible.</p>"}
+        </div>
+
         <hr style="margin:20px 0; border:0; border-top:1px solid var(--border);">
         <h3>📊 Évolution des performances</h3>
         <div class="chart-wrap"><canvas id="graphiqueScores"></canvas></div>
@@ -633,49 +749,6 @@ function importerScores(event) {
     lecteur.readAsText(fichier);
 }
 
-function afficherTableauDeBord() {
-    pageActuelle = "tableau";
-    const tousLesScores = [...scoresExcel, ...entrainementsExcel];
-    const moyenne = tousLesScores.length > 0 ? (tousLesScores.reduce((a, b) => a + b, 0) / tousLesScores.length).toFixed(1) : 0;
-    const record = tousLesScores.length > 0 ? Math.max(...tousLesScores) : 0;
-    const dernier = tousLesScores.length > 0 ? tousLesScores[tousLesScores.length - 1] : 0;
-
-    let contenuProchainesComp = `<p style="font-size:1.1em; font-weight:bold; margin:6px 0 0 0;">Aucune compétition</p>`;
-    if (prochainesCompetitions.length > 0) {
-        contenuProchainesComp = `
-            <div style="font-size: 0.9em; color: var(--blue); font-weight: 700; margin: 6px 0 10px 0;">
-                📅 ${prochainesCompetitions[0].date} (${prochainesCompetitions[0].mois})
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                ${prochainesCompetitions.map((c, idx) => `
-                    <div style="${idx > 0 ? 'border-top: 1px solid var(--border); padding-top: 8px;' : ''}">
-                        <div style="font-size: 1.05em; font-weight: bold;">${c.evenement}</div>
-                        <div style="font-size: 0.88em; color: var(--muted);">📍 ${c.lieu}</div>
-                    </div>
-                `).join("")}
-            </div>
-        `;
-    }
-
-    const titreCardProchaine = prochainesCompetitions.length > 1
-        ? `📅 Prochaines compétitions (${prochainesCompetitions.length})`
-        : `📅 Prochaine compétition`;
-
-    document.getElementById("etat").innerHTML = `
-        <h2>🏠 Tableau de bord</h2>
-        <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:10px;">
-            <div class="card"><h3>🎯 Dernier score</h3><p style="font-size:28px; font-weight:bold;">${dernier}</p></div>
-            <div class="card"><h3>🏆 Record personnel</h3><p style="font-size:28px; font-weight:bold; color:gold;">${record}</p></div>
-            <div class="card"><h3>📈 Moyenne saison</h3><p style="font-size:28px; font-weight:bold;">${moyenne}</p></div>
-            <div class="card"><h3>📋 Résultats</h3><p style="font-size:28px; font-weight:bold;">${tousLesScores.length}</p></div>
-        </div>
-        <div class="card" style="border-left: 5px solid #2563eb; margin-top:16px;">
-            <h3>${titreCardProchaine}</h3>
-            ${contenuProchainesComp}
-        </div>
-    `;
-}
-
 async function synchroniserScores() {
     const { data, error } = await supabaseClient.from("scores").select("*");
     if (error) { console.error(error); return; }
@@ -714,6 +787,7 @@ async function synchroniserEtRecharger(silencieux = false) {
     }
 }
 
+// --- 🏆 Historique des records ---
 function afficherTop10() {
     pageActuelle = "top10";
     const tousLesScores = [];
@@ -721,24 +795,55 @@ function afficherTop10() {
     for (let i = 0; i < datesEntrainements.length; i++) tousLesScores.push({ date: datesEntrainements[i], type: "🏋️ Entraînement", score: Number(entrainementsExcel[i]) });
 
     if (tousLesScores.length === 0) {
-        document.getElementById("etat").innerHTML = "<h2>🥇 Top 10</h2><p>Aucun score.</p>";
+        document.getElementById("etat").innerHTML = "<h2>🥇 Top 10 & Historique des records</h2><p>Aucun score.</p>";
         return;
     }
 
-    const top10 = tousLesScores.sort((a, b) => b.score - a.score).slice(0, 10);
-    const record = top10.length > 0 ? top10[0].score : 0;
+    tousLesScores.sort((a, b) => {
+        const [ja, ma] = a.date.split("/");
+        const [jb, mb] = b.date.split("/");
+        return new Date(2026, ma - 1, ja) - new Date(2026, mb - 1, jb);
+    });
+
+    // Calcul de l'historique des records (chronologique)
+    let historiqueRecords = [];
+    let recordMaxActuel = 0;
+    tousLesScores.forEach(item => {
+        if (item.score > recordMaxActuel) {
+            recordMaxActuel = item.score;
+            historiqueRecords.push({ date: item.date, score: item.score, type: item.type });
+        }
+    });
+
+    const top10 = [...tousLesScores].sort((a, b) => b.score - a.score).slice(0, 10);
+    const record = top10.length > 0 ? Math.max(...tousLesScores.map(s => s.score)) : 0;
     const moyenneTop10 = top10.length > 0 ? (top10.reduce((total, item) => total + item.score, 0) / top10.length).toFixed(1) : 0;
 
+    let htmlHistorique = "";
+    historiqueRecords.forEach(rec => {
+        htmlHistorique += `
+            <div class="monthly-stat-item">
+                <span>📅 ${rec.date} (${rec.type})</span>
+                <span>Nouveau record : <b style="color:gold;">${rec.score} pts</b></span>
+            </div>
+        `;
+    });
+
     let html = `
-        <h2>🥇 Top 10 des meilleurs scores</h2>
+        <h2>🥇 Top 10 & 🏆 Historique des records</h2>
         <div class="podium" style="display:flex; gap:10px; margin-bottom:16px;">
             <div class="second card" style="text-align:center; flex:1;">🥈<br><b>${top10[1] ? top10[1].score : "-"}</b></div>
             <div class="first card" style="text-align:center; flex:1; border:2px solid gold;">🥇<br><b style="color:gold;">${top10[0] ? top10[0].score : "-"}</b></div>
             <div class="third card" style="text-align:center; flex:1;">🥉<br><b>${top10[2] ? top10[2].score : "-"}</b></div>
         </div>
         <div class="card" style="margin-bottom:16px;">
-            <p style="color:gold; font-size:20px; font-weight:bold; margin:0 0 6px 0;">🏆 Record personnel : ${record}</p>
+            <p style="color:gold; font-size:20px; font-weight:bold; margin:0 0 6px 0;">🏆 Record personnel absolu : ${record}</p>
             <p style="font-size:16px; margin:0;">📈 Moyenne du Top 10 : <b>${moyenneTop10}</b></p>
+        </div>
+
+        <div class="card" style="margin-bottom:20px;">
+            <h3>🏆 Historique des records battus</h3>
+            ${htmlHistorique || "<p>Aucun record enregistré.</p>"}
         </div>
     `;
 
