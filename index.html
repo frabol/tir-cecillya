@@ -37,36 +37,7 @@
 <symbol id="i-bulb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.5 1 2.5h6c0-1 .2-1.8 1-2.5A6 6 0 0 0 12 3z"/></symbol>
 </defs>
 </svg>
-<main class="container">
-    <!-- Encart de mise en avant du prochain match -->
-    <section id="next-match-section" class="next-match-card">
-        <h2>🎯 Prochain Match</h2>
-        <div id="next-match-content">
-            <!-- Rempli automatiquement par JavaScript -->
-            <p>Chargement du prochain match...</p>
-        </div>
-    </section>
 
-    <!-- Barre de filtres par discipline -->
-    <section class="filters-section">
-        <h3>Filtrer par discipline</h3>
-        <div class="filter-buttons">
-            <button class="filter-btn active" data-filter="all">Tous</button>
-            <button class="filter-btn" data-filter="10m">10m</button>
-            <button class="filter-btn" data-filter="25m">25m</button>
-            <button class="filter-btn" data-filter="Pistolet">Pistolet</button>
-            <button class="filter-btn" data-filter="Carabine">Carabine</button>
-        </div>
-    </section>
-
-    <!-- Liste complète du calendrier -->
-    <section class="calendar-section">
-        <h3>Calendrier de la saison</h3>
-        <div id="calendar-list" class="calendar-grid">
-            <!-- Les compétitions seront injectées ici -->
-        </div>
-    </section>
-</main>
 <header class="hero">
   <div class="hero-badge"><span class="ic ic-gold"><svg class="svgi"><use href="#i-target"/></svg></span> Tir sportif • Carabine • Saison 2026-2027</div>
   <div style="margin-top:10px"><span id="sync-badge">● À jour</span></div>
@@ -153,7 +124,6 @@ function _embellirTableau(){
 function _embellirIcones(){
   const etat = document.getElementById('etat');
   if(!etat) return;
-  // Remplace les emojis de tête par des SVG nets
   etat.querySelectorAll('h2,h3,.competition').forEach(el=>{
     if(el.dataset.svgDone) return;
     let html = el.innerHTML;
@@ -161,7 +131,6 @@ function _embellirIcones(){
     for(const [emoji, ref] of Object.entries(SVG_MAP)){
       if(html.includes(emoji)){ html = html.split(emoji).join(svgIcon(ref)); changed = true; }
     }
-    // Podium / médailles texte
     if(changed){ el.innerHTML = html; el.dataset.svgDone = "1"; }
   });
 }
@@ -180,5 +149,5 @@ function toggleTheme(){
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
-<script>window.__CF$cv$params={r:'a59d48ab3ab0d0a6',t:'MTc5NDU2Nzc0Mw==',u:'01a1d492a86e7641abb0d0bd3e98be67',ut:'SlXS77xT9yCrw2z.YDPrN3ENh8Nx9qiqCDO4T3QrdsU-1794567743-1.2.1.1-KRJW_oKHXdltPGc1mpR0AvQ6L.iSb1AWtko7Tp2hByMBqhQ_2YMi1PoF4R3FRIXliM_8UWLwXo_7hxveWvImQXtd80NboQF0K6Zo568bZlg',i:60};(function(){if(!document.body)return;var l=window.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/precursor/main.js?ray=a59d48ab3ab0d0a6',s=document.createElement('script');s.src=o?new URL(u,o).href:u;document.head.appendChild(s);})();</script></body>
+</body>
 </html>
