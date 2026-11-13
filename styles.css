@@ -1,5 +1,5 @@
 
-styles-v3.css
+styles-v4.css
 
 100 %
 :root{
@@ -598,4 +598,97 @@ details summary {
     font-size: 16px; /* Évite le zoom automatique sur iOS */
   }
 }
-Affichage de styles-v3.css
+/* ==========================================================================
+   CORRECTIF CONTRASTE MODE CLAIR (LISIBILITÉ HAUTE DÉFINITION)
+   ========================================================================== */
+
+:root,
+[data-theme="light"] {
+  --bg: #dce5f2;
+  --card: #f8fafd;
+  --text: #0b172a;
+  --muted: #475569;
+  --border: #bccae0;
+  --shadow: 0 6px 20px rgba(10, 25, 49, 0.10);
+  --shadow-hover: 0 12px 28px rgba(10, 25, 49, 0.16);
+}
+
+/* Fond de page bien distinct des cartes */
+[data-theme="light"] body {
+  background: linear-gradient(180deg, #cfdcf0 0%, #dce5f2 35%, #e4ebf6 100%) fixed !important;
+  color: var(--text) !important;
+}
+
+/* Cartes et conteneurs bien détachés avec bordure nette */
+[data-theme="light"] .card,
+[data-theme="light"] .kpi,
+[data-theme="light"] .competition,
+[data-theme="light"] .competition-card {
+  background: #ffffff !important;
+  border: 1.5px solid #c2d0e6 !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07) !important;
+}
+
+/* Barre d'outils : fond contrasté et boutons bien lisibles */
+[data-theme="light"] .toolbar {
+  background: #f1f5fb !important;
+  border: 1.5px solid #b8c7e0 !important;
+  box-shadow: 0 10px 25px rgba(10, 25, 49, 0.14) !important;
+}
+
+[data-theme="light"] .search {
+  background: #ffffff !important;
+  border: 1.5px solid #b8c7e0 !important;
+}
+[data-theme="light"] .search input {
+  color: #0b172a !important;
+}
+[data-theme="light"] .search input::placeholder {
+  color: #64748b !important;
+}
+
+/* Boutons en mode clair : texte foncé bien lisible */
+[data-theme="light"] .btn {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1.5px solid #cbd5e1 !important;
+}
+[data-theme="light"] .btn:hover {
+  background: #185adb !important;
+  color: #ffffff !important;
+  border-color: #185adb !important;
+}
+[data-theme="light"] .btn.btn-primary {
+  background: linear-gradient(135deg, #185adb, #1e40af) !important;
+  color: #ffffff !important;
+  border: 0 !important;
+}
+[data-theme="light"] .btn.btn-gold {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24) !important;
+  color: #0f172a !important;
+  border: 0 !important;
+}
+
+/* Remplacement du jaune pâle (gold) illisible sur fond clair par un ambre foncé contrasté */
+[data-theme="light"] [style*="color:gold"],
+[data-theme="light"] [style*="color: gold"] {
+  color: #b45309 !important;
+}
+
+/* Badges de dates et filtres en mode clair */
+[data-theme="light"] .competition-date-badge {
+  background: #e8effa !important;
+  border: 1px solid #bfd0eb !important;
+  color: #1e40af !important;
+}
+[data-theme="light"] .filter-btn {
+  background: #ffffff !important;
+  color: #1e293b !important;
+  border: 1.5px solid #cbd5e1 !important;
+}
+[data-theme="light"] .filter-btn.active {
+  background: #185adb !important;
+  color: #ffffff !important;
+  border-color: #185adb !important;
+}
+Affichage de styles-v4.css
