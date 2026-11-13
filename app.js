@@ -31,7 +31,7 @@ function afficherToast(msg) {
     t.textContent = msg;
     t.classList.add("show");
     clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.classList.remove("show"), 2200);
+    t._timer = setTimeout(() => t.classList.remove("show"), 2500);
 }
 
 const supabaseUrl = "https://tfotbvxoozlbfdzmifdu.supabase.co";
@@ -286,6 +286,7 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
         if (afficher) {
             document.getElementById("etat").innerHTML = "❌ Erreur : " + erreur.message;
         }
+        afficherToast("⚠️ Erreur lors du chargement du calendrier");
     }
 }
 
@@ -340,6 +341,7 @@ async function initialiserApplication() {
     const theme = localStorage.getItem("theme");
     if (theme === "dark") {
         document.body.classList.add("dark");
+        document.documentElement.setAttribute("data-theme", "dark");
     }
     await synchroniserScores();
     await chargerCalendrier("avenir", false);
@@ -374,28 +376,33 @@ function afficherResultats() {
         return new Date(2026, ma - 1, ja) - new Date(2026, mb - 1, jb);
     });
 
-    resultats.forEach(item => {
-        html += `
-            <div class="competition competition-card">
-                <div class="competition-left">
-                    <div class="competition-date-badge">${item.date}</div>
-                    <div class="competition-details">
-                        <div class="competition-title">${item.type}</div>
+    if (resultats.length === 0) {
+        html += `<p>Aucun résultat enregistré.</p>`;
+    } else {
+        resultats.forEach(item => {
+            html += `
+                <div class="competition competition-card">
+                    <div class="competition-left">
+                        <div class="competition-date-badge">${item.date}</div>
+                        <div class="competition-details">
+                            <div class="competition-title">${item.type}</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="competition-badge-status status-avenir">Score : <b>${item.score}</b></span>
                     </div>
                 </div>
-                <div>
-                    <span class="competition-badge-status status-avenir">Score : <b>${item.score}</b></span>
-                </div>
-            </div>
-        `;
-    });
+            `;
+        });
+    }
     document.getElementById("etat").innerHTML = html;
 }
 
 function afficherAjoutScore() {
+    const aujourdhui = new Date().toISOString().split("T")[0];
     document.getElementById("etat").innerHTML = `
         <h2>➕ Nouveau score</h2>
-        <p>Date :</p><input type="date" id="dateScore">
+        <p>Date :</p><input type="date" id="dateScore" value="${aujourdhui}">
         <p>Type :</p>
         <select id="typeScore">
             <option value="entrainement">Entraînement</option>
@@ -411,8 +418,8 @@ async function enregistrerScore() {
     const type = document.getElementById("typeScore").value;
     const score = Number(document.getElementById("valeurScore").value);
 
-    if (!date || isNaN(score)) {
-        alert("Veuillez saisir une date et un score.");
+    if (!date || isNaN(score) || score <= 0) {
+        afficherToast("⚠️ Veuillez saisir une date et un score valide.");
         return;
     }
 
@@ -421,7 +428,7 @@ async function enregistrerScore() {
 
     const existe = historique.some(item => item.date === date && item.type === type && Number(item.score) === score);
     if (existe) {
-        alert("⚠️ Ce score existe déjà.");
+        afficherToast("⚠️ Ce score existe déjà.");
         return;
     }
 
@@ -430,7 +437,7 @@ async function enregistrerScore() {
 
     const { error } = await supabaseClient.from("scores").insert([{ date, type, score }]);
     if (error) {
-        alert("❌ Erreur Supabase : " + error.message);
+        afficherToast("❌ Erreur Supabase : " + error.message);
         return;
     }
 
@@ -445,7 +452,7 @@ async function enregistrerScore() {
         entrainementsExcel.push(score);
     }
 
-    alert("✅ Score enregistré");
+    afficherToast("✅ Score enregistré avec succès");
     afficherResultats();
 }
 
@@ -484,23 +491,30 @@ async function supprimerScore(index) {
     let historique = JSON.parse(localStorage.getItem("scores")) || [];
     const scoreASupprimer = historique[index];
 
-    await supabaseClient.from("scores").delete()
+    const { error } = await supabaseClient.from("scores").delete()
         .eq("date", scoreASupprimer.date)
         .eq("type", scoreASupprimer.type)
         .eq("score", scoreASupprimer.score);
 
+    if (error) {
+        afficherToast("❌ Erreur lors de la suppression Supabase");
+        return;
+    }
+
     historique.splice(index, 1);
     localStorage.setItem("scores", JSON.stringify(historique));
-    await synchroniserEtRecharger();
+    afficherToast("🗑️ Score supprimé");
+    await synchroniserEtRecharger(true);
+    voirScores();
 }
 
 function modifierObjectifPersonnel() {
     const objectifActuel = localStorage.getItem("objectif_tir") || 620;
     const nouvelObjectif = prompt("🎯 Entrez votre objectif personnel de score :", objectifActuel);
-    if (nouvelObjectif !== null && !isNaN(nouvelObjectif)) {
-        localStorage.setItem("objectif_tir", nouvelObjectif);
+    if (nouvelObjectif !== null && !isNaN(nouvelObjectif) && Number(nouvelObjectif) > 0) {
+        localStorage.setItem("objectif_tir", Number(nouvelObjectif));
         afficherTableauDeBord();
-        alert("✅ Objectif mis à jour !");
+        afficherToast("✅ Objectif mis à jour !");
     }
 }
 
@@ -585,7 +599,7 @@ function afficherStats() {
         return;
     }
 
-    const meilleurEntrainement = entrainementsExcel.length > 0 ? Math.max(...entrainementsExcel) : 0;
+    const meilleurGlobal = Math.max(...scores);
     const moyenne = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
     const totalResultats = scoresExcel.length + entrainementsExcel.length;
 
@@ -629,7 +643,7 @@ function afficherStats() {
         <h2>📈 Statistiques & Progression</h2>
         <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:15px;">
             <div class="card"><h3>🎯 Dernier score</h3><p style="font-size:32px; font-weight:bold;">${dernier}</p></div>
-            <div class="card"><h3>🏆 Record</h3><p style="font-size:32px; font-weight:bold; color:gold;">${meilleurEntrainement}</p></div>
+            <div class="card"><h3>🏆 Record</h3><p style="font-size:32px; font-weight:bold; color:gold;">${meilleurGlobal}</p></div>
             <div class="card"><h3>📊 Moyenne</h3><p style="font-size:32px; font-weight:bold;">${moyenne}</p></div>
             <div class="card"><h3>📋 Résultats</h3><p style="font-size:32px; font-weight:bold;">${totalResultats}</p></div>
         </div>
@@ -663,7 +677,6 @@ function afficherStats() {
     const serieMatchs = events.map(e => e.type === "match" ? e.score : null);
     const serieEntrainements = events.map(e => e.type === "entrainement" ? e.score : null);
 
-    // Calcul intelligent des bornes Y pour éviter l'écrasement ou la coupe
     const allScores = [...scoresExcel, ...entrainementsExcel];
     const minY = allScores.length > 0 ? Math.floor(Math.min(...allScores) / 10) * 10 - 10 : 500;
     const maxY = allScores.length > 0 ? Math.ceil(Math.max(...allScores) / 10) * 10 + 10 : 650;
@@ -740,7 +753,7 @@ function afficherStats() {
 
 function exporterScores() {
     const historique = JSON.parse(localStorage.getItem("scores")) || [];
-    if (historique.length === 0) { alert("Aucun score à exporter."); return; }
+    if (historique.length === 0) { afficherToast("⚠️ Aucun score à exporter."); return; }
     const contenu = JSON.stringify(historique, null, 2);
     const blob = new Blob([contenu], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -751,12 +764,12 @@ function exporterScores() {
     lien.click();
     document.body.removeChild(lien);
     URL.revokeObjectURL(url);
-    alert("✅ Export terminé");
+    afficherToast("✅ Export JSON terminé");
 }
 
 function exporterExcel() {
     const historique = JSON.parse(localStorage.getItem("scores")) || [];
-    if (historique.length === 0) { alert("Aucun score à exporter."); return; }
+    if (historique.length === 0) { afficherToast("⚠️ Aucun score à exporter."); return; }
     const donnees = historique.map(item => ({
         Date: item.date,
         Type: item.type === "match" ? "Compétition" : "Entraînement",
@@ -767,7 +780,7 @@ function exporterExcel() {
     const classeur = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(classeur, feuille, "Scores");
     XLSX.writeFile(classeur, "scores_cecillya.xlsx");
-    alert("✅ Export Excel terminé");
+    afficherToast("✅ Export Excel terminé");
 }
 
 function importerScores(event) {
@@ -778,7 +791,7 @@ function importerScores(event) {
     lecteur.onload = function (e) {
         try {
             const donnees = JSON.parse(e.target.result);
-            if (!Array.isArray(donnees)) { alert("❌ Fichier invalide."); return; }
+            if (!Array.isArray(donnees)) { afficherToast("❌ Fichier JSON invalide."); return; }
             donnees.forEach(item => {
                 if (item.type === "Compétition") item.type = "match";
                 if (item.type === "Entraînement") item.type = "entrainement";
@@ -786,24 +799,28 @@ function importerScores(event) {
 
             let historique = JSON.parse(localStorage.getItem("scores")) || [];
             const existants = new Set(historique.map(item => item.date + "|" + item.type + "|" + item.score));
-            const nouveaux = donnees.filter(item => !existants.has(item.date + "|" + item.type + "|" + item.score));
+            const nouveaux = donnees.filter(item => item.date && !isNaN(Number(item.score)) && !existants.has(item.date + "|" + item.type + "|" + item.score));
 
             historique = [...historique, ...nouveaux];
             localStorage.setItem("scores", JSON.stringify(historique));
-            alert("✅ " + nouveaux.length + " nouveau(x) score(s) importé(s).");
+            afficherToast("✅ " + nouveaux.length + " nouveau(x) score(s) importé(s).");
             chargerCalendrier().then(() => { afficherResultats(); });
         } catch (erreur) {
-            alert("❌ Erreur lors de l'import.");
+            afficherToast("❌ Erreur lors de l'import.");
         }
     };
     lecteur.readAsText(fichier);
 }
 
 async function synchroniserScores() {
-    const { data, error } = await supabaseClient.from("scores").select("*");
-    if (error) { console.error(error); return; }
-    const historique = data.map(item => ({ date: item.date, type: item.type, score: Number(item.score) }));
-    localStorage.setItem("scores", JSON.stringify(historique));
+    try {
+        const { data, error } = await supabaseClient.from("scores").select("*");
+        if (error) { console.error(error); return; }
+        const historique = data.map(item => ({ date: item.date, type: item.type, score: Number(item.score) }));
+        localStorage.setItem("scores", JSON.stringify(historique));
+    } catch (e) {
+        console.warn("Mode hors-ligne : utilisation du cache local.");
+    }
 }
 
 async function synchroniserEtRecharger(silencieux = false) {
