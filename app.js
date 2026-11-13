@@ -3,7 +3,7 @@ let scoresExcel = [];
 let entrainementsExcel = [];
 let datesMatchs = [];
 let datesEntrainements = [];
-let prochaineCompetition = "";
+let prochainesCompetitions = [];
 let filtreDisciplineActif = "all";
 
 // --- Correctifs visuel/graph/sync ---
@@ -113,36 +113,70 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
         const sheet = workbook.Sheets["Calendrier 2026-2027"];
         const lignes = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-        prochaineCompetition = "";
-        let prochainMatchObj = null;
+        // Récupérer TOUTES les compétitions de la prochaine date "À venir"
+        prochainesCompetitions = [];
+        let dateProchainMatch = null;
+        let moisCourantRecherche = "";
 
         for (let i = 3; i < lignes.length; i++) {
             const ligne = lignes[i];
             if (!ligne) continue;
+            if (ligne[0]) moisCourantRecherche = ligne[0];
+
             const date = ligne[1];
             const evenement = ligne[2];
             const lieu = ligne[3];
             const statut = ligne[5];
 
-            if (evenement && statut === "À venir" && !prochainMatchObj) {
-                prochaineCompetition = `${date} - ${evenement}`;
-                prochainMatchObj = { date, evenement, lieu };
-                break;
+            if (evenement && statut === "À venir") {
+                if (!dateProchainMatch) {
+                    dateProchainMatch = `${moisCourantRecherche}|${date}`;
+                }
+                if (`${moisCourantRecherche}|${date}` === dateProchainMatch) {
+                    prochainesCompetitions.push({
+                        mois: moisCourantRecherche,
+                        date: date || "",
+                        evenement: evenement,
+                        lieu: lieu || "Lieu non spécifié"
+                    });
+                } else {
+                    break; // On s'arrête dès que la date change
+                }
             }
         }
 
-        // 1. Encart du Prochain Match
+        // 1. Encart du / des Prochain(s) Match(s)
         let html = `<h2>📅 Calendrier de la saison</h2>`;
 
-        if (prochainMatchObj) {
+        if (prochainesCompetitions.length > 0) {
+            const titreEncart = prochainesCompetitions.length > 1
+                ? `🎯 Prochaines compétitions (${prochainesCompetitions.length})`
+                : `🎯 Prochain Match à venir`;
+
             html += `
                 <div class="next-match-card">
-                    <h2>🎯 Prochain Match à venir</h2>
-                    <div style="font-size: 1.15em; font-weight: bold; margin: 5px 0; color: #fff;">
-                        ${prochainMatchObj.evenement}
+                    <h2>${titreEncart}</h2>
+                    <div style="font-size: 0.9em; color: #93c5fd; font-weight: 700; margin-bottom: 10px;">
+                        📅 ${prochainesCompetitions[0].date} (${prochainesCompetitions[0].mois})
                     </div>
-                    <div style="font-size: 0.95em; color: #cbd5e1;">
-                        📅 <b>${prochainMatchObj.date || ""}</b> &nbsp;|&nbsp; 📍 ${prochainMatchObj.lieu || "-"}
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+            `;
+
+            prochainesCompetitions.forEach((comp, idx) => {
+                const borderStyle = idx > 0 ? "border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px;" : "";
+                html += `
+                    <div style="${borderStyle}">
+                        <div style="font-size: 1.1em; font-weight: bold; color: #fff;">
+                            ${comp.evenement}
+                        </div>
+                        <div style="font-size: 0.9em; color: #cbd5e1; margin-top: 2px;">
+                            📍 ${comp.lieu}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
                     </div>
                 </div>
             `;
@@ -176,6 +210,7 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
         // 3. Liste des mois et événements en cartes modernes (avec mémorisation robuste du mois)
         let moisCourant = "";
         let premierMoisAffiche = false;
+        let dernierMoisAffiche = "";
 
         for (let i = 3; i < lignes.length; i++) {
             const ligne = lignes[i];
@@ -192,7 +227,6 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
             }
 
             if (evenement && (filtre === "toutes" || statut === "À venir")) {
-                // Si on change de mois, on ferme l'ancien conteneur grid et on ouvre un nouvel en-tête
                 if (!premierMoisAffiche) {
                     html += `
                         <div class="month-header">
@@ -201,7 +235,7 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
                         <div class="calendar-grid">
                     `;
                     premierMoisAffiche = true;
-                    var dernierMoisAffiche = moisCourant;
+                    dernierMoisAffiche = moisCourant;
                 } else if (moisCourant && moisCourant !== dernierMoisAffiche) {
                     html += `</div>
                         <div class="month-header" style="margin-top:25px;">
@@ -606,6 +640,27 @@ function afficherTableauDeBord() {
     const record = tousLesScores.length > 0 ? Math.max(...tousLesScores) : 0;
     const dernier = tousLesScores.length > 0 ? tousLesScores[tousLesScores.length - 1] : 0;
 
+    let contenuProchainesComp = `<p style="font-size:1.1em; font-weight:bold; margin:6px 0 0 0;">Aucune compétition</p>`;
+    if (prochainesCompetitions.length > 0) {
+        contenuProchainesComp = `
+            <div style="font-size: 0.9em; color: var(--blue); font-weight: 700; margin: 6px 0 10px 0;">
+                📅 ${prochainesCompetitions[0].date} (${prochainesCompetitions[0].mois})
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${prochainesCompetitions.map((c, idx) => `
+                    <div style="${idx > 0 ? 'border-top: 1px solid var(--border); padding-top: 8px;' : ''}">
+                        <div style="font-size: 1.05em; font-weight: bold;">${c.evenement}</div>
+                        <div style="font-size: 0.88em; color: var(--muted);">📍 ${c.lieu}</div>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    }
+
+    const titreCardProchaine = prochainesCompetitions.length > 1
+        ? `📅 Prochaines compétitions (${prochainesCompetitions.length})`
+        : `📅 Prochaine compétition`;
+
     document.getElementById("etat").innerHTML = `
         <h2>🏠 Tableau de bord</h2>
         <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:10px;">
@@ -615,8 +670,8 @@ function afficherTableauDeBord() {
             <div class="card"><h3>📋 Résultats</h3><p style="font-size:28px; font-weight:bold;">${tousLesScores.length}</p></div>
         </div>
         <div class="card" style="border-left: 5px solid #2563eb; margin-top:16px;">
-            <h3>📅 Prochaine compétition</h3>
-            <p style="font-size:1.1em; font-weight:bold; margin:6px 0 0 0;">${prochaineCompetition || "Aucune compétition"}</p>
+            <h3>${titreCardProchaine}</h3>
+            ${contenuProchainesComp}
         </div>
     `;
 }
