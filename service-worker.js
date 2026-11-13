@@ -1,30 +1,61 @@
-const CACHE_NAME = "tir-cecillya-v2";
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = "tir-cecillya-v1.0.0";
+
+const FILES_TO_CACHE = [
   "./",
   "./index.html",
   "./styles.css",
   "./manifest.json",
   "./js/main.js",
-  "./js/storage.js",
-  "./js/calendar.js",
-  "./js/stats.js",
   "./js/ui.js",
-  "./icon-192.png"
+  "./js/calendar.js",
+  "./js/storage.js",
+  "./js/stats.js"
 ];
 
-self.addEventListener("install", (event) => {
+// Installation
+self.addEventListener("install", event => {
+  self.skipWaiting();
+
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(FILES_TO_CACHE))
   );
-  console.log("Tir Cécillya installé et fichiers modulaires mis en cache");
 });
 
-self.addEventListener("fetch", (event) => {
+// Activation
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys
+          .filter(key => key !== CACHE_NAME)
+          .map(key => caches.delete(key))
+      )
+    )
+  );
+
+  self.clients.claim();
+});
+
+// Fetch
+self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
+
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+    fetch(event.request)
+      .then(response => {
+
+        const clone = response.clone();
+
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, clone);
+        });
+
+        return response;
+
+      })
+      .catch(() => {
+        return caches.match(event.request);
+      })
   );
 });
