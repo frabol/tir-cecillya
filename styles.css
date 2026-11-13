@@ -252,16 +252,14 @@ footer{text-align:center;color:var(--muted);padding:26px;font-size:13px}
 body.dark .ic{background:#233252;border-color:#3b517e;text-shadow:none}
 @media(max-width:520px){.ic{width:28px;height:28px;font-size:17px}}
 
-/* --- SVG remplies haute visibilite --- */
+/* --- SVG nettes --- */
 .ic svg.svgi{width:19px;height:19px;display:block}
-.ic{color:#fff;background:linear-gradient(135deg,#334155,#0f172a);border:0;box-shadow:0 3px 8px rgba(0,0,0,.2)}
-.ic-blue{background:linear-gradient(135deg,#2563eb,#1e40af);color:#fff}
-.ic-gold{background:linear-gradient(135deg,#f5b301,#d97706);color:#1a1000}
-.ic-gold svg{stroke-width:2.4}
-.ic-green{background:linear-gradient(135deg,#16a34a,#065f46);color:#fff}
-.ic-red{background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff}
-.ic-navy{background:linear-gradient(135deg,#0a1931,#1e3a8a);color:#fff}
-.ic-grey{background:linear-gradient(135deg,#64748b,#334155);color:#fff}
-.btn-primary .ic,.btn-gold .ic{box-shadow:0 2px 6px rgba(0,0,0,.25)}
-[data-theme="dark"] .ic{box-shadow:0 3px 10px rgba(0,0,0,.5);filter:saturate(1.2)}
-body.dark .ic{box-shadow:0 3px 10px rgba(0,0,0,.5)}
+.ic{color:#0f1f3a}
+.ic-navy{color:#fff}
+.ic-blue{color:#17479e}
+.ic-gold{color:#7a5a00}
+.ic-green{color:#0d6b3a}
+.ic-red{color:#a11}
+[data-theme="dark"] .ic{color:#dbe6ff}
+[data-theme="dark"] .ic-gold{color:#ffd84d}
+body.dark .ic{color:#dbe6ff}
