@@ -1,5 +1,22 @@
-import { state, chargerDonneesExcelEtCalendrier, synchroniserEtRecharger, rechercherCompetition, exporterEvenementICS } from './calendar.js';
+import { state, chargerDonneesExcelEtCalendrier, synchroniserEtRecharger, exporterEvenementICS } from './calendar.js';
 import * as ui from './ui.js';
+
+// Fonction de recherche de compétition intégrée directement pour éviter les erreurs d'import
+export function rechercherCompetition() {
+    const input = document.getElementById("recherche");
+    if (!input) return;
+    const filtre = input.value.toLowerCase();
+    const elements = document.querySelectorAll(".competition-card");
+    
+    elements.forEach(el => {
+        const texte = el.getAttribute("data-texte") || "";
+        if (texte.includes(filtre)) {
+            el.style.display = "";
+        } else {
+            el.style.display = "none";
+        }
+    });
+}
 
 // Rendre toutes les fonctions accessibles globalement pour le HTML (onclick)
 window.afficherTableauDeBord = ui.afficherTableauDeBord;
