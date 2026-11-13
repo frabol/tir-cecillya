@@ -11,18 +11,42 @@
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>.svgi{width:19px;height:19px;flex:0 0 19px}</style>
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="i-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4a1 1 0 0 0-1 1c0 2.5 2 4 4 4M17 6h3a1 1 0 0 1 1 1c0 2.5-2 4-4 4"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+<symbol id="i-cloud" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.5 19a4.5 4.5 0 0 0 .4-9A7 7 0 0 0 4.3 12.5 3.5 3.5 0 0 0 6 19h11.5z"/><path d="M12 12v6M9.5 15.5L12 13l2.5 2.5"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></symbol>
+<symbol id="i-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></symbol>
+<symbol id="i-medal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="14" r="5"/><path d="M9 9L6 3h4l2 4 2-4h4l-3 6"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1.3" fill="currentColor"/><circle cx="4" cy="12" r="1.3" fill="currentColor"/><circle cx="4" cy="18" r="1.3" fill="currentColor"/></symbol>
+<symbol id="i-dl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 21h16"/></symbol>
+<symbol id="i-table" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10M15 10v10"/></symbol>
+<symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></symbol>
+<symbol id="i-bulb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.5 1 2.5h6c0-1 .2-1.8 1-2.5A6 6 0 0 0 12 3z"/></symbol>
+</defs>
+</svg>
+
 <header class="hero">
-  <div class="hero-badge">🎯 Tir sportif • Carabine • Saison 2026-2027</div>
+  <div class="hero-badge"><span class="ic ic-gold"><svg class="svgi"><use href="#i-target"/></svg></span> Tir sportif • Carabine • Saison 2026-2027</div>
   <div style="margin-top:10px"><span id="sync-badge">● À jour</span></div>
   <h1>Tir <span>Cécillya</span></h1>
   <p>Calendrier Ligue Tir Nord-Pas-de-Calais • Suivi des scores & performances</p>
   <div class="hero-stats">
-    <div class="hero-pill">📍 NPdC</div>
-    <div class="hero-pill">🏆 Compétitions & entraînements</div>
-    <div class="hero-pill">📊 Stats en direct</div>
+    <div class="hero-pill"><span class="ic ic-red"><svg class="svgi"><use href="#i-pin"/></svg></span> NPdC</div>
+    <div class="hero-pill"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Compétitions & entraînements</div>
+    <div class="hero-pill"><span class="ic ic-blue"><svg class="svgi"><use href="#i-chart"/></svg></span> Stats en direct</div>
   </div>
 </header>
 
@@ -30,26 +54,26 @@
   <nav class="toolbar" aria-label="Navigation principale">
     <div class="toolbar-row">
       <div class="search">
-        <span>🔍</span>
+        <span class="ic ic-grey"><svg class="svgi"><use href="#i-search"/></svg></span>
         <input type="text" id="recherche" placeholder="Rechercher une compétition ou un lieu…" onkeyup="rechercherCompetition()">
       </div>
-      <button class="btn btn-gold" onclick="synchroniserEtRecharger()">☁️ Synchroniser</button>
-      <button class="btn" onclick="toggleTheme()">🌙 Mode sombre</button>
+      <button class="btn btn-gold" onclick="synchroniserEtRecharger()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-cloud"/></svg></span> Synchroniser</button>
+      <button class="btn" onclick="toggleTheme()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-moon"/></svg></span> Mode sombre</button>
     </div>
     <div class="toolbar-row" role="tablist">
-      <button class="btn btn-primary" onclick="afficherTableauDeBord()">🏠 Tableau de bord</button>
-      <button class="btn" onclick="afficherToutes()">📅 Toutes</button>
-      <button class="btn" onclick="afficherAVenir()">✅ À venir</button>
-      <button class="btn" onclick="afficherResultats()">🏆 Résultats</button>
-      <button class="btn" onclick="afficherStats()">📈 Statistiques</button>
-      <button class="btn" onclick="afficherTop10()">🥇 Top 10</button>
+      <button class="btn btn-primary" onclick="afficherTableauDeBord()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-home"/></svg></span> Tableau de bord</button>
+      <button class="btn" onclick="afficherToutes()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-cal"/></svg></span> Toutes</button>
+      <button class="btn" onclick="afficherAVenir()"><span class="ic ic-green"><svg class="svgi"><use href="#i-check"/></svg></span> À venir</button>
+      <button class="btn" onclick="afficherResultats()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Résultats</button>
+      <button class="btn" onclick="afficherStats()"><span class="ic ic-green"><svg class="svgi"><use href="#i-trend"/></svg></span> Statistiques</button>
+      <button class="btn" onclick="afficherTop10()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-medal"/></svg></span> Top 10</button>
     </div>
     <div class="toolbar-row">
-      <button class="btn" onclick="afficherAjoutScore()">➕ Ajouter un score</button>
-      <button class="btn" onclick="voirScores()">📋 Scores saisis</button>
-      <button class="btn" onclick="exporterScores()">📥 Export JSON</button>
-      <button class="btn" onclick="exporterExcel()">📊 Export Excel</button>
-      <button class="btn" onclick="document.getElementById('importScores').click()">📂 Importer</button>
+      <button class="btn" onclick="afficherAjoutScore()"><span class="ic ic-green"><svg class="svgi"><use href="#i-plus"/></svg></span> Ajouter un score</button>
+      <button class="btn" onclick="voirScores()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-list"/></svg></span> Scores saisis</button>
+      <button class="btn" onclick="exporterScores()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-dl"/></svg></span> Export JSON</button>
+      <button class="btn" onclick="exporterExcel()"><span class="ic ic-green"><svg class="svgi"><use href="#i-table"/></svg></span> Export Excel</button>
+      <button class="btn" onclick="document.getElementById('importScores').click()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-folder"/></svg></span> Importer</button>
       <input type="file" id="importScores" accept=".json" onchange="importerScores(event)" style="display:none">
     </div>
   </nav>
@@ -58,54 +82,67 @@
 <main class="container">
   <div class="card">
     <div id="etat">
-      <h2>🏠 Tableau de bord</h2>
+      <h2><span class="ic ic-blue"><svg class="svgi"><use href="#i-home"/></svg></span> Tableau de bord</h2>
       <p>Chargement des données…</p>
     </div>
   </div>
 
   <div class="card" style="margin-top:16px">
-    <h2>💡 Comment utiliser ce site ?</h2>
+    <h2><span class="ic ic-gold"><svg class="svgi"><use href="#i-bulb"/></svg></span> Comment utiliser ce site ?</h2>
     <p style="color:var(--muted);line-height:1.6;margin:0">
-      1️⃣ Consultez le <b>calendrier Ligue</b> •
-      2️⃣ Ajoutez vos <b>scores d'entraînement et de match</b> •
-      3️⃣ Suivez votre <b>moyenne, record et progression</b> dans Statistiques •
-      4️⃣ <b>Synchronisez</b> pour retrouver vos données sur mobile et PC.
+      Consultez le <b>calendrier Ligue</b> •
+      Ajoutez vos <b>scores d'entraînement et de match</b> •
+      Suivez votre <b>moyenne, record et progression</b> dans Statistiques •
+      <b>Synchronisez</b> pour retrouver vos données sur mobile et PC.
     </p>
   </div>
 </main>
 
 <footer>
-  Tir Cécillya • Fait avec ❤️ pour la saison 2026-2027 • Données stockées localement + Supabase
+  Tir Cécillya • Saison 2026-2027 • Données stockées localement + Supabase
 </footer>
 
 <script>
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js'); }
-// Petit patch visuel : transforme automatiquement le tableau de bord généré par app.js en KPI modernes
-const _origBord = window.afficherTableauDeBord;
+const SVG_MAP = {
+  "🏠":"#i-home","📅":"#i-cal","✅":"#i-check","🏆":"#i-trophy","📈":"#i-trend","🥇":"#i-medal","🥈":"#i-medal","🥉":"#i-medal","🎯":"#i-target","📊":"#i-chart","📋":"#i-list","🏋":"#i-trend","📍":"#i-pin","💾":"#i-dl","☁":"#i-cloud"
+};
+function svgIcon(ref){ return '<span class="ic"><svg class="svgi"><use href="'+ref+'"/></svg></span>'; }
 function _embellirTableau(){
   const etat = document.getElementById('etat');
   if(!etat) return;
-  // KPI grid
   const grid = etat.querySelector('div[style*="grid-template"]');
   if(grid){ grid.classList.add('kpi-grid'); grid.removeAttribute('style');
     grid.querySelectorAll(':scope > div').forEach(d=>d.classList.add('kpi'));
   }
-  // Prochaine compet -> bannière
   const cards = etat.querySelectorAll(':scope > div.card, :scope div.card');
   cards.forEach(c=>{
     if(c.textContent.includes('Prochaine compétition')) c.classList.add('next-match');
   });
-  // Active button
   document.querySelectorAll('.toolbar .btn').forEach(b=>b.classList.remove('active'));
 }
-setInterval(_embellirTableau, 400);
+function _embellirIcones(){
+  const etat = document.getElementById('etat');
+  if(!etat) return;
+  // Remplace les emojis de tête par des SVG nets
+  etat.querySelectorAll('h2,h3,.competition').forEach(el=>{
+    if(el.dataset.svgDone) return;
+    let html = el.innerHTML;
+    let changed = false;
+    for(const [emoji, ref] of Object.entries(SVG_MAP)){
+      if(html.includes(emoji)){ html = html.split(emoji).join(svgIcon(ref)); changed = true; }
+    }
+    // Podium / médailles texte
+    if(changed){ el.innerHTML = html; el.dataset.svgDone = "1"; }
+  });
+}
+setInterval(()=>{ _embellirTableau(); _embellirIcones(); }, 400);
 function toggleTheme(){
   const html = document.documentElement;
   const cur = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-theme', cur);
   localStorage.setItem('theme', cur);
   document.body.classList.toggle('dark', cur==='dark');
-  const btns = document.querySelectorAll('.toolbar .btn');
 }
 (function(){
   const saved = localStorage.getItem('theme');
@@ -114,5 +151,5 @@ function toggleTheme(){
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
-<script>window.__CF$cv$params={r:'a59d3067993dad2e',t:'MTc5NDU2Njc0OQ==',u:'01a1d4837dee777891b5affa3317f945',ut:'JwlrHb0GQYUHo2o5r9Q2EQN526dBz4Sdnf1n9y0SrDU-1794566749-1.2.1.1-0FT6Inex7jZQUcIcSDCB5LX5JR6aCRUrN0KQYPb42SCFlc_Ol48l0svNiVktKS6ck4hPi_b3GjuCHfsj3mWV6VSJU5lLHxz9mma1X0LTEYQ',i:60};(function(){if(!document.body)return;var l=window.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/precursor/main.js?ray=a59d3067993dad2e',s=document.createElement('script');s.src=o?new URL(u,o).href:u;document.head.appendChild(s);})();</script></body>
+<script>window.__CF$cv$params={r:'a59d48ab3ab0d0a6',t:'MTc5NDU2Nzc0Mw==',u:'01a1d492a86e7641abb0d0bd3e98be67',ut:'SlXS77xT9yCrw2z.YDPrN3ENh8Nx9qiqCDO4T3QrdsU-1794567743-1.2.1.1-KRJW_oKHXdltPGc1mpR0AvQ6L.iSb1AWtko7Tp2hByMBqhQ_2YMi1PoF4R3FRIXliM_8UWLwXo_7hxveWvImQXtd80NboQF0K6Zo568bZlg',i:60};(function(){if(!document.body)return;var l=window.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/precursor/main.js?ray=a59d48ab3ab0d0a6',s=document.createElement('script');s.src=o?new URL(u,o).href:u;document.head.appendChild(s);})();</script></body>
 </html>
