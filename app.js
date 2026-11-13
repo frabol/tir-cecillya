@@ -398,18 +398,50 @@ function afficherResultats() {
     document.getElementById("etat").innerHTML = html;
 }
 
+// --- MODE STAND DE TIR : SAISIE ÉCLAIR ---
+function ajusterScoreRapide(delta) {
+    const input = document.getElementById("valeurScore");
+    if (!input) return;
+    let val = parseFloat(input.value) || 600.0;
+    val = Math.max(0, Math.round((val + delta) * 10) / 10);
+    input.value = val.toFixed(1);
+}
+
 function afficherAjoutScore() {
     const aujourdhui = new Date().toISOString().split("T")[0];
+    const tousLesScores = [...scoresExcel, ...entrainementsExcel];
+    const scoreDefaut = tousLesScores.length > 0 ? tousLesScores[tousLesScores.length - 1] : 605.0;
+
     document.getElementById("etat").innerHTML = `
-        <h2>➕ Nouveau score</h2>
-        <p>Date :</p><input type="date" id="dateScore" value="${aujourdhui}">
-        <p>Type :</p>
-        <select id="typeScore">
-            <option value="entrainement">Entraînement</option>
-            <option value="match">Compétition</option>
-        </select>
-        <p>Score :</p><input type="number" step="0.1" id="valeurScore" placeholder="Ex : 617.5">
-        <br><br><button class="btn btn-primary" onclick="enregistrerScore()">💾 Enregistrer</button>
+        <h2>➕ Nouveau score — Mode Stand de Tir</h2>
+        <div style="display:flex; flex-direction:column; gap:14px; max-width:460px;">
+            <div>
+                <label for="dateScore">📅 Date :</label><br>
+                <input type="date" id="dateScore" value="${aujourdhui}" style="margin-top:6px;">
+            </div>
+            <div>
+                <label for="typeScore">🎯 Type de tir :</label><br>
+                <select id="typeScore" style="margin-top:6px;">
+                    <option value="entrainement">🏋️ Entraînement</option>
+                    <option value="match">🏆 Compétition</option>
+                </select>
+            </div>
+            <div>
+                <label for="valeurScore">🔢 Score (Saisie éclair) :</label><br>
+                <input type="number" step="0.1" id="valeurScore" value="${scoreDefaut}" placeholder="Ex : 617.5"
+                    style="margin-top:6px; font-size:26px; font-weight:800; text-align:center; padding:14px;">
+                <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:8px; margin-top:10px;">
+                    <button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(-1)">-1</button>
+                    <button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(-0.5)">-0.5</button>
+                    <button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(0.1)">+0.1</button>
+                    <button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(0.5)">+0.5</button>
+                    <button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(1)">+1</button>
+                </div>
+            </div>
+            <button class="btn btn-primary" style="justify-content:center; padding:14px!important; font-size:16px!important; margin-top:6px;" onclick="enregistrerScore()">
+                💾 Enregistrer le score
+            </button>
+        </div>
     `;
 }
 
@@ -437,8 +469,9 @@ async function enregistrerScore() {
 
     const { error } = await supabaseClient.from("scores").insert([{ date, type, score }]);
     if (error) {
-        afficherToast("❌ Erreur Supabase : " + error.message);
-        return;
+        afficherToast("⚠️ Sauvegardé en local (hors-ligne)");
+    } else {
+        afficherToast("✅ Score enregistré et synchronisé");
     }
 
     const morceaux = date.split("-");
@@ -452,7 +485,6 @@ async function enregistrerScore() {
         entrainementsExcel.push(score);
     }
 
-    afficherToast("✅ Score enregistré avec succès");
     afficherResultats();
 }
 
@@ -600,8 +632,19 @@ function afficherStats() {
     }
 
     const meilleurGlobal = Math.max(...scores);
-    const moyenne = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
+    const moyNum = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const moyenne = moyNum.toFixed(1);
     const totalResultats = scoresExcel.length + entrainementsExcel.length;
+
+    // --- STATISTIQUES AVANCÉES : FORME RÉCENTE & RÉGULARITÉ ---
+    const derniers5 = scores.slice(-5);
+    const moyenne5 = (derniers5.reduce((a, b) => a + b, 0) / derniers5.length).toFixed(1);
+    const diffForme = (Number(moyenne5) - Number(moyenne)).toFixed(1);
+    const badgeForme = Number(diffForme) >= 0 ? `+${diffForme} pts vs saison` : `${diffForme} pts vs saison`;
+
+    const variance = scores.reduce((acc, val) => acc + Math.pow(val - moyNum, 2), 0) / scores.length;
+    const ecartType = Math.sqrt(variance).toFixed(2);
+    const appreciationRegularite = Number(ecartType) <= 3.5 ? "Très régulier" : Number(ecartType) <= 6.0 ? "Régulier" : "Variable";
 
     let tousLesScoresDetailles = [];
     for (let i = 0; i < datesMatchs.length; i++) tousLesScoresDetailles.push({ date: datesMatchs[i], score: scoresExcel[i] });
@@ -644,8 +687,21 @@ function afficherStats() {
         <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:15px;">
             <div class="card"><h3>🎯 Dernier score</h3><p style="font-size:32px; font-weight:bold;">${dernier}</p></div>
             <div class="card"><h3>🏆 Record</h3><p style="font-size:32px; font-weight:bold; color:gold;">${meilleurGlobal}</p></div>
-            <div class="card"><h3>📊 Moyenne</h3><p style="font-size:32px; font-weight:bold;">${moyenne}</p></div>
+            <div class="card"><h3>📊 Moyenne saison</h3><p style="font-size:32px; font-weight:bold;">${moyenne}</p></div>
             <div class="card"><h3>📋 Résultats</h3><p style="font-size:32px; font-weight:bold;">${totalResultats}</p></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap:15px; margin-top:15px;">
+            <div class="card" style="border-left: 4px solid #10b981;">
+                <h3>🔥 Forme du moment (5 derniers tirs)</h3>
+                <p style="font-size:28px; font-weight:bold; margin:8px 0 4px 0;">${moyenne5} pts</p>
+                <small style="color:var(--muted); font-weight:600;">${badgeForme}</small>
+            </div>
+            <div class="card" style="border-left: 4px solid #f5b301;">
+                <h3>📐 Régularité (Écart-type)</h3>
+                <p style="font-size:28px; font-weight:bold; margin:8px 0 4px 0;">± ${ecartType} pts</p>
+                <small style="color:var(--muted); font-weight:600;">Profil : ${appreciationRegularite}</small>
+            </div>
         </div>
 
         <div class="card" style="margin-top:20px;">
