@@ -516,7 +516,7 @@ export function afficherStats() {
 
         <div class="card" style="margin-top:20px;">
             <h3>📈 Progression mensuelle automatique</h3>
-            ${htmlMensuel || "<p>Aucune donnée mensuelle disponible.</p></div>
+            ${htmlMensuel || "<p>Aucune donnée mensuelle disponible.</p>"}
         </div>
 
         <hr style="margin:20px 0; border:0; border-top:1px solid var(--border);">
