@@ -252,14 +252,23 @@ footer{text-align:center;color:var(--muted);padding:26px;font-size:13px}
 body.dark .ic{background:#233252;border-color:#3b517e;text-shadow:none}
 @media(max-width:520px){.ic{width:28px;height:28px;font-size:17px}}
 
-/* --- SVG nettes --- */
+/* --- SVG remplies haute visibilite --- */
 .ic svg.svgi{width:19px;height:19px;display:block}
-.ic{color:#0f1f3a}
-.ic-navy{color:#fff}
-.ic-blue{color:#17479e}
-.ic-gold{color:#7a5a00}
-.ic-green{color:#0d6b3a}
-.ic-red{color:#a11}
-[data-theme="dark"] .ic{color:#dbe6ff}
-[data-theme="dark"] .ic-gold{color:#ffd84d}
-body.dark .ic{color:#dbe6ff}
+.ic{color:#fff;background:linear-gradient(135deg,#334155,#0f172a);border:0;box-shadow:0 3px 8px rgba(0,0,0,.2)}
+.ic-blue{background:linear-gradient(135deg,#2563eb,#1e40af);color:#fff}
+.ic-gold{background:linear-gradient(135deg,#f5b301,#d97706);color:#1a1000}
+.ic-gold svg{stroke-width:2.4}
+.ic-green{background:linear-gradient(135deg,#16a34a,#065f46);color:#fff}
+.ic-red{background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff}
+.ic-navy{background:linear-gradient(135deg,#0a1931,#1e3a8a);color:#fff}
+.ic-grey{background:linear-gradient(135deg,#64748b,#334155);color:#fff}
+.btn-primary .ic,.btn-gold .ic{box-shadow:0 2px 6px rgba(0,0,0,.25)}
+[data-theme="dark"] .ic,[data-theme="dark"] .ic-blue,[data-theme="dark"] .ic-green,[data-theme="dark"] .ic-red,[data-theme="dark"] .ic-navy,[data-theme="dark"] .ic-grey{color:#fff!important;border:1px solid rgba(255,255,255,.45)!important;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 4px 14px rgba(0,0,0,.6)!important;filter:brightness(1.25) saturate(1.2)}
+[data-theme="dark"] .ic-blue{background:linear-gradient(135deg,#3b82f6,#1d4ed8)!important}
+[data-theme="dark"] .ic-gold{background:linear-gradient(135deg,#ffd84d,#f59e0b)!important;color:#1a1000!important;border-color:#ffe9a8!important}
+[data-theme="dark"] .ic-gold svg{stroke:#1a1000}
+[data-theme="dark"] .ic-green{background:linear-gradient(135deg,#22c55e,#047857)!important}
+[data-theme="dark"] .ic-red{background:linear-gradient(135deg,#f87171,#dc2626)!important}
+[data-theme="dark"] .ic-navy{background:linear-gradient(135deg,#334155,#0f172a)!important;border-color:#64748b!important}
+body.dark .ic{color:#fff!important;border:1px solid rgba(255,255,255,.45)!important;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 4px 14px rgba(0,0,0,.6)!important;filter:brightness(1.25) saturate(1.2)}
+body.dark .ic-gold{background:linear-gradient(135deg,#ffd84d,#f59e0b)!important;color:#1a1000!important}
