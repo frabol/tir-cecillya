@@ -514,7 +514,6 @@ function afficherTableauDeBord() {
 
     let pourcentageObjectif = Math.min(100, Math.round((record / objectif) * 100));
 
-    // Alerte notification compétition imminente (simulation basée sur les prochaines compétitions)
     let alerteNotification = "";
     if (prochainesCompetitions.length > 0) {
         alerteNotification = `
@@ -559,7 +558,6 @@ function afficherTableauDeBord() {
             <div class="card"><h3>📋 Résultats</h3><p style="font-size:28px; font-weight:bold;">${tousLesScores.length}</p></div>
         </div>
 
-        <!-- 🎯 Objectif Personnel -->
         <div class="objective-card" onclick="modifierObjectifPersonnel()" style="cursor: pointer;" title="Cliquez pour modifier l'objectif">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h3 style="margin: 0; color: #ffd84d; font-size: 1.1em;">🎯 Objectif Personnel : ${objectif} pts</h3>
@@ -591,7 +589,6 @@ function afficherStats() {
     const moyenne = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
     const totalResultats = scoresExcel.length + entrainementsExcel.length;
 
-    // --- 📈 Progression mensuelle automatique ---
     let tousLesScoresDetailles = [];
     for (let i = 0; i < datesMatchs.length; i++) tousLesScoresDetailles.push({ date: datesMatchs[i], score: scoresExcel[i] });
     for (let i = 0; i < datesEntrainements.length; i++) tousLesScoresDetailles.push({ date: datesEntrainements[i], score: entrainementsExcel[i] });
@@ -600,7 +597,7 @@ function afficherStats() {
     tousLesScoresDetailles.forEach(item => {
         const parts = item.date.split("/");
         if (parts.length === 2) {
-            const moisKey = parts[1]; // Mois (ex: "09", "10", "11")
+            const moisKey = parts[1];
             const nomsMois = { "09": "Septembre 2026", "10": "Octobre 2026", "11": "Novembre 2026", "12": "Décembre 2026", "01": "Janvier 2027", "02": "Février 2027", "03": "Mars 2027", "04": "Avril 2027", "05": "Mai 2027", "06": "Juin 2027" };
             const libelleMois = nomsMois[moisKey] || `Mois ${moisKey}`;
 
@@ -666,23 +663,76 @@ function afficherStats() {
     const serieMatchs = events.map(e => e.type === "match" ? e.score : null);
     const serieEntrainements = events.map(e => e.type === "entrainement" ? e.score : null);
 
+    // Calcul intelligent des bornes Y pour éviter l'écrasement ou la coupe
+    const allScores = [...scoresExcel, ...entrainementsExcel];
+    const minY = allScores.length > 0 ? Math.floor(Math.min(...allScores) / 10) * 10 - 10 : 500;
+    const maxY = allScores.length > 0 ? Math.ceil(Math.max(...allScores) / 10) * 10 + 10 : 650;
+
     graphiqueInstance = new Chart(ctx, {
         type: "line",
         data: {
             labels,
             datasets: [
-                { label: "Compétitions", data: serieMatchs, borderColor: "#17365D", backgroundColor: "rgba(23,54,93,0.20)", borderWidth: 4, tension: 0.4, spanGaps: true, pointRadius: 8 },
-                { label: "Entraînements", data: serieEntrainements, borderColor: "#28a745", backgroundColor: "rgba(40,167,69,0.20)", borderWidth: 4, tension: 0.4, spanGaps: true, pointRadius: 8 }
+                { 
+                    label: "Compétitions", 
+                    data: serieMatchs, 
+                    borderColor: "#2563eb", 
+                    backgroundColor: "rgba(37, 99, 235, 0.12)", 
+                    borderWidth: 3.5, 
+                    tension: 0.35, 
+                    fill: true,
+                    spanGaps: true, 
+                    pointRadius: 5, 
+                    pointHoverRadius: 8,
+                    pointBackgroundColor: "#2563eb",
+                    pointBorderColor: "#ffffff",
+                    pointBorderWidth: 2
+                },
+                { 
+                    label: "Entraînements", 
+                    data: serieEntrainements, 
+                    borderColor: "#10b981", 
+                    backgroundColor: "rgba(16, 185, 129, 0.12)", 
+                    borderWidth: 3.5, 
+                    tension: 0.35, 
+                    fill: true,
+                    spanGaps: true, 
+                    pointRadius: 5, 
+                    pointHoverRadius: 8,
+                    pointBackgroundColor: "#10b981",
+                    pointBorderColor: "#ffffff",
+                    pointBorderWidth: 2
+                }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             interaction: { mode: "index", intersect: false },
-            plugins: { legend: { labels: { font: { size: 14, weight: "bold" } } } },
+            plugins: { 
+                legend: { 
+                    labels: { font: { size: 13, weight: "bold" }, usePointStyle: true, boxWidth: 8 } 
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleFont: { size: 13, weight: 'bold' },
+                    bodyFont: { size: 12 },
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: true
+                }
+            },
             scales: {
-                y: { suggestedMin: 550, suggestedMax: 650, grid: { color: "rgba(0,0,0,0.06)" } },
-                x: { grid: { display: false } }
+                y: { 
+                    min: minY,
+                    max: maxY,
+                    grid: { color: "rgba(100, 116, 139, 0.1)" },
+                    ticks: { font: { size: 11 }, color: "#64748b" }
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { font: { size: 11 }, color: "#64748b", maxRotation: 45 }
+                }
             }
         }
     });
@@ -787,7 +837,6 @@ async function synchroniserEtRecharger(silencieux = false) {
     }
 }
 
-// --- 🏆 Historique des records ---
 function afficherTop10() {
     pageActuelle = "top10";
     const tousLesScores = [];
@@ -805,7 +854,6 @@ function afficherTop10() {
         return new Date(2026, ma - 1, ja) - new Date(2026, mb - 1, jb);
     });
 
-    // Calcul de l'historique des records (chronologique)
     let historiqueRecords = [];
     let recordMaxActuel = 0;
     tousLesScores.forEach(item => {
