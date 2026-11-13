@@ -21,17 +21,17 @@ export async function afficherCalendrier(filtre = "avenir") {
     pageActuelle = "calendrier";
     try {
         const lignes = await chargerDonneesExcelEtCalendrier(filtre);
-        let html = "<h2>Calendrier de la saison</h2>";
+        let html = "<h2>📅 Calendrier de la saison</h2>";
 
         if (state.prochainesCompetitions.length > 0) {
             const titreEncart = state.prochainesCompetitions.length > 1
-                ? "Prochaines competitions (" + state.prochainesCompetitions.length + ")"
-                : "Prochain Match a venir";
+                ? "🎯 Prochaines compétitions (" + state.prochainesCompetitions.length + ")"
+                : "🎯 Prochain Match à venir";
 
             html += '<div class="next-match-card">' +
                     '<h2>' + titreEncart + '</h2>' +
                     '<div style="font-size: 0.9em; color: #93c5fd; font-weight: 700; margin-bottom: 10px;">' +
-                        'Date : ' + state.prochainesCompetitions[0].date + ' (' + state.prochainesCompetitions[0].mois + ')' +
+                        '📅 ' + state.prochainesCompetitions[0].date + ' (' + state.prochainesCompetitions[0].mois + ')' +
                     '</div>' +
                     '<div style="display: flex; flex-direction: column; gap: 10px;">';
 
@@ -39,7 +39,7 @@ export async function afficherCalendrier(filtre = "avenir") {
                 const borderStyle = idx > 0 ? "border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px;" : "";
                 html += '<div style="' + borderStyle + '">' +
                             '<div style="font-size: 1.1em; font-weight: bold; color: #fff;">' + comp.evenement + '</div>' +
-                            '<div style="font-size: 0.9em; color: #cbd5e1; margin-top: 2px;">Lieu : ' + comp.lieu + '</div>' +
+                            '<div style="font-size: 0.9em; color: #cbd5e1; margin-top: 2px;">📍 ' + comp.lieu + '</div>' +
                         '</div>';
             });
             html += '</div></div>';
@@ -79,11 +79,11 @@ export async function afficherCalendrier(filtre = "avenir") {
 
             if (evenement && (filtre === "toutes" || statut === "À venir")) {
                 if (!premierMoisAffiche) {
-                    html += '<div class="month-header">Mois : ' + (moisCourant || "Septembre 2026") + '</div><div class="calendar-grid">';
+                    html += '<div class="month-header">📅 ' + (moisCourant || "Septembre 2026") + '</div><div class="calendar-grid">';
                     premierMoisAffiche = true;
                     dernierMoisAffiche = moisCourant;
                 } else if (moisCourant && moisCourant !== dernierMoisAffiche) {
-                    html += '</div><div class="month-header" style="margin-top:25px;">Mois : ' + moisCourant + '</div><div class="calendar-grid">';
+                    html += '</div><div class="month-header" style="margin-top:25px;">📅 ' + moisCourant + '</div><div class="calendar-grid">';
                     dernierMoisAffiche = moisCourant;
                 }
 
@@ -99,15 +99,15 @@ export async function afficherCalendrier(filtre = "avenir") {
                                 '<div class="competition-date-badge">' + (date || "-") + '</div>' +
                                 '<div class="competition-details">' +
                                     '<div class="competition-title">' + evenement + '</div>' +
-                                    '<div class="competition-location">Lieu : ' + (lieu || "Lieu non spécifié") + '</div>' +
+                                    '<div class="competition-location">📍 ' + (lieu || "Lieu non spécifié") + '</div>' +
                                 '</div>' +
                             '</div>' +
                             '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">';
                 if (estAvenir) {
-                    html += '<button class="btn" style="padding:6px 10px!important; font-size:12px!important;" onclick="exporterEvenementICS(\'' + evSafe + '\', \'' + dateSafe + '\', \'' + moisSafe + '\', \'' + lieuSafe + '\')" title="Ajouter a mon agenda">Agenda</button>';
+                    html += '<button class="btn" style="padding:6px 10px!important; font-size:12px!important;" onclick="exporterEvenementICS(\'' + evSafe + '\', \'' + dateSafe + '\', \'' + moisSafe + '\', \'' + lieuSafe + '\')" title="Ajouter à mon agenda">📆 Agenda</button>';
                 }
                 html += '<span class="competition-badge-status ' + (estAvenir ? 'status-avenir' : 'status-passe') + '">' +
-                            (estAvenir ? 'A venir' : 'Passe') +
+                            (estAvenir ? '✅ À venir' : '📌 Passé') +
                         '</span>' +
                         '</div></div>';
             }
@@ -117,8 +117,8 @@ export async function afficherCalendrier(filtre = "avenir") {
         document.getElementById("etat").innerHTML = html;
         appliquerFiltresCalendrier();
     } catch (erreur) {
-        document.getElementById("etat").innerHTML = "Erreur : " + erreur.message;
-        afficherToast("Erreur lors du chargement du calendrier");
+        document.getElementById("etat").innerHTML = "❌ Erreur : " + erreur.message;
+        afficherToast("⚠️ Erreur lors du chargement du calendrier");
     }
 }
 
@@ -143,43 +143,43 @@ export function afficherTableauDeBord() {
     let alerteNotification = "";
     if (state.prochainesCompetitions.length > 0) {
         alerteNotification = '<div class="alert-competition">' +
-            '<span style="font-size: 28px;">!</span>' +
+            '<span style="font-size: 28px;">🔔</span>' +
             '<div>' +
-                '<div style="font-weight: bold; font-size: 1.05em;">Alerte Competition Imminente</div>' +
-                '<div style="font-size: 0.95em; opacity: 0.9;">Prochain evenement : <b>' + state.prochainesCompetitions[0].evenement + '</b> (' + state.prochainesCompetitions[0].date + ') a ' + state.prochainesCompetitions[0].lieu + '</div>' +
+                '<div style="font-weight: bold; font-size: 1.05em;">Alerte Compétition Imminente !</div>' +
+                '<div style="font-size: 0.95em; opacity: 0.9;">Prochain événement : <b>' + state.prochainesCompetitions[0].evenement + '</b> (' + state.prochainesCompetitions[0].date + ') à ' + state.prochainesCompetitions[0].lieu + '</div>' +
             '</div>' +
         '</div>';
     }
 
-    let contenuProchainesComp = '<p style="font-size:1.1em; font-weight:bold; margin:6px 0 0 0;">Aucune competition</p>';
+    let contenuProchainesComp = '<p style="font-size:1.1em; font-weight:bold; margin:6px 0 0 0;">Aucune compétition</p>';
     if (state.prochainesCompetitions.length > 0) {
-        contenuProchainesComp = '<div style="font-size: 0.9em; color: var(--blue); font-weight: 700; margin: 6px 0 10px 0;">Date : ' + state.prochainesCompetitions[0].date + ' (' + state.prochainesCompetitions[0].mois + ')</div>' +
+        contenuProchainesComp = '<div style="font-size: 0.9em; color: var(--blue); font-weight: 700; margin: 6px 0 10px 0;">📅 ' + state.prochainesCompetitions[0].date + ' (' + state.prochainesCompetitions[0].mois + ')</div>' +
             '<div style="display: flex; flex-direction: column; gap: 8px;">' +
                 state.prochainesCompetitions.map((c, idx) => 
                     '<div style="' + (idx > 0 ? 'border-top: 1px solid var(--border); padding-top: 8px;' : '') + '">' +
                         '<div style="font-size: 1.05em; font-weight: bold;">' + c.evenement + '</div>' +
-                        '<div style="font-size: 0.88em; color: var(--muted);">Lieu : ' + c.lieu + '</div>' +
+                        '<div style="font-size: 0.88em; color: var(--muted);">📍 ' + c.lieu + '</div>' +
                     '</div>'
                 ).join("") +
             '</div>';
     }
 
     const titreCardProchaine = state.prochainesCompetitions.length > 1
-        ? "Prochaines competitions (" + state.prochainesCompetitions.length + ")"
-        : "Prochaine competition";
+        ? "📅 Prochaines compétitions (" + state.prochainesCompetitions.length + ")"
+        : "📅 Prochaine compétition";
 
     document.getElementById("etat").innerHTML = alerteNotification +
-        '<h2>Tableau de bord</h2>' +
+        '<h2>🏠 Tableau de bord</h2>' +
         '<div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:10px;">' +
-            '<div class="card"><h3>Dernier score</h3><p style="font-size:28px; font-weight:bold;">' + dernier + '</p></div>' +
-            '<div class="card"><h3>Record personnel</h3><p style="font-size:28px; font-weight:bold; color:gold;">' + record + '</p></div>' +
-            '<div class="card"><h3>Moyenne saison</h3><p style="font-size:28px; font-weight:bold;">' + moyenne + '</p></div>' +
-            '<div class="card"><h3>Resultats</h3><p style="font-size:28px; font-weight:bold;">' + tousLesScores.length + '</p></div>' +
+            '<div class="card"><h3>🎯 Dernier score</h3><p style="font-size:28px; font-weight:bold;">' + dernier + '</p></div>' +
+            '<div class="card"><h3>🏆 Record personnel</h3><p style="font-size:28px; font-weight:bold; color:gold;">' + record + '</p></div>' +
+            '<div class="card"><h3>📈 Moyenne saison</h3><p style="font-size:28px; font-weight:bold;">' + moyenne + '</p></div>' +
+            '<div class="card"><h3>📋 Résultats</h3><p style="font-size:28px; font-weight:bold;">' + tousLesScores.length + '</p></div>' +
         '</div>' +
         '<div class="objective-card" onclick="modifierObjectifPersonnel()" style="cursor: pointer;" title="Cliquez pour modifier l\'objectif">' +
             '<div style="display: flex; justify-content: space-between; align-items: center;">' +
-                '<h3 style="margin: 0; color: #ffd84d; font-size: 1.1em;">Objectif Personnel : ' + objectif + ' pts</h3>' +
-                '<span style="font-size: 0.85em; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 999px;">Modifier</span>' +
+                '<h3 style="margin: 0; color: #ffd84d; font-size: 1.1em;">🎯 Objectif Personnel : ' + objectif + ' pts</h3>' +
+                '<span style="font-size: 0.85em; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 999px;">Modifier ⚙️</span>' +
             '</div>' +
             '<p style="margin: 6px 0 0 0; font-size: 0.95em; opacity: 0.9;">Record actuel : <b>' + record + ' pts</b> (' + pourcentageObjectif + '% de l\'objectif)</p>' +
             '<div class="progress-bar-container"><div class="progress-bar-fill" style="width: ' + pourcentageObjectif + '%;"></div></div>' +
@@ -192,17 +192,17 @@ export function afficherTableauDeBord() {
 
 export function modifierObjectifPersonnel() {
     const objectifActuel = getObjectifPersonnel();
-    const nouvelObjectif = prompt("Entrez votre objectif personnel de score :", objectifActuel);
+    const nouvelObjectif = prompt("🎯 Entrez votre objectif personnel de score :", objectifActuel);
     if (nouvelObjectif !== null && !isNaN(nouvelObjectif) && Number(nouvelObjectif) > 0) {
         setObjectifPersonnel(nouvelObjectif);
         afficherTableauDeBord();
-        afficherToast("Objectif mis a jour !");
+        afficherToast("✅ Objectif mis à jour !");
     }
 }
 
 export function afficherResultats() {
     pageActuelle = "resultats";
-    let html = "<h2>Resultats</h2>";
+    let html = "<h2>🏆 Résultats</h2>";
     const resultats = [];
 
     const historiqueLocaux = getScoresLocaux();
@@ -220,7 +220,7 @@ export function afficherResultats() {
         const score = Number(state.scoresExcel[i]);
         const key = date + "|match|" + score;
         const local = mapLocaux.get(key);
-        resultats.push({ date: date, type: "Competition", score: score, lieu: local ? local.lieu : "" });
+        resultats.push({ date: date, type: "🏆 Compétition", score: score, lieu: local ? local.lieu : "" });
     }
 
     for (let i = 0; i < state.datesEntrainements.length; i++) {
@@ -228,7 +228,7 @@ export function afficherResultats() {
         const score = Number(state.entrainementsExcel[i]);
         const key = date + "|entrainement|" + score;
         const local = mapLocaux.get(key);
-        resultats.push({ date: date, type: "Entrainement", score: score, lieu: local ? local.lieu : "" });
+        resultats.push({ date: date, type: "🏋️ Entraînement", score: score, lieu: local ? local.lieu : "" });
     }
 
     resultats.sort((a, b) => {
@@ -238,10 +238,10 @@ export function afficherResultats() {
     });
 
     if (resultats.length === 0) {
-        html += "<p>Aucun resultat enregistre.</p>";
+        html += "<p>Aucun résultat enregistré.</p>";
     } else {
         resultats.forEach(item => {
-            const detailLieu = item.lieu ? '<div style="font-size:0.88em; color:var(--muted); margin-top:2px;">Lieu : ' + item.lieu + '</div>' : "";
+            const detailLieu = item.lieu ? '<div style="font-size:0.88em; color:var(--muted); margin-top:2px;">📍 ' + item.lieu + '</div>' : "";
             html += '<div class="competition competition-card">' +
                         '<div class="competition-left">' +
                             '<div class="competition-date-badge">' + item.date + '</div>' +
@@ -288,17 +288,17 @@ export function afficherAjoutScore() {
 
     let inputsSeriesHtml = "";
     for (let i = 1; i <= 6; i++) {
-        inputsSeriesHtml += '<div><label style="font-size:12px;">Serie ' + i + '</label>' +
+        inputsSeriesHtml += '<div><label style="font-size:12px;">Série ' + i + '</label>' +
                             '<input type="number" step="0.1" id="serie_' + i + '" placeholder="101.5" oninput="recalculerTotalSeries()" style="padding:8px; text-align:center; font-weight:700;"></div>';
     }
 
-    document.getElementById("etat").innerHTML = '<h2>Nouveau score - Mode Stand de Tir</h2>' +
+    document.getElementById("etat").innerHTML = '<h2>➕ Nouveau score — Mode Stand de Tir</h2>' +
         '<div style="display:flex; flex-direction:column; gap:14px; max-width:480px;">' +
-            '<div><label for="dateScore">Date :</label><br><input type="date" id="dateScore" value="' + aujourdhui + '" style="margin-top:6px;"></div>' +
-            '<div><label for="typeScore">Type de tir :</label><br><select id="typeScore" style="margin-top:6px;"><option value="entrainement">Entrainement</option><option value="match">Competition</option></select></div>' +
-            '<div><label for="lieuScore">Lieu :</label><br><input type="text" id="lieuScore" placeholder="Ex : Maubeuge, Lille..." style="margin-top:6px;"></div>' +
-            '<details style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:10px 12px;"><summary style="cursor:pointer; font-weight:700; color:var(--blue);">Saisir le detail des 6 series (60 coups)</summary><div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-top:10px;">' + inputsSeriesHtml + '</div></details>' +
-            '<div><label for="valeurScore">Score total (Saisie eclair) :</label><br><input type="number" step="0.1" id="valeurScore" value="' + scoreDefaut + '" placeholder="Ex : 617.5" style="margin-top:6px; font-size:26px; font-weight:800; text-align:center; padding:14px;">' +
+            '<div><label for="dateScore">📅 Date :</label><br><input type="date" id="dateScore" value="' + aujourdhui + '" style="margin-top:6px;"></div>' +
+            '<div><label for="typeScore">🎯 Type de tir :</label><br><select id="typeScore" style="margin-top:6px;"><option value="entrainement">🏋️ Entraînement</option><option value="match">🏆 Compétition</option></select></div>' +
+            '<div><label for="lieuScore">📍 Lieu :</label><br><input type="text" id="lieuScore" placeholder="Ex : Maubeuge, Lille..." style="margin-top:6px;"></div>' +
+            '<details style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:10px 12px;"><summary style="cursor:pointer; font-weight:700; color:var(--blue);">🎯 Saisir le détail des 6 séries (60 coups)</summary><div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-top:10px;">' + inputsSeriesHtml + '</div></details>' +
+            '<div><label for="valeurScore">🔢 Score total (Saisie éclair) :</label><br><input type="number" step="0.1" id="valeurScore" value="' + scoreDefaut + '" placeholder="Ex : 617.5" style="margin-top:6px; font-size:26px; font-weight:800; text-align:center; padding:14px;">' +
             '<div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:8px; margin-top:10px;">' +
                 '<button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(-1)">-1</button>' +
                 '<button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(-0.5)">-0.5</button>' +
@@ -306,8 +306,8 @@ export function afficherAjoutScore() {
                 '<button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(0.5)">+0.5</button>' +
                 '<button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(1)">+1</button>' +
             '</div></div>' +
-            '<div><label for="noteScore">Notes techniques :</label><br><input type="text" id="noteScore" placeholder="Ex : Plombs R10" style="margin-top:6px;"></div>' +
-            '<button class="btn btn-primary" style="justify-content:center; padding:14px!important; font-size:16px!important; margin-top:6px;" onclick="enregistrerScore()">Enregistrer le score</button>' +
+            '<div><label for="noteScore">📝 Notes techniques (plombs, dioptre, sensations) :</label><br><input type="text" id="noteScore" placeholder="Ex : Plombs R10 4.49, +2 clics haut" style="margin-top:6px;"></div>' +
+            '<button class="btn btn-primary" style="justify-content:center; padding:14px!important; font-size:16px!important; margin-top:6px;" onclick="enregistrerScore()">💾 Enregistrer le score</button>' +
         '</div>';
 }
 
@@ -325,17 +325,17 @@ export async function enregistrerScore() {
     }
 
     if (!date || isNaN(score) || score <= 0) {
-        afficherToast("Veuillez saisir une date et un score valide.");
+        afficherToast("⚠️ Veuillez saisir une date et un score valide.");
         return;
     }
 
     const res = await ajouterScore({ date, type, lieu, score, note, series });
     if (!res.ok) {
-        afficherToast("Ce score existe deja.");
+        afficherToast("⚠️ Ce score existe déjà.");
         return;
     }
 
-    afficherToast(res.offline ? "Sauvegarde en local" : "Score enregistre et synchronise");
+    afficherToast(res.offline ? "⚠️ Sauvegardé en local (hors-ligne)" : "✅ Score enregistré et synchronisé");
 
     const morceaux = date.split("-");
     const dateFormatee = morceaux[2] + "/" + morceaux[1];
@@ -353,28 +353,28 @@ export async function enregistrerScore() {
 
 export function voirScores() {
     const historique = getScoresLocaux();
-    let html = "<h2>Scores saisis</h2>";
+    let html = "<h2>📋 Scores saisis</h2>";
 
     if (historique.length === 0) {
-        html += "<p>Aucun score enregistre.</p>";
+        html += "<p>Aucun score enregistré.</p>";
     } else {
         historique.forEach((item, index) => {
-            const detailLieu = item.lieu ? '<div style="font-size:0.88em; color:var(--blue); font-weight:600; margin-top:2px;">Lieu : ' + item.lieu + '</div>' : '<div style="font-size:0.88em; color:var(--muted); font-style:italic; margin-top:2px;">Lieu non renseigne</div>';
-            const detailSeries = item.series && item.series.length > 0 ? '<div style="font-size:0.82em; color:var(--blue); margin-top:2px;">Series : ' + item.series.join(" - ") + '</div>' : "";
-            const detailNote = item.note ? '<div style="font-size:0.82em; color:var(--muted); font-style:italic; margin-top:2px;">Note : ' + item.note + '</div>' : "";
+            const detailLieu = item.lieu ? '<div style="font-size:0.88em; color:var(--blue); font-weight:600; margin-top:2px;">📍 ' + item.lieu + '</div>' : '<div style="font-size:0.88em; color:var(--muted); font-style:italic; margin-top:2px;">📍 Lieu non renseigné</div>';
+            const detailSeries = item.series && item.series.length > 0 ? '<div style="font-size:0.82em; color:var(--blue); margin-top:2px;">Séries : ' + item.series.join(" • ") + '</div>' : "";
+            const detailNote = item.note ? '<div style="font-size:0.82em; color:var(--muted); font-style:italic; margin-top:2px;">📝 ' + item.note + '</div>' : "";
 
             html += '<div class="competition competition-card">' +
                         '<div class="competition-left">' +
                             '<div class="competition-date-badge">' + item.date + '</div>' +
                             '<div class="competition-details">' +
-                                '<div class="competition-title">' + (item.type === "match" ? "Competition" : "Entrainement") + '</div>' +
+                                '<div class="competition-title">' + (item.type === "match" ? "🏆 Compétition" : "🏋️ Entraînement") + '</div>' +
                                 detailLieu +
                                 '<div class="competition-location">Score : <b>' + item.score + '</b></div>' +
                                 detailSeries +
                                 detailNote +
                             '</div>' +
                         '</div>' +
-                        '<div><button onclick="supprimerScore(' + index + ')" style="background:#dc3545; color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:600;">Supprimer</button></div>' +
+                        '<div><button onclick="supprimerScore(' + index + ')" style="background:#dc3545; color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:600;">🗑️ Supprimer</button></div>' +
                     '</div>';
         });
     }
@@ -385,10 +385,10 @@ export async function supprimerScore(index, callbackReload) {
     if (!confirm("Supprimer ce score ?")) return;
     const res = await supprimerScoreParIndex(index);
     if (!res.ok) {
-        afficherToast("Erreur lors de la suppression");
+        afficherToast("❌ Erreur lors de la suppression");
         return;
     }
-    afficherToast("Score supprime");
+    afficherToast("🗑️ Score supprimé");
     if (callbackReload) await callbackReload();
     voirScores();
 }
@@ -398,7 +398,7 @@ export function afficherStats() {
     const stats = calculerStatistiques();
 
     if (!stats) {
-        document.getElementById("etat").innerHTML = "Aucun score trouve.";
+        document.getElementById("etat").innerHTML = "Aucun score trouvé.";
         return;
     }
 
@@ -406,36 +406,36 @@ export function afficherStats() {
     for (const mois in stats.statsParMois) {
         const moyMois = (stats.statsParMois[mois].somme / stats.statsParMois[mois].count).toFixed(1);
         htmlMensuel += '<div class="monthly-stat-item">' +
-            '<span>Mois : ' + mois + ' (' + stats.statsParMois[mois].count + ' tirs)</span>' +
+            '<span>📅 ' + mois + ' (' + stats.statsParMois[mois].count + ' tirs)</span>' +
             '<span>Moyenne : <b>' + moyMois + '</b> | Max : <b style="color:gold;">' + stats.statsParMois[mois].max + '</b></span>' +
         '</div>';
     }
 
-    document.getElementById("etat").innerHTML = '<h2>Statistiques & Progression</h2>' +
+    document.getElementById("etat").innerHTML = '<h2>📈 Statistiques & Progression</h2>' +
         '<div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:15px;">' +
-            '<div class="card"><h3>Dernier score</h3><p style="font-size:32px; font-weight:bold;">' + stats.dernier + '</p></div>' +
-            '<div class="card"><h3>Record</h3><p style="font-size:32px; font-weight:bold; color:gold;">' + stats.meilleurGlobal + '</p></div>' +
-            '<div class="card"><h3>Moyenne saison</h3><p style="font-size:32px; font-weight:bold;">' + stats.moyenne + '</p></div>' +
-            '<div class="card"><h3>Resultats</h3><p style="font-size:32px; font-weight:bold;">' + stats.totalResultats + '</p></div>' +
+            '<div class="card"><h3>🎯 Dernier score</h3><p style="font-size:32px; font-weight:bold;">' + stats.dernier + '</p></div>' +
+            '<div class="card"><h3>🏆 Record</h3><p style="font-size:32px; font-weight:bold; color:gold;">' + stats.meilleurGlobal + '</p></div>' +
+            '<div class="card"><h3>📊 Moyenne saison</h3><p style="font-size:32px; font-weight:bold;">' + stats.moyenne + '</p></div>' +
+            '<div class="card"><h3>📋 Résultats</h3><p style="font-size:32px; font-weight:bold;">' + stats.totalResultats + '</p></div>' +
         '</div>' +
         '<div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap:15px; margin-top:15px;">' +
             '<div class="card" style="border-left: 4px solid #10b981;">' +
-                '<h3>Forme du moment (5 derniers tirs)</h3>' +
+                '<h3>🔥 Forme du moment (5 derniers tirs)</h3>' +
                 '<p style="font-size:28px; font-weight:bold; margin:8px 0 4px 0;">' + stats.moyenne5 + ' pts</p>' +
                 '<small style="color:var(--muted); font-weight:600;">' + stats.badgeForme + '</small>' +
             '</div>' +
             '<div class="card" style="border-left: 4px solid #f5b301;">' +
-                '<h3>Regularite (Ecart-type)</h3>' +
-                '<p style="font-size:28px; font-weight:bold; margin:8px 0 4px 0;">+- ' + stats.ecartType + ' pts</p>' +
+                '<h3>📐 Régularité (Écart-type)</h3>' +
+                '<p style="font-size:28px; font-weight:bold; margin:8px 0 4px 0;">± ' + stats.ecartType + ' pts</p>' +
                 '<small style="color:var(--muted); font-weight:600;">Profil : ' + stats.appreciationRegularite + '</small>' +
             '</div>' +
         '</div>' +
         '<div class="card" style="margin-top:20px;">' +
-            '<h3>Progression mensuelle automatique</h3>' +
-            (htmlMensuel || "<p>Aucune donnee mensuelle disponible.</p>") +
+            '<h3>📈 Progression mensuelle automatique</h3>' +
+            (htmlMensuel || "<p>Aucune donnée mensuelle disponible.</p>") +
         '</div>' +
         '<hr style="margin:20px 0; border:0; border-top:1px solid var(--border);">' +
-        '<h3>Evolution des performances & Objectif (' + stats.objectif + ' pts)</h3>' +
+        '<h3>📊 Évolution des performances & Objectif (' + stats.objectif + ' pts)</h3>' +
         '<div class="chart-wrap"><canvas id="graphiqueScores"></canvas></div>';
 
     dessinerGraphique("graphiqueScores");
@@ -445,14 +445,14 @@ export function afficherTop10() {
     pageActuelle = "top10";
     const tousLesScores = [];
     for (let i = 0; i < state.datesMatchs.length; i++) {
-        tousLesScores.push({ date: state.datesMatchs[i], type: "Competition", score: Number(state.scoresExcel[i]) });
+        tousLesScores.push({ date: state.datesMatchs[i], type: "🏆 Compétition", score: Number(state.scoresExcel[i]) });
     }
     for (let i = 0; i < state.datesEntrainements.length; i++) {
-        tousLesScores.push({ date: state.datesEntrainements[i], type: "Entrainement", score: Number(state.entrainementsExcel[i]) });
+        tousLesScores.push({ date: state.datesEntrainements[i], type: "🏋️ Entraînement", score: Number(state.entrainementsExcel[i]) });
     }
 
     if (tousLesScores.length === 0) {
-        document.getElementById("etat").innerHTML = "<h2>Top 10 & Historique des records</h2><p>Aucun score.</p>";
+        document.getElementById("etat").innerHTML = "<h2>🥇 Top 10 & Historique des records</h2><p>Aucun score.</p>";
         return;
     }
 
@@ -477,28 +477,29 @@ export function afficherTop10() {
 
     let htmlHistorique = "";
     historiqueRecords.forEach(rec => {
-        htmlHistorique += '<div class="monthly-stat-item"><span>Date : ' + rec.date + ' (' + rec.type + ')</span><span>Nouveau record : <b style="color:gold;">' + rec.score + ' pts</b></span></div>';
+        htmlHistorique += '<div class="monthly-stat-item"><span>📅 ' + rec.date + ' (' + rec.type + ')</span><span>Nouveau record : <b style="color:gold;">' + rec.score + ' pts</b></span></div>';
     });
 
-    let html = '<h2>Top 10 & Historique des records</h2>' +
+    let html = '<h2>🥇 Top 10 & 🏆 Historique des records</h2>' +
         '<div class="podium" style="display:flex; gap:10px; margin-bottom:16px;">' +
-            '<div class="second card" style="text-align:center; flex:1;">2eme<br><b>' + (top10[1] ? top10[1].score : "-") + '</b></div>' +
-            '<div class="first card" style="text-align:center; flex:1; border:2px solid gold;">1er<br><b style="color:gold;">' + (top10[0] ? top10[0].score : "-") + '</b></div>' +
-            '<div class="third card" style="text-align:center; flex:1;">3eme<br><b>' + (top10[2] ? top10[2].score : "-") + '</b></div>' +
+            '<div class="second card" style="text-align:center; flex:1;">🥈<br><b>' + (top10[1] ? top10[1].score : "-") + '</b></div>' +
+            '<div class="first card" style="text-align:center; flex:1; border:2px solid gold;">🥇<br><b style="color:gold;">' + (top10[0] ? top10[0].score : "-") + '</b></div>' +
+            '<div class="third card" style="text-align:center; flex:1;">🥉<br><b>' + (top10[2] ? top10[2].score : "-") + '</b></div>' +
         '</div>' +
         '<div class="card" style="margin-bottom:16px;">' +
-            '<p style="color:gold; font-size:20px; font-weight:bold; margin:0 0 6px 0;">Record personnel absolu : ' + record + '</p>' +
-            '<p style="font-size:16px; margin:0;">Moyenne du Top 10 : <b>' + moyenneTop10 + '</b></p>' +
+            '<p style="color:gold; font-size:20px; font-weight:bold; margin:0 0 6px 0;">🏆 Record personnel absolu : ' + record + '</p>' +
+            '<p style="font-size:16px; margin:0;">📈 Moyenne du Top 10 : <b>' + moyenneTop10 + '</b></p>' +
         '</div>' +
-        '<div class="card" style="margin-bottom:20px;"><h3>Historique des records battus</h3>' + (htmlHistorique || "<p>Aucun record enregistre.</p>") + '</div>';
+        '<div class="card" style="margin-bottom:20px;"><h3>🏆 Historique des records battus</h3>' + (htmlHistorique || "<p>Aucun record enregistré.</p>") + '</div>';
 
     top10.forEach((item, index) => {
+        const emoji = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "🎯";
         html += '<div class="competition competition-card">' +
                     '<div class="competition-left">' +
-                        '<div class="competition-date-badge">#' + (index + 1) + '</div>' +
+                        '<div class="competition-date-badge">' + emoji + ' #' + (index + 1) + '</div>' +
                         '<div class="competition-details">' +
                             '<div class="competition-title">' + item.type + '</div>' +
-                            '<div class="competition-location">Date : ' + item.date + '</div>' +
+                            '<div class="competition-location">📅 ' + item.date + '</div>' +
                         '</div>' +
                     '</div>' +
                     '<div><span class="competition-badge-status status-avenir">Score : <b>' + item.score + '</b></span></div>' +
@@ -510,7 +511,7 @@ export function afficherTop10() {
 
 export function exporterScoresJSON() {
     const historique = getScoresLocaux();
-    if (historique.length === 0) { afficherToast("Aucun score a exporter."); return; }
+    if (historique.length === 0) { afficherToast("⚠️ Aucun score à exporter."); return; }
     const blob = new Blob([JSON.stringify(historique, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const lien = document.createElement("a");
@@ -520,18 +521,55 @@ export function exporterScoresJSON() {
     lien.click();
     document.body.removeChild(lien);
     URL.revokeObjectURL(url);
-    afficherToast("Export JSON termine");
+    afficherToast("✅ Export JSON terminé");
 }
 
 export function exporterScoresExcel() {
     const historique = getScoresLocaux();
-    if (historique.length === 0) { afficherToast("Aucun score a exporter."); return; }
+    if (historique.length === 0) { afficherToast("⚠️ Aucun score à exporter."); return; }
     const donnees = historique.map(item => ({
         Date: item.date,
-        Type: item.type === "match" ? "Competition" : "Entrainement",
+        Type: item.type === "match" ? "Compétition" : "Entraînement",
         Lieu: item.lieu || "",
         Score: Number(item.score),
         Series: (item.series || []).join(" | "),
         Notes: item.note || ""
     }));
     donnees.unshift({ Date: new Date().toLocaleDateString("fr-FR"), Type: "Export Tir Cécillya", Lieu: "", Score: "", Series: "", Notes: "" });
+    const feuille = XLSX.utils.json_to_sheet(donnees);
+    const classeur = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(classeur, feuille, "Scores");
+    XLSX.writeFile(classeur, "scores_cecillya.xlsx");
+    afficherToast("✅ Export Excel terminé");
+}
+
+export function importerScoresJSON(event, callbackReload) {
+    const fichier = event.target.files[0];
+    if (!fichier) return;
+
+    const lecteur = new FileReader();
+    lecteur.onload = async function (e) {
+        try {
+            const donnees = JSON.parse(e.target.result);
+            if (!Array.isArray(donnees)) { afficherToast("❌ Fichier JSON invalide."); return; }
+            donnees.forEach(item => {
+                if (item.type === "Compétition") item.type = "match";
+                if (item.type === "Entraînement") item.type = "entrainement";
+            });
+
+            const historique = getScoresLocaux();
+            const existants = new Set(historique.map(item => item.date + "|" + item.type + "|" + item.score));
+            const nouveaux = donnees.filter(item =>
+                item.date && !isNaN(Number(item.score)) && !existants.has(item.date + "|" + item.type + "|" + item.score)
+            );
+
+            setScoresLocaux([...historique, ...nouveaux]);
+            afficherToast("✅ " + nouveaux.length + " nouveau(x) score(s) importé(s).");
+            if (callbackReload) await callbackReload();
+            afficherResultats();
+        } catch (erreur) {
+            afficherToast("❌ Erreur lors de l'import.");
+        }
+    };
+    lecteur.readAsText(fichier);
+}
