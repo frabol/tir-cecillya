@@ -272,3 +272,90 @@ body.dark .ic{background:#233252;border-color:#3b517e;text-shadow:none}
 [data-theme="dark"] .ic-navy{background:linear-gradient(135deg,#334155,#0f172a)!important;border-color:#64748b!important}
 body.dark .ic{color:#fff!important;border:1px solid rgba(255,255,255,.45)!important;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 4px 14px rgba(0,0,0,.6)!important;filter:brightness(1.25) saturate(1.2)}
 body.dark .ic-gold{background:linear-gradient(135deg,#ffd84d,#f59e0b)!important;color:#1a1000!important}
+/* Encart Prochain Match */
+.next-match-card {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e1e1e 100%);
+    border: 2px solid #3b82f6;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.next-match-card h2 {
+    margin-top: 0;
+    color: #93c5fd;
+    font-size: 1.15rem;
+}
+
+/* Boutons de filtres */
+.filters-section {
+    margin-bottom: 16px;
+}
+
+.filters-section h3 {
+    font-size: 1rem;
+    color: #a0a0a0;
+    margin-bottom: 8px;
+}
+
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filter-btn {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border: 1px solid #2a2a2a;
+    padding: 8px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.filter-btn.active, .filter-btn:hover {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: #fff;
+}
+
+/* Cartes de compétitions */
+.event-card {
+    background-color: #1e1e1e;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.event-info .event-date {
+    font-size: 0.85rem;
+    color: #3b82f6;
+    font-weight: bold;
+}
+
+.event-info .event-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 3px 0;
+}
+
+.event-info .event-location {
+    font-size: 0.85rem;
+    color: #a0a0a0;
+}
+
+.badge {
+    background-color: #27272a;
+    color: #d4d4d8;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
