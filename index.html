@@ -37,7 +37,36 @@
 <symbol id="i-bulb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.5 1 2.5h6c0-1 .2-1.8 1-2.5A6 6 0 0 0 12 3z"/></symbol>
 </defs>
 </svg>
+<main class="container">
+    <!-- Encart de mise en avant du prochain match -->
+    <section id="next-match-section" class="next-match-card">
+        <h2>🎯 Prochain Match</h2>
+        <div id="next-match-content">
+            <!-- Rempli automatiquement par JavaScript -->
+            <p>Chargement du prochain match...</p>
+        </div>
+    </section>
 
+    <!-- Barre de filtres par discipline -->
+    <section class="filters-section">
+        <h3>Filtrer par discipline</h3>
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">Tous</button>
+            <button class="filter-btn" data-filter="10m">10m</button>
+            <button class="filter-btn" data-filter="25m">25m</button>
+            <button class="filter-btn" data-filter="Pistolet">Pistolet</button>
+            <button class="filter-btn" data-filter="Carabine">Carabine</button>
+        </div>
+    </section>
+
+    <!-- Liste complète du calendrier -->
+    <section class="calendar-section">
+        <h3>Calendrier de la saison</h3>
+        <div id="calendar-list" class="calendar-grid">
+            <!-- Les compétitions seront injectées ici -->
+        </div>
+    </section>
+</main>
 <header class="hero">
   <div class="hero-badge"><span class="ic ic-gold"><svg class="svgi"><use href="#i-target"/></svg></span> Tir sportif • Carabine • Saison 2026-2027</div>
   <div style="margin-top:10px"><span id="sync-badge">● À jour</span></div>
