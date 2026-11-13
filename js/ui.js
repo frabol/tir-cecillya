@@ -220,12 +220,54 @@ export function modifierObjectifPersonnel() {
 export function afficherResultats() {
     pageActuelle = "resultats";
     let html = "<h2>🏆 Résultats</h2>";
-    const historique = getScoresLocaux();
+    const resultats = [];
 
-    if (historique.length === 0) {
+    const historiqueLocaux = getScoresLocaux();
+    const mapLocaux = new Map(historiqueLocaux.map(item => {
+        let d = item.date;
+        if (d && d.includes("-")) {
+            const p = d.split("-");
+            d = p[2] + "/" + p[1];
+        }
+        return [`${d}|${item.type}|${Number(item.score)}`, item];
+    }));
+
+    for (let i = 0; i < state.datesMatchs.length; i++) {
+        const date = state.datesMatchs[i];
+        const score = Number(state.scoresExcel[i]);
+        const key = `${date}|match|${score}`;
+        const local = mapLocaux.get(key);
+        resultats.push({ 
+            date: date, 
+            type: "🏆 Compétition", 
+            score: score, 
+            lieu: local ? local.lieu : "" 
+        });
+    }
+
+    for (let i = 0; i < state.datesEntrainements.length; i++) {
+        const date = state.datesEntrainements[i];
+        const score = Number(state.entrainementsExcel[i]);
+        const key = `${date}|entrainement|${score}`;
+        const local = mapLocaux.get(key);
+        resultats.push({ 
+            date: date, 
+            type: "🏋️ Entraînement", 
+            score: score, 
+            lieu: local ? local.lieu : "" 
+        });
+    }
+
+    resultats.sort((a, b) => {
+        const [ja, ma] = (a.date || "").split("/");
+        const [jb, mb] = (b.date || "").split("/");
+        return new Date(2026, (ma || 1) - 1, ja || 1) - new Date(2026, (mb || 1) - 1, jb || 1);
+    });
+
+    if (resultats.length === 0) {
         html += `<p>Aucun résultat enregistré.</p>`;
     } else {
-        historique.forEach(item => {
+        resultats.forEach(item => {
             const detailLieu = item.lieu 
                 ? `<div style="font-size:0.88em; color:var(--muted); margin-top:2px;">📍 ${item.lieu}</div>` 
                 : "";
@@ -235,7 +277,7 @@ export function afficherResultats() {
                     <div class="competition-left">
                         <div class="competition-date-badge">${item.date}</div>
                         <div class="competition-details">
-                            <div class="competition-title">${item.type === "match" ? "🏆 Compétition" : "🏋️ Entraînement"}</div>
+                            <div class="competition-title">${item.type}</div>
                             ${detailLieu}
                         </div>
                     </div>
@@ -385,8 +427,8 @@ export function voirScores() {
     } else {
         historique.forEach((item, index) => {
             const detailLieu = item.lieu 
-                ? `<div style="font-size:0.88em; color:var(--muted); margin-top:2px;">📍 ${item.lieu}</div>` 
-                : "";
+                ? `<div style="font-size:0.88em; color:var(--blue); font-weight:600; margin-top:2px;">📍 ${item.lieu}</div>` 
+                : `<div style="font-size:0.88em; color:var(--muted); font-style:italic; margin-top:2px;">📍 Lieu non renseigné</div>`;
             const detailSeries = item.series && item.series.length > 0
                 ? `<div style="font-size:0.82em; color:var(--blue); margin-top:2px;">Séries : ${item.series.join(" • ")}</div>`
                 : "";
@@ -474,7 +516,7 @@ export function afficherStats() {
 
         <div class="card" style="margin-top:20px;">
             <h3>📈 Progression mensuelle automatique</h3>
-            ${htmlMensuel || "<p>Aucune donnée mensuelle disponible.</p>"}
+            ${htmlMensuel || "<p>Aucune donnée mensuelle disponible.</p></div>
         </div>
 
         <hr style="margin:20px 0; border:0; border-top:1px solid var(--border);">
