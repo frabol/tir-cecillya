@@ -294,11 +294,11 @@ export function afficherAjoutScore() {
 
     document.getElementById("etat").innerHTML = '<h2>➕ Nouveau score — Mode Stand de Tir</h2>' +
         '<div style="display:flex; flex-direction:column; gap:14px; max-width:480px;">' +
-            '<div><label for="dateScore">📅 Date :</label><br><input type="date" id="dateScore" value="' + aujourdhui + '" style="margin-top:6px;"></div>' +
-            '<div><label for="typeScore">🎯 Type de tir :</label><br><select id="typeScore" style="margin-top:6px;"><option value="entrainement">🏋️ Entraînement</option><option value="match">🏆 Compétition</option></select></div>' +
-            '<div><label for="lieuScore">📍 Lieu :</label><br><input type="text" id="lieuScore" placeholder="Ex : Maubeuge, Lille..." style="margin-top:6px;"></div>' +
+            '<div><label for="dateScore">📅 Date :</label><input type="date" id="dateScore" value="' + aujourdhui + '" style="margin-top:6px;"></div>' +
+            '<div><label for="typeScore">🎯 Type de tir :</label><select id="typeScore" style="margin-top:6px;"><option value="entrainement">🏋️ Entraînement</option><option value="match">🏆 Compétition</option></select></div>' +
+            '<div><label for="lieuScore">📍 Lieu :</label><input type="text" id="lieuScore" placeholder="Ex : Maubeuge, Lille..." style="margin-top:6px;"></div>' +
             '<details style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:10px 12px;"><summary style="cursor:pointer; font-weight:700; color:var(--blue);">🎯 Saisir le détail des 6 séries (60 coups)</summary><div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-top:10px;">' + inputsSeriesHtml + '</div></details>' +
-            '<div><label for="valeurScore">🔢 Score total (Saisie éclair) :</label><br><input type="number" step="0.1" id="valeurScore" value="' + scoreDefaut + '" placeholder="Ex : 617.5" style="margin-top:6px; font-size:26px; font-weight:800; text-align:center; padding:14px;">' +
+            '<div><label for="valeurScore">🔢 Score total (Saisie éclair) :</label><input type="number" step="0.1" id="valeurScore" value="' + scoreDefaut + '" placeholder="Ex : 617.5" style="margin-top:6px; font-size:26px; font-weight:800; text-align:center; padding:14px;">' +
             '<div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:8px; margin-top:10px;">' +
                 '<button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(-1)">-1</button>' +
                 '<button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(-0.5)">-0.5</button>' +
@@ -306,7 +306,7 @@ export function afficherAjoutScore() {
                 '<button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(0.5)">+0.5</button>' +
                 '<button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(1)">+1</button>' +
             '</div></div>' +
-            '<div><label for="noteScore">📝 Notes techniques (plombs, dioptre, sensations) :</label><br><input type="text" id="noteScore" placeholder="Ex : Plombs R10 4.49, +2 clics haut" style="margin-top:6px;"></div>' +
+            '<div><label for="noteScore">📝 Notes techniques (plombs, dioptre, sensations) :</label><input type="text" id="noteScore" placeholder="Ex : Plombs R10 4.49, +2 clics haut" style="margin-top:6px;"></div>' +
             '<button class="btn btn-primary" style="justify-content:center; padding:14px!important; font-size:16px!important; margin-top:6px;" onclick="enregistrerScore()">💾 Enregistrer le score</button>' +
         '</div>';
 }
@@ -482,9 +482,9 @@ export function afficherTop10() {
 
     let html = '<h2>🥇 Top 10 & 🏆 Historique des records</h2>' +
         '<div class="podium" style="display:flex; gap:10px; margin-bottom:16px;">' +
-            '<div class="second card" style="text-align:center; flex:1;">🥈<br><b>' + (top10[1] ? top10[1].score : "-") + '</b></div>' +
-            '<div class="first card" style="text-align:center; flex:1; border:2px solid gold;">🥇<br><b style="color:gold;">' + (top10[0] ? top10[0].score : "-") + '</b></div>' +
-            '<div class="third card" style="text-align:center; flex:1;">🥉<br><b>' + (top10[2] ? top10[2].score : "-") + '</b></div>' +
+            '<div class="second card" style="text-align:center; flex:1;">🥈<b>' + (top10[1] ? top10[1].score : "-") + '</b></div>' +
+            '<div class="first card" style="text-align:center; flex:1; border:2px solid gold;">🥇<b style="color:gold;">' + (top10[0] ? top10[0].score : "-") + '</b></div>' +
+            '<div class="third card" style="text-align:center; flex:1;">🥉<b>' + (top10[2] ? top10[2].score : "-") + '</b></div>' +
         '</div>' +
         '<div class="card" style="margin-bottom:16px;">' +
             '<p style="color:gold; font-size:20px; font-weight:bold; margin:0 0 6px 0;">🏆 Record personnel absolu : ' + record + '</p>' +
