@@ -116,7 +116,7 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
         prochaineCompetition = "";
         let prochainMatchObj = null;
 
-        for (let i = 4; i < lignes.length; i++) {
+        for (let i = 3; i < lignes.length; i++) {
             const ligne = lignes[i];
             if (!ligne) continue;
             const date = ligne[1];
@@ -173,37 +173,45 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
         });
         html += `</div></div>`;
 
-        // 3. Liste des mois et événements en cartes modernes
-        let moisCourant = "Septembre 2026";
-        html += `
-            <div class="month-header">
-                📅 Septembre 2026
-            </div>
-            <div class="calendar-grid">
-        `;
+        // 3. Liste des mois et événements en cartes modernes (avec mémorisation robuste du mois)
+        let moisCourant = "";
+        let premierMoisAffiche = false;
 
-        for (let i = 4; i < lignes.length; i++) {
+        for (let i = 3; i < lignes.length; i++) {
             const ligne = lignes[i];
             if (!ligne) continue;
 
+            const moisBrut = ligne[0];
             const date = ligne[1];
             const evenement = ligne[2];
             const lieu = ligne[3];
             const statut = ligne[5];
-            const mois = ligne[0];
 
-            if (mois && mois !== moisCourant) {
-                moisCourant = mois;
-                html += `
-                    </div>
-                    <div class="month-header" style="margin-top:30px;">
-                        📅 ${mois}
-                    </div>
-                    <div class="calendar-grid">
-                `;
+            if (moisBrut) {
+                moisCourant = moisBrut;
             }
 
             if (evenement && (filtre === "toutes" || statut === "À venir")) {
+                // Si on change de mois, on ferme l'ancien conteneur grid et on ouvre un nouvel en-tête
+                if (!premierMoisAffiche) {
+                    html += `
+                        <div class="month-header">
+                            📅 ${moisCourant || "Septembre 2026"}
+                        </div>
+                        <div class="calendar-grid">
+                    `;
+                    premierMoisAffiche = true;
+                    var dernierMoisAffiche = moisCourant;
+                } else if (moisCourant && moisCourant !== dernierMoisAffiche) {
+                    html += `</div>
+                        <div class="month-header" style="margin-top:25px;">
+                            📅 ${moisCourant}
+                        </div>
+                        <div class="calendar-grid">
+                    `;
+                    dernierMoisAffiche = moisCourant;
+                }
+
                 const texteComplet = `${date || ""} ${evenement} ${lieu || ""}`.toLowerCase();
                 const estAvenir = (statut === "À venir");
                 
@@ -229,7 +237,9 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
                 `;
             }
         }
-        html += `</div>`;
+        if (premierMoisAffiche) {
+            html += `</div>`;
+        }
 
         if (afficher) {
             document.getElementById("etat").innerHTML = html;
@@ -389,4 +399,318 @@ async function enregistrerScore() {
     }
 
     const morceaux = date.split("-");
-    const date
+    const dateFormatee = morceaux[2] + "/" + morceaux[1];
+
+    if (type === "match") {
+        datesMatchs.push(dateFormatee);
+        scoresExcel.push(score);
+    } else {
+        datesEntrainements.push(dateFormatee);
+        entrainementsExcel.push(score);
+    }
+
+    alert("✅ Score enregistré");
+    afficherResultats();
+}
+
+function voirScores() {
+    let historique = JSON.parse(localStorage.getItem("scores")) || [];
+    let html = "<h2>📋 Scores saisis</h2>";
+
+    if (historique.length === 0) {
+        html += `<p>Aucun score enregistré.</p>`;
+    } else {
+        historique.forEach((item, index) => {
+            html += `
+                <div class="competition competition-card">
+                    <div class="competition-left">
+                        <div class="competition-date-badge">${item.date}</div>
+                        <div class="competition-details">
+                            <div class="competition-title">${item.type === "match" ? "🏆 Compétition" : "🏋️ Entraînement"}</div>
+                            <div class="competition-location">Score : <b>${item.score}</b></div>
+                        </div>
+                    </div>
+                    <div>
+                        <button onclick="supprimerScore(${index})" style="background:#dc3545; color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:600;">
+                            🗑️ Supprimer
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+    document.getElementById("etat").innerHTML = html;
+}
+
+async function supprimerScore(index) {
+    if (!confirm("Supprimer ce score ?")) return;
+
+    let historique = JSON.parse(localStorage.getItem("scores")) || [];
+    const scoreASupprimer = historique[index];
+
+    await supabaseClient.from("scores").delete()
+        .eq("date", scoreASupprimer.date)
+        .eq("type", scoreASupprimer.type)
+        .eq("score", scoreASupprimer.score);
+
+    historique.splice(index, 1);
+    localStorage.setItem("scores", JSON.stringify(historique));
+    await synchroniserEtRecharger();
+}
+
+function afficherStats() {
+    pageActuelle = "stats";
+    const scores = [...scoresExcel, ...entrainementsExcel];
+
+    if (scores.length === 0) {
+        document.getElementById("etat").innerHTML = "Aucun score trouvé.";
+        return;
+    }
+
+    const meilleurCompetition = scoresExcel.length > 0 ? Math.max(...scoresExcel) : 0;
+    const meilleurEntrainement = entrainementsExcel.length > 0 ? Math.max(...entrainementsExcel) : 0;
+    const moyenne = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
+    const totalResultats = scoresExcel.length + entrainementsExcel.length;
+
+    const tousLesScores = [];
+    for (let i = 0; i < datesMatchs.length; i++) tousLesScores.push({ date: datesMatchs[i], score: scoresExcel[i] });
+    for (let i = 0; i < datesEntrainements.length; i++) tousLesScores.push({ date: datesEntrainements[i], score: entrainementsExcel[i] });
+
+    tousLesScores.sort((a, b) => {
+        const [ja, ma] = a.date.split("/");
+        const [jb, mb] = b.date.split("/");
+        return new Date(2026, ma - 1, ja) - new Date(2026, mb - 1, jb);
+    });
+
+    const dernier = tousLesScores.length > 0 ? tousLesScores[tousLesScores.length - 1].score : 0;
+
+    document.getElementById("etat").innerHTML = `
+        <h2>📈 Statistiques</h2>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:15px;">
+            <div class="card"><h3>🎯 Dernier score</h3><p style="font-size:32px; font-weight:bold;">${dernier}</p></div>
+            <div class="card"><h3>🏆 Record</h3><p style="font-size:32px; font-weight:bold; color:gold;">${meilleurEntrainement}</p></div>
+            <div class="card"><h3>📊 Moyenne</h3><p style="font-size:32px; font-weight:bold;">${moyenne}</p></div>
+            <div class="card"><h3>📋 Résultats</h3><p style="font-size:32px; font-weight:bold;">${totalResultats}</p></div>
+        </div>
+        <hr style="margin:20px 0; border:0; border-top:1px solid var(--border);">
+        <h3>📊 Évolution des performances</h3>
+        <div class="chart-wrap"><canvas id="graphiqueScores"></canvas></div>
+    `;
+
+    if (graphiqueInstance) {
+        try { graphiqueInstance.destroy(); } catch (e) {}
+        graphiqueInstance = null;
+    }
+
+    const ctx = document.getElementById("graphiqueScores");
+    const events = [];
+    for (let i = 0; i < datesMatchs.length; i++) events.push({ date: datesMatchs[i], ts: dateFRversTS(datesMatchs[i]), score: Number(scoresExcel[i]), type: "match", idx: i });
+    for (let i = 0; i < datesEntrainements.length; i++) events.push({ date: datesEntrainements[i], ts: dateFRversTS(datesEntrainements[i]), score: Number(entrainementsExcel[i]), type: "entrainement", idx: i });
+    events.sort((a, b) => (a.ts - b.ts) || (a.idx - b.idx));
+
+    const compteDate = {};
+    const labels = events.map(e => {
+        compteDate[e.date] = (compteDate[e.date] || 0) + 1;
+        return compteDate[e.date] > 1 ? e.date + " (" + compteDate[e.date] + ")" : e.date;
+    });
+    const serieMatchs = events.map(e => e.type === "match" ? e.score : null);
+    const serieEntrainements = events.map(e => e.type === "entrainement" ? e.score : null);
+
+    graphiqueInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels,
+            datasets: [
+                { label: "Compétitions", data: serieMatchs, borderColor: "#17365D", backgroundColor: "rgba(23,54,93,0.20)", borderWidth: 4, tension: 0.4, spanGaps: true, pointRadius: 8 },
+                { label: "Entraînements", data: serieEntrainements, borderColor: "#28a745", backgroundColor: "rgba(40,167,69,0.20)", borderWidth: 4, tension: 0.4, spanGaps: true, pointRadius: 8 }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            plugins: { legend: { labels: { font: { size: 14, weight: "bold" } } } },
+            scales: {
+                y: { suggestedMin: 550, suggestedMax: 650, grid: { color: "rgba(0,0,0,0.06)" } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+}
+
+function exporterScores() {
+    const historique = JSON.parse(localStorage.getItem("scores")) || [];
+    if (historique.length === 0) { alert("Aucun score à exporter."); return; }
+    const contenu = JSON.stringify(historique, null, 2);
+    const blob = new Blob([contenu], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const lien = document.createElement("a");
+    lien.href = url;
+    lien.download = "scores_cecillya.json";
+    document.body.appendChild(lien);
+    lien.click();
+    document.body.removeChild(lien);
+    URL.revokeObjectURL(url);
+    alert("✅ Export terminé");
+}
+
+function exporterExcel() {
+    const historique = JSON.parse(localStorage.getItem("scores")) || [];
+    if (historique.length === 0) { alert("Aucun score à exporter."); return; }
+    const donnees = historique.map(item => ({
+        Date: item.date,
+        Type: item.type === "match" ? "Compétition" : "Entraînement",
+        Score: Number(item.score)
+    }));
+    donnees.unshift({ Date: new Date().toLocaleDateString("fr-FR"), Type: "Export Tir Cécillya", Score: "" });
+    const feuille = XLSX.utils.json_to_sheet(donnees);
+    const classeur = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(classeur, feuille, "Scores");
+    XLSX.writeFile(classeur, "scores_cecillya.xlsx");
+    alert("✅ Export Excel terminé");
+}
+
+function importerScores(event) {
+    const fichier = event.target.files[0];
+    if (!fichier) return;
+
+    const lecteur = new FileReader();
+    lecteur.onload = function (e) {
+        try {
+            const donnees = JSON.parse(e.target.result);
+            if (!Array.isArray(donnees)) { alert("❌ Fichier invalide."); return; }
+            donnees.forEach(item => {
+                if (item.type === "Compétition") item.type = "match";
+                if (item.type === "Entraînement") item.type = "entrainement";
+            });
+
+            let historique = JSON.parse(localStorage.getItem("scores")) || [];
+            const existants = new Set(historique.map(item => item.date + "|" + item.type + "|" + item.score));
+            const nouveaux = donnees.filter(item => !existants.has(item.date + "|" + item.type + "|" + item.score));
+
+            historique = [...historique, ...nouveaux];
+            localStorage.setItem("scores", JSON.stringify(historique));
+            alert("✅ " + nouveaux.length + " nouveau(x) score(s) importé(s).");
+            chargerCalendrier().then(() => { afficherResultats(); });
+        } catch (erreur) {
+            alert("❌ Erreur lors de l'import.");
+        }
+    };
+    lecteur.readAsText(fichier);
+}
+
+function afficherTableauDeBord() {
+    pageActuelle = "tableau";
+    const tousLesScores = [...scoresExcel, ...entrainementsExcel];
+    const moyenne = tousLesScores.length > 0 ? (tousLesScores.reduce((a, b) => a + b, 0) / tousLesScores.length).toFixed(1) : 0;
+    const record = tousLesScores.length > 0 ? Math.max(...tousLesScores) : 0;
+    const dernier = tousLesScores.length > 0 ? tousLesScores[tousLesScores.length - 1] : 0;
+
+    document.getElementById("etat").innerHTML = `
+        <h2>🏠 Tableau de bord</h2>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:10px;">
+            <div class="card"><h3>🎯 Dernier score</h3><p style="font-size:28px; font-weight:bold;">${dernier}</p></div>
+            <div class="card"><h3>🏆 Record personnel</h3><p style="font-size:28px; font-weight:bold; color:gold;">${record}</p></div>
+            <div class="card"><h3>📈 Moyenne saison</h3><p style="font-size:28px; font-weight:bold;">${moyenne}</p></div>
+            <div class="card"><h3>📋 Résultats</h3><p style="font-size:28px; font-weight:bold;">${tousLesScores.length}</p></div>
+        </div>
+        <div class="card" style="border-left: 5px solid #2563eb; margin-top:16px;">
+            <h3>📅 Prochaine compétition</h3>
+            <p style="font-size:1.1em; font-weight:bold; margin:6px 0 0 0;">${prochaineCompetition || "Aucune compétition"}</p>
+        </div>
+    `;
+}
+
+async function synchroniserScores() {
+    const { data, error } = await supabaseClient.from("scores").select("*");
+    if (error) { console.error(error); return; }
+    const historique = data.map(item => ({ date: item.date, type: item.type, score: Number(item.score) }));
+    localStorage.setItem("scores", JSON.stringify(historique));
+}
+
+async function synchroniserEtRecharger(silencieux = false) {
+    if (syncEnCours) return;
+    syncEnCours = true;
+    const badge = document.getElementById("sync-badge");
+    if (badge) { badge.textContent = "🔄 Sync…"; badge.classList.add("syncing"); }
+    const scrollY = window.scrollY;
+    const rechercheActive = document.getElementById("recherche") ? document.getElementById("recherche").value : "";
+
+    try {
+        await synchroniserScores();
+        scoresExcel = []; entrainementsExcel = []; datesMatchs = []; datesEntrainements = [];
+        const doitAfficherCalendrier = (pageActuelle !== "stats" && pageActuelle !== "resultats" && pageActuelle !== "top10" && pageActuelle !== "tableau");
+        await chargerCalendrier("avenir", doitAfficherCalendrier);
+
+        switch (pageActuelle) {
+            case "stats": afficherStats(); break;
+            case "resultats": afficherResultats(); break;
+            case "top10": afficherTop10(); break;
+            case "calendrier": break;
+            default: afficherTableauDeBord();
+        }
+        if (!silencieux) afficherToast("✅ Synchronisation terminée");
+    } finally {
+        syncEnCours = false;
+        if (badge) { badge.textContent = "● À jour"; badge.classList.remove("syncing"); }
+        window.scrollTo(0, scrollY);
+        const r = document.getElementById("recherche");
+        if (r && rechercheActive) { r.value = rechercheActive; }
+    }
+}
+
+function afficherTop10() {
+    pageActuelle = "top10";
+    const tousLesScores = [];
+    for (let i = 0; i < datesMatchs.length; i++) tousLesScores.push({ date: datesMatchs[i], type: "🏆 Compétition", score: Number(scoresExcel[i]) });
+    for (let i = 0; i < datesEntrainements.length; i++) tousLesScores.push({ date: datesEntrainements[i], type: "🏋️ Entraînement", score: Number(entrainementsExcel[i]) });
+
+    if (tousLesScores.length === 0) {
+        document.getElementById("etat").innerHTML = "<h2>🥇 Top 10</h2><p>Aucun score.</p>";
+        return;
+    }
+
+    const top10 = tousLesScores.sort((a, b) => b.score - a.score).slice(0, 10);
+    const record = top10.length > 0 ? top10[0].score : 0;
+    const moyenneTop10 = top10.length > 0 ? (top10.reduce((total, item) => total + item.score, 0) / top10.length).toFixed(1) : 0;
+
+    let html = `
+        <h2>🥇 Top 10 des meilleurs scores</h2>
+        <div class="podium" style="display:flex; gap:10px; margin-bottom:16px;">
+            <div class="second card" style="text-align:center; flex:1;">🥈<br><b>${top10[1] ? top10[1].score : "-"}</b></div>
+            <div class="first card" style="text-align:center; flex:1; border:2px solid gold;">🥇<br><b style="color:gold;">${top10[0] ? top10[0].score : "-"}</b></div>
+            <div class="third card" style="text-align:center; flex:1;">🥉<br><b>${top10[2] ? top10[2].score : "-"}</b></div>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+            <p style="color:gold; font-size:20px; font-weight:bold; margin:0 0 6px 0;">🏆 Record personnel : ${record}</p>
+            <p style="font-size:16px; margin:0;">📈 Moyenne du Top 10 : <b>${moyenneTop10}</b></p>
+        </div>
+    `;
+
+    top10.forEach((item, index) => {
+        const emoji = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "🎯";
+        html += `
+            <div class="competition competition-card">
+                <div class="competition-left">
+                    <div class="competition-date-badge">${emoji} #${index + 1}</div>
+                    <div class="competition-details">
+                        <div class="competition-title">${item.type}</div>
+                        <div class="competition-location">📅 ${item.date}</div>
+                    </div>
+                </div>
+                <div>
+                    <span class="competition-badge-status status-avenir">Score : <b>${item.score}</b></span>
+                </div>
+            </div>
+        `;
+    });
+
+    document.getElementById("etat").innerHTML = html;
+}
+
+function toggleTheme() {
+    document.body.classList.toggle("dark");
+    document.documentElement.setAttribute("data-theme", document.body.classList.contains("dark") ? "dark" : "light");
+    const modeSombre = document.body.classList.contains("dark");
+    localStorage.setItem("theme", modeSombre ? "dark" : "light");
+}
