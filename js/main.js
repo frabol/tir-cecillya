@@ -1,7 +1,6 @@
 import { state, chargerDonneesExcelEtCalendrier, exporterEvenementICS } from './calendar.js';
 import * as ui from './ui.js';
 
-// Fonction de synchronisation et rechargement intégrée directement
 export async function synchroniserEtRecharger() {
     ui.afficherToast("🔄 Synchronisation en cours...");
     try {
@@ -24,7 +23,6 @@ export async function synchroniserEtRecharger() {
     }
 }
 
-// Fonction de recherche de compétition intégrée
 export function rechercherCompetition() {
     const input = document.getElementById("recherche");
     if (!input) return;
@@ -41,7 +39,7 @@ export function rechercherCompetition() {
     });
 }
 
-// Rendre toutes les fonctions accessibles globalement pour le HTML (onclick)
+// Pont global pour le HTML (onclick)
 window.afficherTableauDeBord = ui.afficherTableauDeBord;
 window.afficherToutes = () => ui.afficherCalendrier("toutes");
 window.afficherAVenir = () => ui.afficherCalendrier("avenir");
@@ -82,7 +80,6 @@ export async function initApp() {
     }
 }
 
-// Lancement au chargement de la page
 document.addEventListener("DOMContentLoaded", () => {
     initApp();
 });
