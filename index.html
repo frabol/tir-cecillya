@@ -1,407 +1,117 @@
 <!DOCTYPE html>
-<html lang="fr">
-
+<html lang="fr" data-theme="light">
 <head>
-
-    <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="manifest" href="manifest.json">
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <meta name="theme-color" content="#17365D">
-    <meta name="mobile-web-app-capable" content="yes">
-
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Tir Cécillya">
-
-    <link rel="apple-touch-icon" href="icon-192.png">
-
-    <title>Tir Cécillya</title>
-    
-    <style>
-    #graphiqueScores{
-
-    background:white;
-
-    border-radius:15px;
-
-    margin-top:20px;
-
-    height:450px !important;
-
-    width:100%;
-
-}
-    .dark{
-
-    background:#121212;
-
-    color:white;
-
-}
-
-.dark .card{
-
-    background:#1f1f1f;
-
-    color:white;
-
-}
-        
-.podium{
-    display:flex;
-    justify-content:center;
-    align-items:flex-end;
-    gap:10px;
-    margin:20px 0;
-}
-
-.first:hover,
-.second:hover,
-.third:hover{
-
-    transform:scale(1.05);
-
-}
-
-.first{
-    height:140px;
-    background:linear-gradient(
-        180deg,
-        #ffd700,
-        #e6b800
-    );
-
-    box-shadow:
-        0 4px 12px rgba(0,0,0,0.2);
-}
-
-.second{
-    height:110px;
-    background:linear-gradient(
-        180deg,
-        #d9d9d9,
-        #bfbfbf
-    );
-
-    box-shadow:
-        0 4px 12px rgba(0,0,0,0.2);
-}
-
-.third{
-    height:90px;
-
-    background:linear-gradient(
-        180deg,
-        #cd7f32,
-        #a85f17
-    );
-
-    color:white;
-
-    box-shadow:
-        0 4px 12px rgba(0,0,0,0.2);
-}
-     .competition{
- 
-padding:12px;
- 
-border-bottom:1px solid #ddd;
- 
-transition:0.3s;
-}
- 
-.competition:hover{
- 
-background:#f8faff;
- 
-border-radius:10px;
- 
-}   
-       .dark{
-
-    background:#121212 !important;
-
-    color:white;
-
-}
-
-.dark .card{
-
-    background:#1f1f1f;
-
-    color:white;
-
-}
-
-.dark .competition{
-
-    border-bottom:1px solid #444;
-
-}
-
-.dark .competition:hover{
-
-    background:#2a2a2a;
-
-}
-
-.dark input,
-.dark select{
-
-    background:#2a2a2a;
-
-    color:white;
-
-    border:1px solid #555;
-
-}
-
-.dark button{
-
-    background:#2a2a2a;
-
-    color:white;
-
-}
-
-.dark button:hover{
-
-    background:#2563eb;
-
-}
-
-.dark #graphiqueScores{
-
-    background:#1f1f1f;
-
-}
-
-.dark .date{
-
-    color:#7cb3ff;
-
-} 
-        body{
-    margin:0;
-
-    font-family:
-        'Segoe UI',
-        Arial,
-        sans-serif;
-
-    background:
-        linear-gradient(
-            180deg,
-            #eef4ff,
-            #f5f7fa
-        );
-}
-
-        header{
-
-    background:
-        linear-gradient(
-            135deg,
-            #17365D,
-            #2563eb
-        );
-
-    padding:25px;
-
-    text-align:center;
-
-    color:white;
-
-    box-shadow:
-        0 4px 15px rgba(0,0,0,0.15);
-
-}
-
-      .card{
-    background:white;
-    margin:15px auto;
-    padding:20px;
-    border-radius:18px;
-
-    box-shadow:
-        0 8px 20px rgba(0,0,0,0.08);
-
-    max-width:1400px;
-
-    transition:all 0.3s ease;
-}
-
-.card:hover{
-
-    transform:translateY(-4px);
-
-    box-shadow:
-        0 12px 25px rgba(0,0,0,0.12);
-
-}
-
-        h2{
-            margin-top:0;
-        }
-
-        .competition{
-            padding:10px;
-            border-bottom:1px solid #ddd;
-        }
-
-        .date{
-            font-weight:bold;
-            color:#17365D;
-        }
-
-      button{
-
-    cursor:pointer;
-
-    border:none;
-
-    background:white;
-
-    transition:all 0.3s ease;
-
-    box-shadow:
-        0 2px 8px rgba(0,0,0,0.1);
-
-}
-
-button:hover{
-
-    transform:translateY(-2px);
-
-    background:#2563eb;
-
-    color:white;
-
-}
-
-      input{
-
-    border:none;
-
-    box-shadow:
-        0 2px 8px rgba(0,0,0,0.08);
-
-}
-
-    </style>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tir Cécillya — Suivi & Calendrier Ligue Tir NPdC</title>
+<meta name="description" content="Tir Cécillya : tableau de bord, résultats, statistiques et calendrier Ligue Tir Nord-Pas-de-Calais 2026-2027.">
+<meta name="theme-color" content="#0a1931">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
 
-<header>
-
-    <h1>Tir Cécillya</h1>
-
-    <p>Calendrier Ligue Tir NPdC</p>
-
+<header class="hero">
+  <div class="hero-badge">🎯 Tir sportif • Carabine • Saison 2026-2027</div>
+  <h1>Tir <span>Cécillya</span></h1>
+  <p>Calendrier Ligue Tir Nord-Pas-de-Calais • Suivi des scores & performances</p>
+  <div class="hero-stats">
+    <div class="hero-pill">📍 NPdC</div>
+    <div class="hero-pill">🏆 Compétitions & entraînements</div>
+    <div class="hero-pill">📊 Stats en direct</div>
+  </div>
 </header>
 
-<div style="
-    display:flex;
-    gap:5px;
-    flex-wrap:wrap;
-    padding:10px;
-    justify-content:center;
-">
-
-    <input
-        type="text"
-        id="recherche"
-        placeholder="🔍 Rechercher une compétition ou un lieu"
-        onkeyup="rechercherCompetition()"
-    >
-    
-    <button onclick="afficherTableauDeBord()">
-         🏠 Tableau de bord
-    </button>
-    
-    <button onclick="afficherToutes()">
-        📅 Toutes
-    </button>
-
-    <button onclick="afficherAVenir()">
-        ✅ À venir
-    </button>
-
-    <button onclick="afficherResultats()">
-        🏆 Résultats
-    </button>
-
-    <button onclick="afficherStats()">
-        📈 Statistiques
-    </button> 
-    
-    <button onclick="afficherTop10()">
-    🥇 Top 10
-    </button>
-    
-    <button onclick="afficherAjoutScore()">
-        ➕ Ajouter un score
-    </button>
-
-    <button onclick="voirScores()">
-        📋 Scores saisis
-    </button>
-
-    <button onclick="exporterScores()">
-        📥 Exporter les scores
-    </button>
-    
-    <button onclick="exporterExcel()">
-    📊 Export Excel
-    </button>
-<button onclick="synchroniserEtRecharger()">
-    ☁️ Synchroniser
-</button>
-<button onclick="document.getElementById('importScores').click()">
-    📂 Importer les scores
-</button>
-    
-<button onclick="toggleTheme()">
-    🌙 Mode sombre
-</button>
-    
-<input
-    type="file"
-    id="importScores"
-    accept=".json"
-    onchange="importerScores(event)"
-    style="display:none"
->
-
-</div>
-
-<div class="card">
-
-    <div id="etat">
-        Chargement...
+<div class="toolbar-wrap">
+  <nav class="toolbar" aria-label="Navigation principale">
+    <div class="toolbar-row">
+      <div class="search">
+        <span>🔍</span>
+        <input type="text" id="recherche" placeholder="Rechercher une compétition ou un lieu…" onkeyup="rechercherCompetition()">
+      </div>
+      <button class="btn btn-gold" onclick="synchroniserEtRecharger()">☁️ Synchroniser</button>
+      <button class="btn" onclick="toggleTheme()">🌙 Mode sombre</button>
     </div>
-
+    <div class="toolbar-row" role="tablist">
+      <button class="btn btn-primary" onclick="afficherTableauDeBord()">🏠 Tableau de bord</button>
+      <button class="btn" onclick="afficherToutes()">📅 Toutes</button>
+      <button class="btn" onclick="afficherAVenir()">✅ À venir</button>
+      <button class="btn" onclick="afficherResultats()">🏆 Résultats</button>
+      <button class="btn" onclick="afficherStats()">📈 Statistiques</button>
+      <button class="btn" onclick="afficherTop10()">🥇 Top 10</button>
+    </div>
+    <div class="toolbar-row">
+      <button class="btn" onclick="afficherAjoutScore()">➕ Ajouter un score</button>
+      <button class="btn" onclick="voirScores()">📋 Scores saisis</button>
+      <button class="btn" onclick="exporterScores()">📥 Export JSON</button>
+      <button class="btn" onclick="exporterExcel()">📊 Export Excel</button>
+      <button class="btn" onclick="document.getElementById('importScores').click()">📂 Importer</button>
+      <input type="file" id="importScores" accept=".json" onchange="importerScores(event)" style="display:none">
+    </div>
+  </nav>
 </div>
+
+<main class="container">
+  <div class="card">
+    <div id="etat">
+      <h2>🏠 Tableau de bord</h2>
+      <p>Chargement des données…</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h2>💡 Comment utiliser ce site ?</h2>
+    <p style="color:var(--muted);line-height:1.6;margin:0">
+      1️⃣ Consultez le <b>calendrier Ligue</b> •
+      2️⃣ Ajoutez vos <b>scores d'entraînement et de match</b> •
+      3️⃣ Suivez votre <b>moyenne, record et progression</b> dans Statistiques •
+      4️⃣ <b>Synchronisez</b> pour retrouver vos données sur mobile et PC.
+    </p>
+  </div>
+</main>
+
+<footer>
+  Tir Cécillya • Fait avec ❤️ pour la saison 2026-2027 • Données stockées localement + Supabase
+</footer>
 
 <script>
-
-if ('serviceWorker' in navigator) {
-
-    navigator.serviceWorker.register('service-worker.js');
-
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js'); }
+// Petit patch visuel : transforme automatiquement le tableau de bord généré par app.js en KPI modernes
+const _origBord = window.afficherTableauDeBord;
+function _embellirTableau(){
+  const etat = document.getElementById('etat');
+  if(!etat) return;
+  // KPI grid
+  const grid = etat.querySelector('div[style*="grid-template"]');
+  if(grid){ grid.classList.add('kpi-grid'); grid.removeAttribute('style');
+    grid.querySelectorAll(':scope > div').forEach(d=>d.classList.add('kpi'));
+  }
+  // Prochaine compet -> bannière
+  const cards = etat.querySelectorAll(':scope > div.card, :scope div.card');
+  cards.forEach(c=>{
+    if(c.textContent.includes('Prochaine compétition')) c.classList.add('next-match');
+  });
+  // Active button
+  document.querySelectorAll('.toolbar .btn').forEach(b=>b.classList.remove('active'));
 }
-
+setInterval(_embellirTableau, 400);
+function toggleTheme(){
+  const html = document.documentElement;
+  const cur = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', cur);
+  localStorage.setItem('theme', cur);
+  document.body.classList.toggle('dark', cur==='dark');
+  const btns = document.querySelectorAll('.toolbar .btn');
+}
+(function(){
+  const saved = localStorage.getItem('theme');
+  if(saved==='dark'){ document.documentElement.setAttribute('data-theme','dark'); }
+})();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
-
-</body>
+<script>window.__CF$cv$params={r:'a59d1d7cdaee0071',t:'MTc5NDU2NTk3NA==',u:'01a1d477ab3177638d1f252c8fb0e784',ut:'GKMH2zPGF59hTGlw70a3aK_TqbbtaXlrzTx9miIzbE8-1794565974-1.2.1.1-HBMAzZlgql_06aPYr0rCjVfd4hQ3MnlM_xqY8Td.w7m.rPMtvHCFysLOBv_2dxYdy9nM0eDFQxTiNBA4nn2dFBuruJ5xkE8D_de9BRAQ_6I',i:60};(function(){if(!document.body)return;var l=window.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/precursor/main.js?ray=a59d1d7cdaee0071',s=document.createElement('script');s.src=o?new URL(u,o).href:u;document.head.appendChild(s);})();</script></body>
 </html>
