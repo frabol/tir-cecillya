@@ -1,4 +1,3 @@
-
 let pageActuelle = "tableau";
 let scoresExcel = [];
 let entrainementsExcel = [];
@@ -163,9 +162,9 @@ async function chargerCalendrier(filtre = "avenir", afficher = true) {
             { id: "all", label: "Tous" },
             { id: "10m", label: "10m" },
             { id: "25m", label: "25m" },
-            { id: "50m", label: "Carabine 50m" },
-            { id: "carabine10m", label: "Carabine 10m (C10)" },
-            { id: "pistolet", label: "Pistolet (P10/PV)" }
+            { id: "carabine10m", label: "Carabine 10m" },
+            { id: "carabine50m", label: "Carabine 50m" },
+            { id: "pistolet", label: "Pistolet" }
         ];
 
         html += `<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">`;
@@ -264,9 +263,13 @@ function appliquerFiltresCalendrier() {
         if (filtreDisciplineActif === "pistolet") {
             okDiscipline = texte.includes("pistolet") || texte.includes("p10") || texte.includes("pv") || texte.includes("p std");
         } else if (filtreDisciplineActif === "carabine10m") {
-            okDiscipline = (texte.includes("carabine") || texte.includes("c10")) && !texte.includes("50m");
-        } else if (filtreDisciplineActif === "50m") {
-            okDiscipline = texte.includes("50m") || texte.includes("300m");
+            okDiscipline = (texte.includes("carabine") || texte.includes("c10")) && !texte.includes("50m") && !texte.includes("300m");
+        } else if (filtreDisciplineActif === "carabine50m") {
+            okDiscipline = texte.includes("50m") || texte.includes("300m") || texte.includes("carabine 50");
+        } else if (filtreDisciplineActif === "10m") {
+            okDiscipline = texte.includes("10m") || texte.includes("c10") || texte.includes("p10");
+        } else if (filtreDisciplineActif === "25m") {
+            okDiscipline = texte.includes("25m");
         } else if (filtreDisciplineActif !== "all") {
             okDiscipline = texte.includes(filtreDisciplineActif);
         }
