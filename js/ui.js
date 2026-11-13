@@ -484,45 +484,39 @@ export function afficherStats() {
     let htmlMensuel = "";
     for (const mois in stats.statsParMois) {
         const moyMois = (stats.statsParMois[mois].somme / stats.statsParMois[mois].count).toFixed(1);
-        htmlMensuel += `
-            <div class="monthly-stat-item">
-                <span>📅 ${mois} (${stats.statsParMois[mois].count} tirs)</span>
-                <span>Moyenne : <b>${moyMois}</b> | Max : <b style="color:gold;">${stats.statsParMois[mois].max}</b></span>
-            </div>
-        `;
+        htmlMensuel += '<div class="monthly-stat-item">';
+        htmlMensuel += '<span>📅 ' + mois + ' (' + stats.statsParMois[mois].count + ' tirs)</span>';
+        htmlMensuel += '<span>Moyenne : <b>' + moyMois + '</b> | Max : <b style="color:gold;">' + stats.statsParMois[mois].max + '</b></span>';
+        htmlMensuel += '</div>';
     }
 
-    document.getElementById("etat").innerHTML = `
-        <h2>📈 Statistiques & Progression</h2>
-        <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:15px;">
-            <div class="card"><h3>🎯 Dernier score</h3><p style="font-size:32px; font-weight:bold;">${stats.dernier}</p></div>
-            <div class="card"><h3>🏆 Record</h3><p style="font-size:32px; font-weight:bold; color:gold;">${stats.meilleurGlobal}</p></div>
-            <div class="card"><h3>📊 Moyenne saison</h3><p style="font-size:32px; font-weight:bold;">${stats.moyenne}</p></div>
-            <div class="card"><h3>📋 Résultats</h3><p style="font-size:32px; font-weight:bold;">${stats.totalResultats}</p></div>
-        </div>
-
-        <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap:15px; margin-top:15px;">
-            <div class="card" style="border-left: 4px solid #10b981;">
-                <h3>🔥 Forme du moment (5 derniers tirs)</h3>
-                <p style="font-size:28px; font-weight:bold; margin:8px 0 4px 0;">${stats.moyenne5} pts</p>
-                <small style="color:var(--muted); font-weight:600;">${stats.badgeForme}</small>
-            </div>
-            <div class="card" style="border-left: 4px solid #f5b301;">
-                <h3>📐 Régularité (Écart-type)</h3>
-                <p style="font-size:28px; font-weight:bold; margin:8px 0 4px 0;">± ${stats.ecartType} pts</p>
-                <small style="color:var(--muted); font-weight:600;">Profil : ${stats.appreciationRegularite}</small>
-            </div>
-        </div>
-
-        <div class="card" style="margin-top:20px;">
-            <h3>📈 Progression mensuelle automatique</h3>
-            ${htmlMensuel || "<p>Aucune donnée mensuelle disponible.</p>"}
-        </div>
-
-        <hr style="margin:20px 0; border:0; border-top:1px solid var(--border);">
-        <h3>📊 Évolution des performances & Objectif (${stats.objectif} pts)</h3>
-        <div class="chart-wrap"><canvas id="graphiqueScores"></canvas></div>
-    `;
+    document.getElementById("etat").innerHTML = 
+        '<h2>📈 Statistiques & Progression</h2>' +
+        '<div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:15px;">' +
+            '<div class="card"><h3>🎯 Dernier score</h3><p style="font-size:32px; font-weight:bold;">' + stats.dernier + '</p></div>' +
+            '<div class="card"><h3>🏆 Record</h3><p style="font-size:32px; font-weight:bold; color:gold;">' + stats.meilleurGlobal + '</p></div>' +
+            '<div class="card"><h3>📊 Moyenne saison</h3><p style="font-size:32px; font-weight:bold;">' + stats.moyenne + '</p></div>' +
+            '<div class="card"><h3>📋 Résultats</h3><p style="font-size:32px; font-weight:bold;">' + stats.totalResultats + '</p></div>' +
+        '</div>' +
+        '<div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap:15px; margin-top:15px;">' +
+            '<div class="card" style="border-left: 4px solid #10b981;">' +
+                '<h3>🔥 Forme du moment (5 derniers tirs)</h3>' +
+                '<p style="font-size:28px; font-weight:bold; margin:8px 0 4px 0;">' + stats.moyenne5 + ' pts</p>' +
+                '<small style="color:var(--muted); font-weight:600;">' + stats.badgeForme + '</small>' +
+            '</div>' +
+            '<div class="card" style="border-left: 4px solid #f5b301;">' +
+                '<h3>📐 Régularité (Écart-type)</h3>' +
+                '<p style="font-size:28px; font-weight:bold; margin:8px 0 4px 0;">± ' + stats.ecartType + ' pts</p>' +
+                '<small style="color:var(--muted); font-weight:600;">Profil : ' + stats.appreciationRegularite + '</small>' +
+            '</div>' +
+        '</div>' +
+        '<div class="card" style="margin-top:20px;">' +
+            '<h3>📈 Progression mensuelle automatique</h3>' +
+            (htmlMensuel || "<p>Aucune donnée mensuelle disponible.</p>") +
+        '</div>' +
+        '<hr style="margin:20px 0; border:0; border-top:1px solid var(--border);">' +
+        '<h3>📊 Évolution des performances & Objectif (' + stats.objectif + ' pts)</h3>' +
+        '<div class="chart-wrap"><canvas id="graphiqueScores"></canvas></div>';
 
     dessinerGraphique("graphiqueScores");
 }
