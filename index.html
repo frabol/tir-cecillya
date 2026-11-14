@@ -131,7 +131,9 @@ input[name^="serie"] {
 
 <div class="toolbar-wrap">
   <nav class="toolbar" aria-label="Navigation principale">
-    <div class="toolbar-row">
+
+    <!-- Rangée 1 : recherche + actions globales -->
+    <div class="toolbar-row toolbar-row-top">
       <div class="search">
         <span class="ic ic-grey"><svg class="svgi"><use href="#i-search"/></svg></span>
         <input type="text" id="recherche" placeholder="Rechercher une compétition ou un lieu…" oninput="rechercherCompetition()">
@@ -139,16 +141,24 @@ input[name^="serie"] {
       <button class="btn btn-gold" onclick="synchroniserEtRecharger()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-cloud"/></svg></span> Synchroniser</button>
       <button class="btn" onclick="toggleTheme()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-moon"/></svg></span> Mode clair</button>
     </div>
+
+    <!-- Rangée 2 : navigation du calendrier -->
     <div class="toolbar-row" role="tablist">
-      <button class="btn" onclick="afficherTimer()"><span class="ic ic-red"><svg class="svgi"><use href="#i-target"/></svg></span> ⏱️ Timer Stand</button>
       <button class="btn btn-primary" onclick="afficherTableauDeBord()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-home"/></svg></span> Tableau de bord</button>
       <button class="btn" onclick="afficherToutes()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-cal"/></svg></span> Toutes</button>
       <button class="btn" onclick="afficherAVenir()"><span class="ic ic-green"><svg class="svgi"><use href="#i-check"/></svg></span> À venir</button>
       <button class="btn" onclick="afficherResultats()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Résultats</button>
+      <button class="btn" onclick="afficherTimer()"><span class="ic ic-red"><svg class="svgi"><use href="#i-target"/></svg></span> Timer Stand</button>
+    </div>
+
+    <!-- Rangée 3 : analyse -->
+    <div class="toolbar-row">
       <button class="btn" onclick="afficherStats()"><span class="ic ic-green"><svg class="svgi"><use href="#i-trend"/></svg></span> Statistiques</button>
       <button class="btn" onclick="afficherTop10()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-medal"/></svg></span> Top 10</button>
       <button class="btn" onclick="afficherPalmares()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Palmarès</button>
     </div>
+
+    <!-- Rangée 4 : gestion des scores -->
     <div class="toolbar-row">
       <button class="btn" onclick="afficherAjoutScore()"><span class="ic ic-green"><svg class="svgi"><use href="#i-plus"/></svg></span> Ajouter un score</button>
       <button class="btn" onclick="voirScores()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-list"/></svg></span> Scores saisis</button>
@@ -157,6 +167,7 @@ input[name^="serie"] {
       <button class="btn" onclick="document.getElementById('importScores').click()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-folder"/></svg></span> Importer</button>
       <input type="file" id="importScores" accept=".json" onchange="importerScores(event)" style="display:none">
     </div>
+
   </nav>
 </div>
 
@@ -262,6 +273,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script type="module" src="js/main.js?v=7.2"></script>
+<script type="module" src="js/main.js?v=7.3"></script>
 </body>
 </html>
