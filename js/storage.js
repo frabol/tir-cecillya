@@ -8,7 +8,7 @@ export const supabaseClient = window.supabase.createClient(supabaseUrl, supabase
    L'écriture cloud exige une session Supabase Auth valide, et la
    base refuse toute modification sans elle (RLS, voir supabase.sql).
    --------------------------------------------------------------- */
-const EMAIL_AUTORISE = "frabol@tir-cecillya.fr";
+const EMAIL_AUTORISE = "frabol2@hotmail.com";
 const CLE_SESSION = "cecillya_session";
 
 export async function estConnecte() {
