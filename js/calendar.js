@@ -11,26 +11,40 @@ export const state = {
     lieuxParResultat: {},
     filtreDisciplineActif: "all"
 };
+
 function determinerLieu(evenement, lieu) {
 
     const lieuNettoye = String(lieu || "").trim();
+    const evenementTexte = String(evenement || "").trim();
 
+    // Cas normal : lieu réel présent
     if (
         lieuNettoye &&
-        lieuNettoye !== "SUIVANT ZONES"
+        ![
+            "SUIVANT ZONES",
+            "SUIVANT ZONE",
+            "ZONES",
+            "ZONE"
+        ].includes(lieuNettoye.toUpperCase())
     ) {
         return lieuNettoye;
     }
 
-    const match = String(evenement || "")
-        .match(/\(([^)]+)\)/);
+    // Recherche des clubs/stands dans le titre
+    const match = evenementTexte.match(/\(([^)]+)\)/);
 
-    if (match) {
-        return match[1];
+    if (match && match[1]) {
+        return match[1]
+            .split("/")
+            .map(x => x.trim())
+            .filter(Boolean)
+            .join(" • ");
     }
 
-    return lieuNettoye || "Lieu non spécifié";
+    // Cas sans lieu connu
+    return "À déterminer";
 }
+
 export function exporterEvenementICS(titre, dateBrute, moisBrut, lieu, afficherToast) {
     const moisMap = {
         "septembre": "09", "octobre": "10", "novembre": "11", "décembre": "12",
