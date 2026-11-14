@@ -3,13 +3,18 @@ import { getObjectifPersonnel } from './storage.js';
 
 let graphiqueInstance = null;
 
+// Saison 2026-2027 : sept.–déc. → 2026, janv.–juin → 2027.
+export function anneeSaison(mois) {
+    return (mois >= 9) ? 2026 : 2027;
+}
+
 export function dateFRversTS(d) {
     try {
         const p = String(d).split("/");
         if (p.length < 2) return 0;
         const j = parseInt(p[0], 10), m = parseInt(p[1], 10);
         if (!j || !m) return 0;
-        return new Date(2026, m - 1, j).getTime();
+        return new Date(anneeSaison(m), m - 1, j).getTime();
     } catch (e) { return 0; }
 }
 
@@ -39,6 +44,7 @@ export function calculerStatistiques() {
     for (let i = 0; i < state.datesEntrainements.length; i++) {
         tousLesScoresDetailles.push({ date: state.datesEntrainements[i], score: state.entrainementsExcel[i] });
     }
+    tousLesScoresDetailles.sort((a, b) => dateFRversTS(a.date) - dateFRversTS(b.date));
 
     const statsParMois = {};
     const nomsMois = {

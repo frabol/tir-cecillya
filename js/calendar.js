@@ -89,6 +89,21 @@ export function exporterEvenementICS(titre, dateBrute, moisBrut, lieu, afficherT
     if (afficherToast) afficherToast("📅 Événement téléchargé pour votre agenda !");
 }
 
+function convertirCelluleDateExcel(valeur) {
+    if (valeur === null || valeur === undefined || valeur === "") return "";
+    if (typeof valeur === "number") {
+        const jsDate = new Date((valeur - 25569) * 86400 * 1000);
+        return jsDate.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+    }
+    const texte = String(valeur).trim();
+    // Déjà au format JJ/MM ou JJ/MM/AAAA
+    const m = texte.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/);
+    if (m) {
+        return m[1].padStart(2, "0") + "/" + m[2].padStart(2, "0");
+    }
+    return texte;
+}
+
 export async function chargerDonneesExcelEtCalendrier(filtre = "avenir") {
     const response = await fetch("Calendrier_Ligue_Tir_NPdC_2026_2027_dernier.xlsx?v=" + Date.now());
     const data = await response.arrayBuffer();
@@ -109,22 +124,8 @@ export async function chargerDonneesExcelEtCalendrier(filtre = "avenir") {
         const dateEntrainementExcel = donneesGraph[i][15];
         const entrainement = donneesGraph[i][16];
 
-        let dateMatch = "";
-        let dateEntrainement = "";
-
-        if (dateMatchExcel) {
-            if (typeof dateMatchExcel === "number") {
-                const jsDate = new Date((dateMatchExcel - 25569) * 86400 * 1000);
-                dateMatch = jsDate.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
-            } else {
-                dateMatch = String(dateMatchExcel);
-            }
-        }
-
-        if (typeof dateEntrainementExcel === "number") {
-            const jsDate = new Date((dateEntrainementExcel - 25569) * 86400 * 1000);
-            dateEntrainement = jsDate.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
-        }
+        const dateMatch = convertirCelluleDateExcel(dateMatchExcel);
+        const dateEntrainement = convertirCelluleDateExcel(dateEntrainementExcel);
 
         const valeurEntrainement = Number(entrainement);
         if (!isNaN(valeurEntrainement) && valeurEntrainement >= 300) {

@@ -1,9 +1,15 @@
-import { state, chargerDonneesExcelEtCalendrier, exporterEvenementICS } from './calendar.js';
+import { state, chargerDonneesExcelEtCalendrier, exporterEvenementICS as exporterEvenementICSBase } from './calendar.js';
+import { synchroniserScores } from './storage.js';
 import * as ui from './ui.js';
+
+export function exporterEvenementICS(titre, dateBrute, moisBrut, lieu) {
+    exporterEvenementICSBase(titre, dateBrute, moisBrut, lieu, (m) => ui.afficherToast(m));
+}
 
 export async function synchroniserEtRecharger() {
     ui.afficherToast("🔄 Synchronisation en cours...");
     try {
+        try { await synchroniserScores(); } catch (e) { console.warn("Sync Supabase ignorée :", e); }
         await chargerDonneesExcelEtCalendrier("avenir");
         ui.afficherToast("✅ Synchronisation réussie !");
         if (ui.pageActuelle === "tableau") {
@@ -63,6 +69,7 @@ window.modifierObjectifPersonnel = ui.modifierObjectifPersonnel;
 
 export async function initApp() {
     try {
+        try { await synchroniserScores(); } catch (e) { console.warn("Sync Supabase ignorée :", e); }
         await chargerDonneesExcelEtCalendrier("avenir");
         if (ui.pageActuelle === "tableau") {
             ui.afficherTableauDeBord();

@@ -75,16 +75,17 @@ export async function supprimerScoreParIndex(index) {
     const scoreASupprimer = historique[index];
     if (!scoreASupprimer) return { ok: false };
 
-    const { error } = await supabaseClient.from("scores").delete()
-        .eq("date", scoreASupprimer.date)
-        .eq("type", scoreASupprimer.type)
-        .eq("score", scoreASupprimer.score);
-
-    if (error) {
-        return { ok: false };
-    }
-
+    // Offline-first : on retire en local dans tous les cas, puis on tente le cloud.
     historique.splice(index, 1);
     setScoresLocaux(historique);
-    return { ok: true };
+
+    try {
+        const { error } = await supabaseClient.from("scores").delete()
+            .eq("date", scoreASupprimer.date)
+            .eq("type", scoreASupprimer.type)
+            .eq("score", scoreASupprimer.score);
+        return { ok: true, offline: Boolean(error) };
+    } catch (e) {
+        return { ok: true, offline: true };
+    }
 }

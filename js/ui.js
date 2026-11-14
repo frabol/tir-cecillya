@@ -4,6 +4,38 @@ import { calculerStatistiques, dessinerGraphique } from './stats.js';
 
 export let pageActuelle = "tableau";
 
+export function echapperHTML(texte) {
+    return String(texte ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+function echapperAttrJS(texte) {
+    return String(texte ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
+// Saison 2026-2027 : sept.–déc. → 2026, janv.–juin → 2027 (pour un tri chronologique correct).
+function tsJJMM(dateJJMM) {
+    const [j, m] = String(dateJJMM || "").split("/").map(Number);
+    if (!j || !m) return 0;
+    return new Date(m >= 9 ? 2026 : 2027, m - 1, j).getTime();
+}
+
+function construireEvenementsChronologiques() {
+    const events = [];
+    for (let i = 0; i < state.datesMatchs.length; i++) {
+        events.push({ date: state.datesMatchs[i], type: "match", score: Number(state.scoresExcel[i]) });
+    }
+    for (let i = 0; i < state.datesEntrainements.length; i++) {
+        events.push({ date: state.datesEntrainements[i], type: "entrainement", score: Number(state.entrainementsExcel[i]) });
+    }
+    events.sort((a, b) => tsJJMM(a.date) - tsJJMM(b.date));
+    return events;
+}
+
 export function afficherToast(msg) {
     let t = document.getElementById("toast-sync");
     if (!t) {
@@ -105,17 +137,17 @@ export async function afficherCalendrier(filtre = "avenir") {
 
                 const texteComplet = (String(date || "") + " " + String(evenement) + " " + String(lieu || "")).toLowerCase();
                 const estAvenir = (statut === "À venir");
-                const evSafe = String(evenement).replace(/'/g, "\\'");
-                const lieuSafe = String(lieu || "Lieu non spécifié").replace(/'/g, "\\'");
-                const dateSafe = String(date || "").replace(/'/g, "\\'");
-                const moisSafe = String(moisCourant || "").replace(/'/g, "\\'");
+                const evSafe = echapperAttrJS(evenement);
+                const lieuSafe = echapperAttrJS(lieu || "Lieu non spécifié");
+                const dateSafe = echapperAttrJS(date || "");
+                const moisSafe = echapperAttrJS(moisCourant || "");
 
-                html += '<div class="competition competition-card" data-texte="' + texteComplet + '">' +
+                html += '<div class="competition competition-card" data-texte="' + echapperHTML(texteComplet) + '">' +
                             '<div class="competition-left">' +
-                                '<div class="competition-date-badge">' + (date || "-") + '</div>' +
+                                '<div class="competition-date-badge">' + echapperHTML(date || "-") + '</div>' +
                                 '<div class="competition-details">' +
-                                    '<div class="competition-title">' + evenement + '</div>' +
-                                    '<div class="competition-location">📍 ' + (lieu || "Lieu non spécifié") + '</div>' +
+                                    '<div class="competition-title">' + echapperHTML(evenement) + '</div>' +
+                                    '<div class="competition-location">📍 ' + echapperHTML(lieu || "Lieu non spécifié") + '</div>' +
                                 '</div>' +
                             '</div>' +
                             '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">';
@@ -152,7 +184,8 @@ export function afficherTableauDeBord() {
     const tousLesScores = [...state.scoresExcel, ...state.entrainementsExcel];
     const moyenne = tousLesScores.length > 0 ? (tousLesScores.reduce((a, b) => a + b, 0) / tousLesScores.length).toFixed(1) : 0;
     const record = tousLesScores.length > 0 ? Math.max(...tousLesScores) : 0;
-    const dernier = tousLesScores.length > 0 ? tousLesScores[tousLesScores.length - 1] : 0;
+    const chrono = construireEvenementsChronologiques();
+    const dernier = chrono.length > 0 ? chrono[chrono.length - 1].score : 0;
     const objectif = getObjectifPersonnel();
     const pourcentageObjectif = Math.min(100, Math.round((record / objectif) * 100));
 
@@ -267,17 +300,13 @@ resultats.push({
 });
     }
 
-    resultats.sort((a, b) => {
-        const [ja, ma] = (a.date || "").split("/");
-        const [jb, mb] = (b.date || "").split("/");
-        return new Date(2026, (ma || 1) - 1, ja || 1) - new Date(2026, (mb || 1) - 1, jb || 1);
-    });
+    resultats.sort((a, b) => tsJJMM(a.date) - tsJJMM(b.date));
 
     if (resultats.length === 0) {
         html += "<p>Aucun résultat enregistré.</p>";
     } else {
         resultats.forEach(item => {
-            const detailLieu = item.lieu ? '<div style="font-size:0.88em; color:var(--muted); margin-top:2px;">📍 ' + item.lieu + '</div>' : "";
+            const detailLieu = item.lieu ? '<div style="font-size:0.88em; color:var(--muted); margin-top:2px;">📍 ' + echapperHTML(item.lieu) + '</div>' : "";
             html += '<div class="competition competition-card">' +
                         '<div class="competition-left">' +
                             '<div class="competition-date-badge">' + item.date + '</div>' +
@@ -395,13 +424,13 @@ export function voirScores() {
         html += "<p>Aucun score enregistré.</p>";
     } else {
         historique.forEach((item, index) => {
-            const detailLieu = item.lieu ? '<div style="font-size:0.88em; color:var(--blue); font-weight:600; margin-top:2px;">📍 ' + item.lieu + '</div>' : '<div style="font-size:0.88em; color:var(--muted); font-style:italic; margin-top:2px;">📍 Lieu non renseigné</div>';
-            const detailSeries = item.series && item.series.length > 0 ? '<div style="font-size:0.82em; color:var(--blue); margin-top:2px;">Séries : ' + item.series.join(" • ") + '</div>' : "";
-            const detailNote = item.note ? '<div style="font-size:0.82em; color:var(--muted); font-style:italic; margin-top:2px;">📝 ' + item.note + '</div>' : "";
+            const detailLieu = item.lieu ? '<div style="font-size:0.88em; color:var(--blue); font-weight:600; margin-top:2px;">📍 ' + echapperHTML(item.lieu) + '</div>' : '<div style="font-size:0.88em; color:var(--muted); font-style:italic; margin-top:2px;">📍 Lieu non renseigné</div>';
+            const detailSeries = item.series && item.series.length > 0 ? '<div style="font-size:0.82em; color:var(--blue); margin-top:2px;">Séries : ' + echapperHTML(item.series.join(" • ")) + '</div>' : "";
+            const detailNote = item.note ? '<div style="font-size:0.82em; color:var(--muted); font-style:italic; margin-top:2px;">📝 ' + echapperHTML(item.note) + '</div>' : "";
 
             html += '<div class="competition competition-card">' +
                         '<div class="competition-left">' +
-                            '<div class="competition-date-badge">' + item.date + '</div>' +
+                            '<div class="competition-date-badge">' + echapperHTML(item.date) + '</div>' +
                             '<div class="competition-details">' +
                                 '<div class="competition-title">' + (item.type === "match" ? "🏆 Compétition" : "🏋️ Entraînement") + '</div>' +
                                 detailLieu +
@@ -492,11 +521,7 @@ export function afficherTop10() {
         return;
     }
 
-    tousLesScores.sort((a, b) => {
-        const [ja, ma] = a.date.split("/");
-        const [jb, mb] = b.date.split("/");
-        return new Date(2026, ma - 1, ja) - new Date(2026, mb - 1, jb);
-    });
+    tousLesScores.sort((a, b) => tsJJMM(a.date) - tsJJMM(b.date));
 
     const historiqueRecords = [];
     let recordMaxActuel = 0;
@@ -571,12 +596,29 @@ export function exporterScoresExcel() {
         Series: (item.series || []).join(" | "),
         Notes: item.note || ""
     }));
-    donnees.unshift({ Date: new Date().toLocaleDateString("fr-FR"), Type: "Export Tir Cécillya", Lieu: "", Score: "", Series: "", Notes: "" });
     const feuille = XLSX.utils.json_to_sheet(donnees);
     const classeur = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(classeur, feuille, "Scores");
     XLSX.writeFile(classeur, "scores_cecillya.xlsx");
     afficherToast("✅ Export Excel terminé");
+}
+
+function normaliserDateImport(valeur) {
+    if (!valeur) return "";
+    const texte = String(valeur).trim();
+    // Format ISO YYYY-MM-DD (stockage local / Supabase)
+    let m = texte.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return m[1] + "-" + m[2] + "-" + m[3];
+    // Format JJ/MM ou JJ/MM/AAAA → converti en YYYY-MM-DD (année de saison)
+    m = texte.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/);
+    if (m) {
+        const jj = m[1].padStart(2, "0");
+        const mm = m[2].padStart(2, "0");
+        let annee = m[3] ? m[3] : (Number(mm) >= 9 ? "2026" : "2027");
+        if (annee.length === 2) annee = "20" + annee;
+        return annee + "-" + mm + "-" + jj;
+    }
+    return "";
 }
 
 export function importerScoresJSON(event, callbackReload) {
@@ -588,24 +630,32 @@ export function importerScoresJSON(event, callbackReload) {
         try {
             const donnees = JSON.parse(e.target.result);
             if (!Array.isArray(donnees)) { afficherToast("❌ Fichier JSON invalide."); return; }
-            donnees.forEach(item => {
-                if (item.type === "Compétition") item.type = "match";
-                if (item.type === "Entraînement") item.type = "entrainement";
-            });
-
-            const historique = getScoresLocaux();
-            const existants = new Set(historique.map(item => item.date + "|" + item.type + "|" + item.score));
-            const nouveaux = donnees.filter(item =>
-                item.date && !isNaN(Number(item.score)) && !existants.has(item.date + "|" + item.type + "|" + item.score)
-            );
-
-            setScoresLocaux([...historique, ...nouveaux]);
-            afficherToast("✅ " + nouveaux.length + " nouveau(x) score(s) importé(s).");
+            let importes = 0;
+            for (const brut of donnees) {
+                let type = brut.type;
+                if (type === "Compétition") type = "match";
+                if (type === "Entraînement") type = "entrainement";
+                if (type !== "match" && type !== "entrainement") continue;
+                const dateNorm = normaliserDateImport(brut.date);
+                const scoreNum = Number(brut.score);
+                if (!dateNorm || !isFinite(scoreNum) || scoreNum <= 0) continue;
+                const res = await ajouterScore({
+                    date: dateNorm,
+                    type,
+                    lieu: String(brut.lieu || "").trim(),
+                    score: Math.round(scoreNum * 10) / 10,
+                    note: String(brut.note || brut.Notes || "").trim(),
+                    series: Array.isArray(brut.series) ? brut.series.map(Number).filter(n => isFinite(n) && n > 0) : []
+                });
+                if (res.ok) importes++;
+            }
+            afficherToast(importes > 0 ? ("✅ " + importes + " nouveau(x) score(s) importé(s).") : "ℹ️ Aucun nouveau score à importer.");
             if (callbackReload) await callbackReload();
             afficherResultats();
         } catch (erreur) {
             afficherToast("❌ Erreur lors de l'import.");
         }
+        event.target.value = "";
     };
     lecteur.readAsText(fichier);
 }
