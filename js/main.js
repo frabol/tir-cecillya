@@ -63,6 +63,9 @@ window.importerScores = (e) => ui.importerScoresJSON(e, initApp);
 window.synchroniserEtRecharger = synchroniserEtRecharger;
 window.rechercherCompetition = rechercherCompetition;
 window.filtrerParDiscipline = ui.filtrerParDiscipline;
+window.filtrerMoisCalendrier = ui.filtrerMoisCalendrier;
+window.trierResultats = ui.trierResultats;
+window.filtrerResultats = ui.filtrerResultats;
 window.exporterEvenementICS = exporterEvenementICS;
 window.ajusterScoreRapide = ui.ajusterScoreRapide;
 window.recalculerTotalSeries = ui.recalculerTotalSeries;
@@ -94,12 +97,10 @@ export async function initApp() {
         } else if (ui.pageActuelle === "top10") {
             ui.afficherTop10();
         }
-        ui.afficherHero();          // ← ajoute cette ligne
     } catch (e) {
         console.error("Erreur d'initialisation :", e);
     }
 }
-
 
 document.addEventListener("DOMContentLoaded", () => {
     initApp();
