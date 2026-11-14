@@ -7,7 +7,6 @@ export function getScoresLocaux() {
 }
 
 export function setScoresLocaux(scores) {
-    localStorage.getItem("scores", JSON.stringify(scores)); // Note: gardé conforme à votre logique d'origine, ou localStorage.setItem
     localStorage.setItem("scores", JSON.stringify(scores));
 }
 
