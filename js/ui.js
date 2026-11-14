@@ -17,25 +17,20 @@ export function afficherToast(msg) {
     t._timer = setTimeout(() => t.classList.remove("show"), 2500);
 }
 
+// Corrections manuelles vérifiées saison 2026-2027 (source : calendrier Ligue + résultats).
+// Centralisées ici pour éviter les doublons : utiliser corrigerLieuCompetition().
+const CORRECTIONS_LIEUX = [
+    { date: "04/10", score: 604.1, lieu: "Trith-St-Léger" },
+    { date: "18/10", score: 610.5, lieu: "Aulnoye-Aymeries" },
+    { date: "25/10", score: 600.3, lieu: "Aulnoye-Aymeries" },
+];
+
 function corrigerLieuCompetition(date, score, lieuActuel) {
-
-    const corrections = [
-
-        { date: "04/10", score: 604.1, lieu: "Trith St Léger" },
-
-        { date: "18/10", score: 610.5, lieu: "AULNOYE" },
-
-        { date: "25/10", score: 600.3, lieu: "Aulnoye" },
-
-
-    ];
-
-    const correction = corrections.find(c =>
+    const correction = CORRECTIONS_LIEUX.find(c =>
         c.date === date &&
         Math.abs(c.score - score) < 0.1
     );
-
-    return correction ? correction.lieu : lieuActuel;
+    return correction ? correction.lieu : (lieuActuel || "").trim();
 }
 
 export async function afficherCalendrier(filtre = "avenir") {
@@ -242,24 +237,14 @@ export function afficherResultats() {
         const key = date + "|match|" + score;
        const local = mapLocaux.get(key);
 
-let lieu =
+const lieuBrut =
     local?.lieu ||
     state.lieuxParResultat?.[date] ||
     state.lieuxParDate?.[date] ||
     "";
 
-// Corrections connues de la saison
-if (date === "18/10" && Math.abs(score - 610.5) < 0.1) {
-    lieu = "AULNOYE";
-}
-
-if (date === "04/10" && Math.abs(score - 604.1) < 0.1) {
-    lieu = "Trith St Léger";
-}
-
-if (date === "25/10" && Math.abs(score - 600.3) < 0.1) {
-    lieu = " AULNOYE";
-}
+// Applique les corrections connues de la saison (plus de ifs dispersés)
+const lieu = corrigerLieuCompetition(date, score, lieuBrut);
 
 resultats.push({
     date,
