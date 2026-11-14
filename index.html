@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="light">
+<html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -137,7 +137,7 @@ input[name^="serie"] {
         <input type="text" id="recherche" placeholder="Rechercher une compétition ou un lieu…" oninput="rechercherCompetition()">
       </div>
       <button class="btn btn-gold" onclick="synchroniserEtRecharger()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-cloud"/></svg></span> Synchroniser</button>
-      <button class="btn" onclick="toggleTheme()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-moon"/></svg></span> Mode sombre</button>
+      <button class="btn" onclick="toggleTheme()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-moon"/></svg></span> Mode clair</button>
     </div>
     <div class="toolbar-row" role="tablist">
       <button class="btn" onclick="afficherTimer()"><span class="ic ic-red"><svg class="svgi"><use href="#i-target"/></svg></span> ⏱️ Timer Stand</button>
@@ -223,19 +223,36 @@ function _observer(){
   etat.dataset.observe = '1';
   new MutationObserver(()=>{ _embellirIcones(); }).observe(etat, {childList:true, subtree:true});
 }
+function _majLibelleTheme(){
+  const btn = document.querySelector('.toolbar .btn[onclick="toggleTheme()"]');
+  if(!btn) return;
+  const sombre = document.documentElement.getAttribute('data-theme') === 'dark';
+  const label = btn.lastChild;
+  if(label && label.nodeType === 3){ label.textContent = sombre ? ' Mode clair' : ' Mode sombre'; }
+}
 window.toggleTheme = function(){
   const html = document.documentElement;
   const cur = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-theme', cur);
   localStorage.setItem('theme', cur);
   document.body.classList.toggle('dark', cur==='dark');
+  _majLibelleTheme();
 };
 (function(){
+  // Sombre par defaut. Seul un choix explicite "light" repasse en clair.
   const saved = localStorage.getItem('theme');
-  if(saved==='dark'){ document.documentElement.setAttribute('data-theme','dark'); }
+  const theme = (saved === 'light') ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  document.body.classList.toggle('dark', theme === 'dark');
 })();
+document.addEventListener('DOMContentLoaded', () => {
+  _embellirTableau();
+  _embellirIcones();
+  _observer();
+  _majLibelleTheme();
+});
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script type="module" src="js/main.js?v=6.5"></script>
+<script type="module" src="js/main.js?v=6.6"></script>
 </body>
 </html>
