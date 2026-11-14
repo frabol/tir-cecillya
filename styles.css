@@ -135,7 +135,6 @@ body {
   margin-left: 8px;
 }
 
-/* Boutons : sombres par defaut, partout dans l'appli */
 .btn{
   border-radius:999px;
   padding:12px 18px;
@@ -743,4 +742,63 @@ footer {
   #bandeau-timer { top: 8px; padding: 6px 14px; }
   .bandeau-timer-temps { font-size: 1.15rem; }
   .bandeau-timer-phase { font-size: .68rem; }
+}
+
+/* ===== Page Palmarès ===== */
+.palmares-saison {
+  margin-bottom: 14px;
+}
+
+.palmares-ligne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.palmares-ligne:last-child { border-bottom: none; }
+
+.palmares-podium {
+  background: rgba(201, 162, 39, .10);
+  border-radius: 10px;
+}
+
+.palmares-rang {
+  flex: 0 0 46px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.palmares-detail {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.palmares-compet {
+  font-weight: 600;
+  font-size: .95rem;
+  overflow-wrap: anywhere;
+}
+
+.palmares-meta {
+  font-size: .78rem;
+  color: var(--muted);
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+}
+
+.palmares-score {
+  flex: 0 0 auto;
+  font-weight: 800;
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .palmares-rang { flex-basis: 36px; font-size: .95rem; }
+  .palmares-score { font-size: 1rem; }
+  .palmares-compet { font-size: .88rem; }
 }
