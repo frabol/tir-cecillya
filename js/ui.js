@@ -1,8 +1,56 @@
 import { state, chargerDonneesExcelEtCalendrier, appliquerFiltresCalendrier, exporterEvenementICS } from './calendar.js';
 import { getScoresLocaux, setScoresLocaux, getObjectifPersonnel, setObjectifPersonnel, ajouterScore, supprimerScoreParIndex } from './storage.js';
 import { calculerStatistiques, dessinerGraphique } from './stats.js';
+import { getScoresLocaux, setScoresLocaux, getObjectifPersonnel, setObjectifPersonnel, ajouterScore, supprimerScoreParIndex } from './storage.js';
+import { calculerStatistiques, dessinerGraphique } from './stats.js';
+import { state as etatCalendrier } from './calendar.js';   // ← si pas déjà importé
 
 export let pageActuelle = "tableau";
+/* ===== Bandeau hero (KPI en haut de page) ===== */
+export function afficherHero() {
+    const scores = [...state.scoresExcel, ...state.entrainementsExcel];
+    if (scores.length === 0) return;
+
+    const moyenne = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
+    const record  = Math.max(...scores);
+
+    /* Régularité 1 : part de tirs à 600 et plus */
+    const pourcentRegulier = Math.round(
+        (scores.filter(s => s >= 600).length / scores.length) * 100
+    );
+
+    /* Régularité 2 : écart-type, déjà calculé par stats.js */
+    const stats = calculerStatistiques();
+    const ecartType = stats ? stats.ecartType : "—";
+    const profil = stats ? stats.appreciationRegularite : "—";
+
+    const objectif = getObjectifPersonnel();
+    const progression = Math.min(100, Math.round((record / objectif) * 100));
+
+    const set = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+    };
+
+    set("hero-average", moyenne);
+    set("hero-record", record.toFixed(1));
+    set("hero-regularity", pourcentRegulier + "%");
+    set("hero-regularity-profil", profil + " · ± " + ecartType + " pts");
+    set("hero-series", scores.length);
+    set("hero-goal-percent", progression + "%");
+    set("hero-goal-note", "Record " + record.toFixed(1) + " pts sur " + objectif + " pts");
+
+    const bar = document.getElementById("hero-goal-progress");
+    if (bar) bar.style.width = progression + "%";
+
+    const prochaines = state.prochainesCompetitions || [];
+    const bloc = document.getElementById("hero-next");
+    if (bloc && prochaines.length > 0) {
+        const p = prochaines[0];
+        bloc.innerHTML = "🎯 Prochaine échéance : <b>" + p.evenement +
+            "</b> — " + p.date + " · " + p.lieu;
+    }
+}
 
 export function echapperHTML(texte) {
     return String(texte ?? "")
