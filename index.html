@@ -91,36 +91,53 @@ input[name^="serie"] {
     <span style="font-size:12px; font-weight:700; color:#fff; text-shadow:0 2px 5px rgba(0,0,0,0.8); letter-spacing:0.06em; text-transform:uppercase;">Ligue NPdC</span>
   </div>
 
-  <!-- Contenu central -->
-  <div style="max-width:600px; margin:0 auto; position:relative; z-index:4;">
+   <!-- Contenu central -->
+  <div class="hero-content">
     <div class="hero-badge"><span class="ic ic-gold"><svg class="svgi"><use href="#i-target"/></svg></span> Tir sportif • Carabine • Saison 2026-2027</div>
     <div style="margin-top:10px"><span id="sync-badge">● À jour</span></div>
-    <h1>Tir <span>Cécillya</span></h1>
-    <p>Calendrier Ligue Tir Nord-Pas-de-Calais • Suivi des scores & performances</p>
+    <h1 class="hero-title">Tir <span>Cécillya</span></h1>
+    <p class="hero-subtitle">Calendrier Ligue Tir Nord-Pas-de-Calais • Suivi des scores & performances</p>
+
     <div class="hero-stats">
-      <div class="hero-pill"><img src="https://s3.static-clubeo.com/1200/uploads/carabiniers-de-maubeuge/logo__saedhg.png" alt="Maubeuge" style="width:20px;height:20px;object-fit:contain;border-radius:50%"> Carabiniers de Maubeuge</div>
+      <div class="hero-pill"><img src="[s3.static-clubeo.com](https://s3.static-clubeo.com/1200/uploads/carabiniers-de-maubeuge/logo__saedhg.png)" alt="Maubeuge" style="width:20px;height:20px;object-fit:contain;border-radius:50%"> Carabiniers de Maubeuge</div>
       <div class="hero-pill"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Compétitions & entraînements</div>
       <div class="hero-pill"><span class="ic ic-blue"><svg class="svgi"><use href="#i-chart"/></svg></span> Stats en direct</div>
     </div>
-  </div>
-  <div class="hero-stats">
 
-  <div class="hero-stat">
-    <span id="hero-average" class="hero-stat-value">0</span>
-    <span class="hero-stat-label">Moyenne</span>
+    <div class="hero-kpis">
+      <div class="hero-stat">
+        <span id="hero-average" class="hero-stat-value">—</span>
+        <span class="hero-stat-label">Moyenne</span>
+      </div>
+      <div class="hero-stat">
+        <span id="hero-record" class="hero-stat-value">—</span>
+        <span class="hero-stat-label">Record</span>
+      </div>
+      <div class="hero-stat">
+        <span id="hero-regularity" class="hero-stat-value">—</span>
+        <span class="hero-stat-label">Régularité</span>
+        <span id="hero-regularity-profil" class="hero-stat-sub">—</span>
+      </div>
+      <div class="hero-stat">
+        <span id="hero-series" class="hero-stat-value">—</span>
+        <span class="hero-stat-label">Scores saisis</span>
+      </div>
+    </div>
+
+    <div class="hero-goal">
+      <div class="hero-goal-header">
+        <span>Objectif de saison</span>
+        <span id="hero-goal-percent">0%</span>
+      </div>
+      <div class="hero-goal-bar">
+        <div class="hero-goal-progress" id="hero-goal-progress"></div>
+      </div>
+      <div class="hero-goal-note" id="hero-goal-note"></div>
+    </div>
+
+    <div class="hero-next" id="hero-next"></div>
   </div>
 
-  <div class="hero-stat">
-    <span id="hero-record" class="hero-stat-value">0</span>
-    <span class="hero-stat-label">Record</span>
-  </div>
-
-  <div class="hero-stat">
-    <span id="hero-regularity" class="hero-stat-value">0%</span>
-    <span class="hero-stat-label">Régularité</span>
-  </div>
-
-</div>
 </header>
 
 <style>
