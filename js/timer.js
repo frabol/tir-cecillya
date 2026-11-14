@@ -7,6 +7,43 @@ let phaseActuelle = "essais"; // "essais" ou "match"
 let timerActif = false;
 let modeActuelConfig = { essais: 15, match: 75, nom: "10m - 60 coups (Électro)" };
 
+// ===== Sauvegarde de l'etat : le timer survit au changement de page =====
+const CLE_ETAT = "timer_etat";
+
+function sauvegarderEtat() {
+    try {
+        localStorage.setItem(CLE_ETAT, JSON.stringify({
+            tempsRestant,
+            dureeTotalePhase,
+            phaseActuelle,
+            modeActuelConfig,
+            horodatage: Date.now(),
+            enMarche: timerActif
+        }));
+    } catch (e) { /* stockage indisponible */ }
+}
+
+function restaurerEtat() {
+    try {
+        const brut = localStorage.getItem(CLE_ETAT);
+        if (!brut) return;
+        const e = JSON.parse(brut);
+        if (!e || typeof e.tempsRestant !== "number") return;
+
+        phaseActuelle = e.phaseActuelle === "match" ? "match" : "essais";
+        if (e.modeActuelConfig) modeActuelConfig = e.modeActuelConfig;
+        dureeTotalePhase = Number(e.dureeTotalePhase) || tempsRestant;
+
+        /* Si le timer tournait, on retire le temps ecoule depuis la sauvegarde. */
+        let reste = Number(e.tempsRestant);
+        if (e.enMarche && e.horodatage) {
+            const ecoule = Math.floor((Date.now() - e.horodatage) / 1000);
+            reste = Math.max(0, reste - ecoule);
+        }
+        tempsRestant = reste;
+    } catch (err) { /* etat illisible : on repart du preset par defaut */ }
+}
+
 export function jouerBip(frequence = 880, duree = 0.2, type = 'sine') {
     try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -47,6 +84,7 @@ export function appliquerPresetTimer(essaisMin, matchMin, nom) {
     dureeTotalePhase = (phaseActuelle === "essais" ? essaisMin : matchMin) * 60;
     tempsRestant = dureeTotalePhase;
     mettreAJourAffichageTimer();
+    sauvegarderEtat();
     afficherToast("🎯 Preset chargé : " + nom);
 }
 
@@ -66,6 +104,7 @@ export function changerPhaseTimer() {
         afficherToast("🎯 Retour aux ESSAIS");
     }
     mettreAJourAffichageTimer();
+    sauvegarderEtat();
 }
 
 export function demarrerPauseTimer() {
@@ -73,7 +112,8 @@ export function demarrerPauseTimer() {
     if (timerActif) {
         clearInterval(timerInterval);
         timerActif = false;
-        if (btn) { btn.textContent = "▶ Reprendre"; btn.style.background = "#10b981"; }
+        sauvegarderEtat();
+        if (btn) { btn.textContent = "▶ Reprendre"; btn.style.background = "#22c55e"; }
         afficherToast("⏸️ Timer en pause");
     } else {
         if (tempsRestant <= 0) return;
@@ -102,12 +142,14 @@ export function demarrerPauseTimer() {
                             demarrerPauseTimer();
                         }
                     } else {
-                        alert("🏁 TEMPS ÉCOULÉ ! Fin de la séance.");
+                        afficherToast("🏁 TEMPS ÉCOULÉ ! Fin de la séance.");
                     }
                 }
             }
             mettreAJourAffichageTimer();
+            sauvegarderEtat();
         }, 1000);
+        sauvegarderEtat();
         afficherToast("▶️ Timer démarré");
     }
 }
@@ -115,6 +157,7 @@ export function demarrerPauseTimer() {
 export function arreterTimer() {
     clearInterval(timerInterval);
     timerActif = false;
+    sauvegarderEtat();
     const btn = document.getElementById("btn-start-pause");
     if (btn) { btn.textContent = "▶ Démarrer"; btn.style.background = ""; }
 }
@@ -124,6 +167,7 @@ export function resetTimer() {
     dureeTotalePhase = (phaseActuelle === "essais" ? modeActuelConfig.essais : modeActuelConfig.match) * 60;
     tempsRestant = dureeTotalePhase;
     mettreAJourAffichageTimer();
+    sauvegarderEtat();
     afficherToast("🔄 Timer réinitialisé");
 }
 
@@ -131,6 +175,7 @@ export function ajusterTempsTimer(minutes) {
     tempsRestant = Math.max(0, tempsRestant + minutes * 60);
     dureeTotalePhase = Math.max(tempsRestant, dureeTotalePhase);
     mettreAJourAffichageTimer();
+    sauvegarderEtat();
 }
 
 export function mettreAJourAffichageTimer() {
@@ -162,6 +207,7 @@ export function mettreAJourAffichageTimer() {
 
 export function afficherTimer() {
     window.pageActuelle = "timer";
+    restaurerEtat();
     let html = '<button class="btn btn-retour" onclick="afficherTableauDeBord()">← Retour au tableau de bord</button>' +
         '<h2>⏱️ Timer & Stand de Tir Officiel</h2>' +
         '<p style="color:var(--muted); margin-bottom:16px;">Chronométrage officiel FFTir (Règlement ISSF) avec alertes sonores.</p>' +

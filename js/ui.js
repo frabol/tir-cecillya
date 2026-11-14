@@ -11,12 +11,10 @@ export function afficherHero() {
     const moyenne = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
     const record  = Math.max(...scores);
 
-    /* Régularité 1 : part de tirs à 600 et plus */
     const pourcentRegulier = Math.round(
         (scores.filter(s => s >= 600).length / scores.length) * 100
     );
 
-    /* Régularité 2 : écart-type, déjà calculé par stats.js */
     const stats = calculerStatistiques();
     const ecartType = stats ? stats.ecartType : "—";
     const profil = stats ? stats.appreciationRegularite : "—";
@@ -89,11 +87,64 @@ export function echapperHTML(texte) {
         .replace(/'/g, "&#39;");
 }
 
+/* Boite de confirmation aux couleurs du site, a la place du confirm() natif. */
+export function confirmer(message, onOui, texteBouton = "Confirmer") {
+    const deja = document.getElementById("modale-confirme");
+    if (deja) deja.remove();
+
+    const box = document.createElement("div");
+    box.id = "modale-confirme";
+    box.innerHTML =
+        '<div class="modale-fond"></div>' +
+        '<div class="modale-boite" role="dialog" aria-modal="true">' +
+            '<p class="modale-texte">' + echapperHTML(message) + '</p>' +
+            '<div class="modale-actions">' +
+                '<button class="btn" id="modale-non">Annuler</button>' +
+                '<button class="btn btn-primary" id="modale-oui">' + echapperHTML(texteBouton) + '</button>' +
+            '</div>' +
+        '</div>';
+    document.body.appendChild(box);
+
+    const fermer = () => box.remove();
+    box.querySelector(".modale-fond").onclick = fermer;
+    box.querySelector("#modale-non").onclick = fermer;
+    box.querySelector("#modale-oui").onclick = () => { fermer(); onOui(); };
+    document.addEventListener("keydown", function esc(e){
+        if (e.key === "Escape") { fermer(); document.removeEventListener("keydown", esc); }
+    });
+}
+
+export function afficherToast(msg) {
+    let t = document.getElementById("toast-sync");
+    if (!t) {
+        t = document.createElement("div");
+        t.id = "toast-sync";
+        document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove("show"), 2500);
+}
+
+const CORRECTIONS_LIEUX = [
+    { date: "04/10", score: 604.1, lieu: "Trith-St-Léger" },
+    { date: "18/10", score: 610.5, lieu: "Aulnoye-Aymeries" },
+    { date: "25/10", score: 600.3, lieu: "Aulnoye-Aymeries" },
+];
+
+function corrigerLieuCompetition(date, score, lieuActuel) {
+    const correction = CORRECTIONS_LIEUX.find(c =>
+        c.date === date &&
+        Math.abs(c.score - score) < 0.1
+    );
+    return correction ? correction.lieu : (lieuActuel || "").trim();
+}
+
 function echapperAttrJS(texte) {
     return String(texte ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
 
-// Saison 2026-2027 : sept.–déc. → 2026, janv.–juin → 2027 (pour un tri chronologique correct).
 function tsJJMM(dateJJMM) {
     const [j, m] = String(dateJJMM || "").split("/").map(Number);
     if (!j || !m) return 0;
@@ -110,35 +161,6 @@ function construireEvenementsChronologiques() {
     }
     events.sort((a, b) => tsJJMM(a.date) - tsJJMM(b.date));
     return events;
-}
-
-export function afficherToast(msg) {
-    let t = document.getElementById("toast-sync");
-    if (!t) {
-        t = document.createElement("div");
-        t.id = "toast-sync";
-        document.body.appendChild(t);
-    }
-    t.textContent = msg;
-    t.classList.add("show");
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.classList.remove("show"), 2500);
-}
-
-// Corrections manuelles vérifiées saison 2026-2027 (source : calendrier Ligue + résultats).
-// Centralisées ici pour éviter les doublons : utiliser corrigerLieuCompetition().
-const CORRECTIONS_LIEUX = [
-    { date: "04/10", score: 604.1, lieu: "Trith-St-Léger" },
-    { date: "18/10", score: 610.5, lieu: "Aulnoye-Aymeries" },
-    { date: "25/10", score: 600.3, lieu: "Aulnoye-Aymeries" },
-];
-
-function corrigerLieuCompetition(date, score, lieuActuel) {
-    const correction = CORRECTIONS_LIEUX.find(c =>
-        c.date === date &&
-        Math.abs(c.score - score) < 0.1
-    );
-    return correction ? correction.lieu : (lieuActuel || "").trim();
 }
 
 export async function afficherCalendrier(filtre = "avenir") {
@@ -266,12 +288,24 @@ export function afficherTableauDeBord() {
     const objectif = getObjectifPersonnel();
     const pourcentageObjectif = Math.min(100, Math.round((record / objectif) * 100));
 
-    let alerteNotification = "";
+    /* L'alerte ne s'affiche que si la compétition est dans les 30 jours. */
+    let joursAvantProchaine = null;
     if (state.prochainesCompetitions.length > 0) {
+        const dp = state.prochainesCompetitions[0].dateReelle || "";
+        const m = String(dp).match(/(\d{2})\/(\d{2})\/(\d{4})/);
+        if (m) {
+            const j = parseInt(m[1], 10), mo = parseInt(m[2], 10), an = parseInt(m[3], 10);
+            const cible = new Date(an, mo - 1, j).getTime();
+            joursAvantProchaine = Math.ceil((cible - Date.now()) / 86400000);
+        }
+    }
+
+    let alerteNotification = "";
+    if (joursAvantProchaine !== null && joursAvantProchaine <= 30 && joursAvantProchaine >= 0) {
         alerteNotification = '<div class="alert-competition">' +
             '<span style="font-size: 28px;">🔔</span>' +
             '<div>' +
-                '<div style="font-weight: bold; font-size: 1.05em;">Alerte Compétition Imminente !</div>' +
+                '<div style="font-weight: bold; font-size: 1.05em;">Alerte Compétition — dans ' + joursAvantProchaine + ' jour' + (joursAvantProchaine > 1 ? 's' : '') + '</div>' +
                 '<div style="font-size: 0.95em; opacity: 0.9;">Prochain événement : <b>' + state.prochainesCompetitions[0].evenement + '</b> (' + state.prochainesCompetitions[0].date + ') à ' + state.prochainesCompetitions[0].lieu + '</div>' +
             '</div>' +
         '</div>';
@@ -356,7 +390,6 @@ export function afficherResultats() {
             state.lieuxParDate?.[date] ||
             "";
 
-        // Applique les corrections connues de la saison (plus de ifs dispersés)
         const lieu = corrigerLieuCompetition(date, score, lieuBrut);
 
         resultats.push({
@@ -492,6 +525,14 @@ export async function enregistrerScore() {
     if (!date) { afficherToast("⚠️ Choisissez une date"); return; }
     if (isNaN(score) || score <= 0) { afficherToast("⚠️ Score invalide"); return; }
 
+    /* Contrôle de vraisemblance : maximum 654 en carabine 10m (60 plombs). */
+    const MAX_VRAISEMBLABLE = 654;
+    if (score > MAX_VRAISEMBLABLE) {
+        const msg = "⚠️ " + score + " pts dépasse le maximum possible (" + MAX_VRAISEMBLABLE + ").\n" +
+                    "Vérifiez la saisie.\nEnregistrer quand même ?";
+        if (!confirm(msg)) return;
+    }
+
     const res = await ajouterScore({ date, type, lieu, note, score, series });
     if (!res.ok) {
         afficherToast(res.raison === "existe" ? "⚠️ Ce score existe déjà" : "❌ Erreur d'enregistrement");
@@ -534,15 +575,16 @@ export function voirScores() {
 }
 
 export async function supprimerScore(index, callbackReload) {
-    if (!confirm("Supprimer ce score ?")) return;
-    const res = await supprimerScoreParIndex(index);
-    if (!res.ok) {
-        afficherToast("❌ Erreur lors de la suppression");
-        return;
-    }
-    afficherToast("🗑️ Score supprimé");
-    if (callbackReload) await callbackReload();
-    voirScores();
+    confirmer("Supprimer définitivement ce score ?", async () => {
+        const res = await supprimerScoreParIndex(index);
+        if (!res.ok) {
+            afficherToast("❌ Erreur lors de la suppression");
+            return;
+        }
+        afficherToast("🗑️ Score supprimé");
+        if (callbackReload) await callbackReload();
+        voirScores();
+    }, "Supprimer");
 }
 
 export function afficherStats() {
