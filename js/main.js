@@ -2,17 +2,18 @@ import * as timer from './timer.js';
 import { state, chargerDonneesExcelEtCalendrier, exporterEvenementICS as exporterEvenementICSBase } from './calendar.js';
 import { synchroniserScores } from './storage.js';
 import * as ui from './ui.js';
+import { afficherPalmares, filtrerPalmares } from './palmares.js';
 
 export function exporterEvenementICS(titre, dateBrute, moisBrut, lieu) {
     exporterEvenementICSBase(titre, dateBrute, moisBrut, lieu, (m) => ui.afficherToast(m));
 }
 
 export async function synchroniserEtRecharger() {
-    ui.afficherToast("🔄 Synchronisation en cours...");
+    ui.afficherToast("Synchronisation en cours...");
     try {
         try { await synchroniserScores(); } catch (e) { console.warn("Sync Supabase ignorée :", e); }
         await chargerDonneesExcelEtCalendrier("avenir");
-        ui.afficherToast("✅ Synchronisation réussie !");
+        ui.afficherToast("Synchronisation réussie !");
         if (ui.pageActuelle === "tableau") {
             ui.afficherTableauDeBord();
         } else if (ui.pageActuelle === "calendrier") {
@@ -23,11 +24,13 @@ export async function synchroniserEtRecharger() {
             ui.afficherStats();
         } else if (ui.pageActuelle === "top10") {
             ui.afficherTop10();
+        } else if (ui.pageActuelle === "palmares") {
+            afficherPalmares();
         } else if (ui.pageActuelle === "timer") {
             timer.afficherTimer();
         }
     } catch (e) {
-        ui.afficherToast("❌ Erreur de synchronisation");
+        ui.afficherToast("Erreur de synchronisation");
         console.error(e);
     }
 }
@@ -66,6 +69,8 @@ window.filtrerParDiscipline = ui.filtrerParDiscipline;
 window.filtrerMoisCalendrier = ui.filtrerMoisCalendrier;
 window.trierResultats = ui.trierResultats;
 window.filtrerResultats = ui.filtrerResultats;
+window.afficherPalmares = afficherPalmares;
+window.filtrerPalmares = filtrerPalmares;
 window.exporterEvenementICS = exporterEvenementICS;
 window.ajusterScoreRapide = ui.ajusterScoreRapide;
 window.recalculerTotalSeries = ui.recalculerTotalSeries;
@@ -96,6 +101,8 @@ export async function initApp() {
             ui.afficherStats();
         } else if (ui.pageActuelle === "top10") {
             ui.afficherTop10();
+        } else if (ui.pageActuelle === "palmares") {
+            afficherPalmares();
         }
     } catch (e) {
         console.error("Erreur d'initialisation :", e);
