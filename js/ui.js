@@ -220,7 +220,7 @@ export function afficherResultats() {
         const score = Number(state.scoresExcel[i]);
         const key = date + "|match|" + score;
         const local = mapLocaux.get(key);
-        resultats.push({ date: date, type: "🏆 Compétition", score: score, lieu: local ? local.lieu : "" });
+        resultats.push({ date: date, type: "🏆 Compétition", score: score, lieu: local?.lieu || state.lieuxParDate[date] || "" });
     }
 
     for (let i = 0; i < state.datesEntrainements.length; i++) {
@@ -228,7 +228,7 @@ export function afficherResultats() {
         const score = Number(state.entrainementsExcel[i]);
         const key = date + "|entrainement|" + score;
         const local = mapLocaux.get(key);
-        resultats.push({ date: date, type: "🏋️ Entraînement", score: score, lieu: local ? local.lieu : "" });
+        resultats.push({ date: date, type: "🏋️ Entraînement", score: score, lieu: local?.lieu || state.lieuxParDate[date] || "" });
     }
 
     resultats.sort((a, b) => {
