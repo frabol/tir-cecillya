@@ -328,3 +328,412 @@ export function modifierObjectifPersonnel() {
         afficherToast("✅ Objectif mis à jour !");
     }
 }
+
+export function afficherResultats() {
+    pageActuelle = "resultats";
+    let html = boutonRetour() + "<h2>🏆 Résultats</h2>";
+    const resultats = [];
+
+    const historiqueLocaux = getScoresLocaux();
+    const mapLocaux = new Map(historiqueLocaux.map(item => {
+        let d = item.date;
+        if (d && d.includes("-")) {
+            const p = d.split("-");
+            d = p[2] + "/" + p[1];
+        }
+        return [d + "|" + item.type + "|" + Number(item.score), item];
+    }));
+
+    for (let i = 0; i < state.datesMatchs.length; i++) {
+        const date = state.datesMatchs[i];
+        const score = Number(state.scoresExcel[i]);
+        const key = date + "|match|" + score;
+        const local = mapLocaux.get(key);
+
+        const lieuBrut =
+            local?.lieu ||
+            state.lieuxParResultat?.[date] ||
+            state.lieuxParDate?.[date] ||
+            "";
+
+        // Applique les corrections connues de la saison (plus de ifs dispersés)
+        const lieu = corrigerLieuCompetition(date, score, lieuBrut);
+
+        resultats.push({
+            date,
+            type: "🏆 Compétition",
+            score,
+            lieu
+        });
+    }
+
+    for (let i = 0; i < state.datesEntrainements.length; i++) {
+        const date = state.datesEntrainements[i];
+        const score = Number(state.entrainementsExcel[i]);
+        const key = date + "|entrainement|" + score;
+        const local = mapLocaux.get(key);
+        resultats.push({
+            date: date,
+            type: "🏋️ Entraînement",
+            score: score,
+            lieu: local?.lieu || "MAUBEUGE"
+        });
+    }
+
+    resultats.sort((a, b) => tsJJMM(a.date) - tsJJMM(b.date));
+
+    if (resultats.length === 0) {
+        html += "<p>Aucun résultat enregistré.</p>";
+    } else {
+        resultats.forEach(item => {
+            const detailLieu = item.lieu ? '<div style="font-size:0.88em; color:var(--muted); margin-top:2px;">📍 ' + echapperHTML(item.lieu) + '</div>' : "";
+            html += '<div class="competition competition-card">' +
+                        '<div class="competition-left">' +
+                            '<div class="competition-date-badge">' + item.date + '</div>' +
+                            '<div class="competition-details">' +
+                                '<div class="competition-title">' + item.type + '</div>' +
+                                detailLieu +
+                                '<div class="competition-location">Score : <b>' + item.score + '</b></div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+        });
+    }
+
+    document.getElementById("etat").innerHTML = html;
+    majToolbar();
+}
+
+export function ajusterScoreRapide(delta) {
+    const champ = document.getElementById("scoreTotal");
+    if (!champ) return;
+    const actuel = parseFloat(champ.value) || 0;
+    const nouveau = Math.max(0, Math.round((actuel + delta) * 10) / 10);
+    champ.value = nouveau;
+    recalculerTotalSeries();
+}
+
+export function recalculerTotalSeries() {
+    const champs = document.querySelectorAll('input[id^="serie"]');
+    if (champs.length === 0) return;
+    let somme = 0;
+    champs.forEach(c => { somme += parseFloat(c.value) || 0; });
+    const total = document.getElementById("scoreTotal");
+    if (total) total.value = Math.round(somme * 10) / 10;
+}
+
+export function afficherAjoutScore(pageTitre = "Ajouter un score") {
+    const aujourdHui = new Date().toISOString().slice(0, 10);
+    let inputsSeriesHtml = "";
+    for (let i = 1; i <= 6; i++) {
+        inputsSeriesHtml += '<div style="text-align:center;">' +
+            '<label style="font-size:.8em; color:var(--muted); display:block;">Série ' + i + '</label>' +
+            '<input type="number" step="0.1" min="0" id="serie' + i + '" oninput="recalculerTotalSeries()" style="font-size:1.2rem; padding:8px; width:100%; box-sizing:border-box;">' +
+        '</div>';
+    }
+
+    const html = '<h2>➕ ' + pageTitre + '</h2>' +
+        '<div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:14px;">' +
+            '<div>' +
+                '<label style="font-weight:700; display:block; margin-bottom:6px;">Date</label>' +
+                '<input type="date" id="scoreDate" value="' + aujourdHui + '" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text);">' +
+            '</div>' +
+            '<div>' +
+                '<label style="font-weight:700; display:block; margin-bottom:6px;">Type</label>' +
+                '<select id="scoreType" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text);">' +
+                    '<option value="match">🏆 Compétition</option>' +
+                    '<option value="entrainement">🏋️ Entraînement</option>' +
+                '</select>' +
+            '</div>' +
+            '<div>' +
+                '<label style="font-weight:700; display:block; margin-bottom:6px;">Lieu</label>' +
+                '<input type="text" id="scoreLieu" placeholder="Ex : CALAIS" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text);">' +
+            '</div>' +
+        '</div>' +
+        '<div style="margin-top:18px;">' +
+            '<label style="font-weight:700; display:block; margin-bottom:6px;">Score total</label>' +
+            '<input type="number" step="0.1" min="0" id="scoreTotal" style="width:100%; padding:14px; font-size:1.6rem; font-weight:800; text-align:center; border-radius:12px; border:1px solid var(--border); background:var(--bg); color:var(--text); box-sizing:border-box;">' +
+        '</div>' +
+        '<div style="display:grid; grid-template-columns: repeat(5,1fr); gap:8px; margin-top:10px;">' +
+            '<button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(-1)">-1</button>' +
+            '<button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(-0.5)">-0.5</button>' +
+            '<button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(0.1)">+0.1</button>' +
+            '<button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(0.5)">+0.5</button>' +
+            '<button type="button" class="btn" style="justify-content:center; padding:12px 4px!important; font-weight:800!important;" onclick="ajusterScoreRapide(1)">+1</button>' +
+        '</div>' +
+        '<div style="margin-top:16px;">' +
+            '<label style="font-weight:700; display:block; margin-bottom:6px;">Note (facultatif)</label>' +
+            '<input type="text" id="scoreNote" placeholder="Ex : vent fort, bonne forme…" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text); box-sizing:border-box;">' +
+        '</div>' +
+        '<details style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:10px 12px; margin-top:16px;"><summary style="cursor:pointer; font-weight:700; color:var(--primary);">🎯 Détail des 6 séries (facultatif)</summary><div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-top:10px;">' + inputsSeriesHtml + '</div></details>' +
+        '<button class="btn btn-primary" style="justify-content:center; width:100%; padding:14px!important; font-size:16px!important; margin-top:16px;" onclick="enregistrerScore()">💾 Enregistrer le score</button>';
+
+    document.getElementById("etat").innerHTML = html;
+    majToolbar();
+}
+
+export async function enregistrerScore() {
+    const date = document.getElementById("scoreDate")?.value || "";
+    const type = document.getElementById("scoreType")?.value || "match";
+    const lieu = (document.getElementById("scoreLieu")?.value || "").trim();
+    const note = (document.getElementById("scoreNote")?.value || "").trim();
+    let score = parseFloat(document.getElementById("scoreTotal")?.value);
+
+    const series = [];
+    for (let i = 1; i <= 6; i++) {
+        const v = parseFloat(document.getElementById("serie" + i)?.value);
+        if (!isNaN(v) && v > 0) series.push(v);
+    }
+    if (!isNaN(score) && series.length === 6) {
+        const somme = Math.round(series.reduce((a, b) => a + b, 0) * 10) / 10;
+        if (Math.abs(somme - score) > 0.2) score = somme;
+    }
+
+    if (!date) { afficherToast("⚠️ Choisissez une date"); return; }
+    if (isNaN(score) || score <= 0) { afficherToast("⚠️ Score invalide"); return; }
+
+    const res = await ajouterScore({ date, type, lieu, note, score, series });
+    if (!res.ok) {
+        afficherToast(res.raison === "existe" ? "⚠️ Ce score existe déjà" : "❌ Erreur d'enregistrement");
+        return;
+    }
+    afficherToast(res.offline ? "💾 Score enregistré (hors ligne)" : "✅ Score enregistré !");
+    voirScores();
+}
+
+export function voirScores() {
+    pageActuelle = "scores";
+    const historique = getScoresLocaux();
+    let html = boutonRetour() + "<h2>📋 Scores saisis</h2>";
+
+    if (historique.length === 0) {
+        html += "<p>Aucun score enregistré.</p>";
+    } else {
+        historique.forEach((item, index) => {
+            const detailLieu = item.lieu ? '<div style="font-size:0.88em; color:var(--primary); font-weight:600; margin-top:2px;">📍 ' + echapperHTML(item.lieu) + '</div>' : '<div style="font-size:0.88em; color:var(--muted); font-style:italic; margin-top:2px;">📍 Lieu non renseigné</div>';
+            const detailSeries = item.series && item.series.length > 0 ? '<div style="font-size:0.82em; color:var(--primary); margin-top:2px;">Séries : ' + echapperHTML(item.series.join(" • ")) + '</div>' : "";
+            const detailNote = item.note ? '<div style="font-size:0.82em; color:var(--muted); font-style:italic; margin-top:2px;">📝 ' + echapperHTML(item.note) + '</div>' : "";
+
+            html += '<div class="competition competition-card">' +
+                        '<div class="competition-left">' +
+                            '<div class="competition-date-badge">' + echapperHTML(item.date) + '</div>' +
+                            '<div class="competition-details">' +
+                                '<div class="competition-title">' + (item.type === "match" ? "🏆 Compétition" : "🏋️ Entraînement") + '</div>' +
+                                detailLieu +
+                                '<div class="competition-location">Score : <b>' + item.score + '</b></div>' +
+                                detailSeries +
+                                detailNote +
+                            '</div>' +
+                        '</div>' +
+                        '<div><button onclick="supprimerScore(' + index + ')" style="background:var(--primary); color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:600;">🗑️ Supprimer</button></div>' +
+                    '</div>';
+        });
+    }
+    document.getElementById("etat").innerHTML = html;
+    majToolbar();
+}
+
+export async function supprimerScore(index, callbackReload) {
+    if (!confirm("Supprimer ce score ?")) return;
+    const res = await supprimerScoreParIndex(index);
+    if (!res.ok) {
+        afficherToast("❌ Erreur lors de la suppression");
+        return;
+    }
+    afficherToast("🗑️ Score supprimé");
+    if (callbackReload) await callbackReload();
+    voirScores();
+}
+
+export function afficherStats() {
+    pageActuelle = "stats";
+    const stats = calculerStatistiques();
+
+    if (!stats) {
+        document.getElementById("etat").innerHTML = boutonRetour() + "<p>Aucun score trouvé.</p>";
+        majToolbar();
+        return;
+    }
+
+    let htmlMensuel = "";
+    for (const mois in stats.statsParMois) {
+        const moyMois = (stats.statsParMois[mois].somme / stats.statsParMois[mois].count).toFixed(1);
+        htmlMensuel += '<div class="monthly-stat-item">' +
+            '<span>📅 ' + mois + ' (' + stats.statsParMois[mois].count + ' tirs)</span>' +
+            '<span>Moyenne : <b>' + moyMois + '</b> | Max : <b style="color:var(--gold);">' + stats.statsParMois[mois].max + '</b></span>' +
+        '</div>';
+    }
+
+    document.getElementById("etat").innerHTML = boutonRetour() +
+        '<h2>📈 Statistiques & Progression</h2>' +
+        '<div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:15px;">' +
+            '<div class="card"><h3>🎯 Dernier score</h3><p style="font-size:32px; font-weight:bold;">' + stats.dernier + '</p></div>' +
+            '<div class="card"><h3>🏆 Record</h3><p style="font-size:32px; font-weight:bold; color:var(--gold);">' + stats.meilleurGlobal + '</p></div>' +
+            '<div class="card"><h3>📊 Moyenne saison</h3><p style="font-size:32px; font-weight:bold;">' + stats.moyenne + '</p></div>' +
+            '<div class="card"><h3>📋 Résultats</h3><p style="font-size:32px; font-weight:bold;">' + stats.totalResultats + '</p></div>' +
+        '</div>' +
+        '<div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap:15px; margin-top:15px;">' +
+            '<div class="card" style="border-left: 4px solid var(--gold);">' +
+                '<h3>🔥 Forme du moment (5 derniers tirs)</h3>' +
+                '<p style="font-size:28px; font-weight:bold; margin:8px 0 4px 0;">' + stats.moyenne5 + ' pts</p>' +
+                '<small style="color:var(--muted); font-weight:600;">' + stats.badgeForme + '</small>' +
+            '</div>' +
+            '<div class="card" style="border-left: 4px solid var(--primary);">' +
+                '<h3>📐 Régularité (Écart-type)</h3>' +
+                '<p style="font-size:28px; font-weight:bold; margin:8px 0 4px 0;">± ' + stats.ecartType + ' pts</p>' +
+                '<small style="color:var(--muted); font-weight:600;">Profil : ' + stats.appreciationRegularite + '</small>' +
+            '</div>' +
+        '</div>' +
+        '<div class="card" style="margin-top:20px;">' +
+            '<h3>📈 Progression mensuelle automatique</h3>' +
+            (htmlMensuel || "<p>Aucune donnée mensuelle disponible.</p>") +
+        '</div>' +
+        '<hr style="margin:20px 0; border:0; border-top:1px solid var(--border);">' +
+        '<h3>📊 Évolution des performances & Objectif (' + stats.objectif + ' pts)</h3>' +
+        '<div class="chart-wrap"><canvas id="graphiqueScores"></canvas></div>';
+
+    dessinerGraphique("graphiqueScores");
+    majToolbar();
+}
+
+export function afficherTop10() {
+    pageActuelle = "top10";
+    const tousLesScores = [];
+    for (let i = 0; i < state.datesMatchs.length; i++) {
+        tousLesScores.push({ date: state.datesMatchs[i], type: "🏆 Compétition", score: Number(state.scoresExcel[i]) });
+    }
+    for (let i = 0; i < state.datesEntrainements.length; i++) {
+        tousLesScores.push({ date: state.datesEntrainements[i], type: "🏋️ Entraînement", score: Number(state.entrainementsExcel[i]) });
+    }
+
+    if (tousLesScores.length === 0) {
+        document.getElementById("etat").innerHTML = boutonRetour() + "<h2>🥇 Top 10 & Historique des records</h2><p>Aucun score.</p>";
+        majToolbar();
+        return;
+    }
+
+    tousLesScores.sort((a, b) => tsJJMM(a.date) - tsJJMM(b.date));
+
+    const historiqueRecords = [];
+    let recordMaxActuel = 0;
+    tousLesScores.forEach(item => {
+        if (item.score > recordMaxActuel) {
+            recordMaxActuel = item.score;
+            historiqueRecords.push({ date: item.date, type: item.type, score: item.score });
+        }
+    });
+
+    const top10 = [...tousLesScores].sort((a, b) => b.score - a.score).slice(0, 10);
+    const moyenneTop10 = top10.length > 0 ? (top10.reduce((t, i) => t + i.score, 0) / top10.length).toFixed(1) : 0;
+    const recordAbsolu = top10.length > 0 ? top10[0].score : 0;
+
+    let html = boutonRetour() + '<h2>🥇 Top 10 & Historique des records</h2>';
+    html += '<div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap:15px;">' +
+        top10.map((item, idx) => {
+            const medaille = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "";
+            return '<div class="card" style="text-align:center; padding:16px;">' +
+                '<div style="font-size:.85em; color:var(--muted); font-weight:700;">' + (medaille || ("#" + (idx + 1))) + '</div>' +
+                '<div style="font-size:1.9rem; font-weight:900; color:' + (idx === 0 ? 'var(--gold)' : 'var(--text)') + ';">' + item.score + '</div>' +
+                '<div style="font-size:.8em; color:var(--muted); margin-top:2px;">' + item.date + '</div>' +
+                '<div style="font-size:.8em; color:var(--muted);">' + item.type + '</div>' +
+            '</div>';
+        }).join("") +
+    '</div>';
+
+    html += '<div class="card" style="margin-top:20px;">' +
+        '<h3>🏆 Record personnel absolu : ' + recordAbsolu + '</h3>' +
+        '<p style="font-size:16px; margin:0;">📊 Moyenne du Top 10 : <b>' + moyenneTop10 + '</b></p>' +
+    '</div>';
+
+    html += '<div class="card" style="margin-top:20px;">' +
+        '<h3>📈 Historique des records battus</h3>' +
+        historiqueRecords.map(r =>
+            '<div class="monthly-stat-item">' +
+                '<span>📅 ' + r.date + ' ( ' + r.type + ' )</span>' +
+                '<span>Nouveau record : <b style="color:var(--gold);">' + r.score + ' pts</b></span>' +
+            '</div>'
+        ).join("") +
+    '</div>';
+
+    document.getElementById("etat").innerHTML = html;
+    majToolbar();
+}
+
+export function exporterScoresJSON() {
+    const historique = getScoresLocaux();
+    if (historique.length === 0) { afficherToast("⚠️ Aucun score à exporter"); return; }
+    const blob = new Blob([JSON.stringify(historique, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "scores-tir-cecillya-" + new Date().toISOString().slice(0, 10) + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    afficherToast("💾 Export JSON téléchargé");
+}
+
+export function exporterScoresExcel() {
+    const historique = getScoresLocaux();
+    if (historique.length === 0) { afficherToast("⚠️ Aucun score à exporter"); return; }
+
+    const lignes = historique.map(item => ({
+        Date: item.date,
+        Type: item.type === "match" ? "Compétition" : "Entraînement",
+        Lieu: item.lieu || "",
+        Score: item.score,
+        Series: item.series && item.series.length ? item.series.join(" - ") : "",
+        Note: item.note || ""
+    }));
+
+    const feuille = XLSX.utils.json_to_sheet(lignes);
+    const classeur = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(classeur, feuille, "Scores");
+    XLSX.writeFile(classeur, "scores-tir-cecillya-" + new Date().toISOString().slice(0, 10) + ".xlsx");
+    afficherToast("📊 Export Excel téléchargé");
+}
+
+export function importerScoresJSON(event, callbackReload) {
+    const fichier = event.target.files && event.target.files[0];
+    if (!fichier) return;
+
+    const lecteur = new FileReader();
+    lecteur.onload = async (e) => {
+        try {
+            const donnees = JSON.parse(e.target.result);
+            if (!Array.isArray(donnees)) throw new Error("Format invalide");
+
+            const historique = getScoresLocaux();
+            let ajoutes = 0;
+            donnees.forEach(item => {
+                if (!item || !item.date || item.score === undefined) return;
+                const existe = historique.some(h =>
+                    h.date === item.date &&
+                    h.type === item.type &&
+                    Number(h.score) === Number(item.score)
+                );
+                if (!existe) {
+                    historique.push({
+                        date: item.date,
+                        type: item.type || "entrainement",
+                        lieu: item.lieu || "",
+                        score: Number(item.score),
+                        note: item.note || "",
+                        series: Array.isArray(item.series) ? item.series : []
+                    });
+                    ajoutes++;
+                }
+            });
+            setScoresLocaux(historique);
+            afficherToast(ajoutes > 0 ? "✅ " + ajoutes + " score(s) importé(s)" : "ℹ️ Aucun nouveau score");
+            if (callbackReload) await callbackReload();
+        } catch (err) {
+            afficherToast("❌ Fichier JSON invalide");
+            console.error(err);
+        } finally {
+            event.target.value = "";
+        }
+    };
+    lecteur.readAsText(fichier);
+}
