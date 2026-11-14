@@ -1,23 +1,29 @@
 :root {
-  --bg: #f8fafc;
+  --navy: #3b0712;
+  --primary: #dc2626;
+  --primary-hover: #991b1b;
+
+  --bg: #f4e8ea;
   --card-bg: #ffffff;
-  --text: #0f172a;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --text: #1f0a0e;
+  --muted: #64474c;
+  --border: #e5c6cb;
+
+  --shadow: 0 6px 20px rgba(59, 7, 18, 0.10);
 }
 
 [data-theme="dark"] {
-  --bg: #0b0f19;
-  --card-bg: #111827;
-  --text: #f9fafb;
-  --muted: #9ca3af;
-  --border: #1f2937;
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --navy: #2a060e;
+  --primary: #ef4444;
+  --primary-hover: #991b1b;
+
+  --bg: #170a0d;
+  --card-bg: #241015;
+  --text: #fff1f2;
+  --muted: #d1a3ab;
+  --border: #471d26;
+
+  --shadow: 0 10px 30px rgba(0,0,0,.45);
 }
 
 body {
@@ -46,7 +52,15 @@ body {
 
 /* En-tête / Hero */
 .hero {
-  background: linear-gradient(135deg, #0a1931 0%, #1e3a8a 100%);
+  background:
+      radial-gradient(800px 300px at 20% 0%, rgba(255,255,255,.16), transparent),
+      radial-gradient(600px 300px at 90% 20%, rgba(245,179,1,.32), transparent),
+      linear-gradient(
+          135deg,
+          #2b050d 0%,
+          #7f1d1d 48%,
+          #dc2626 100%
+      );
   color: #fff;
   padding: 30px 20px;
   text-align: center;
@@ -125,13 +139,14 @@ body {
 
 /* Cartes de compétitions & Calendrier */
 .month-header {
-  font-size: 1.25rem;
-  font-weight: 800;
-  margin: 24px 0 12px 0;
-  color: var(--primary);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  background: linear-gradient(
+      135deg,
+      #450a0a 0%,
+      #b91c1c 100%
+  );
+  color: white;
+  padding: 10px 16px;
+  border-radius: 12px;
 }
 .calendar-grid {
   display: grid;
@@ -178,12 +193,13 @@ body {
 
 /* Encart Prochain Match */
 .next-match-card {
-  background: linear-gradient(135deg, #1e3a8a 100%, #2563eb 0%);
+  background: linear-gradient(
+      135deg,
+      #3b0712 0%,
+      #b91c1c 100%
+  );
   color: white;
-  border-radius: 14px;
-  padding: 18px;
-  margin-bottom: 20px;
-  box-shadow: var(--shadow);
+  border: 1px solid #ef4444;
 }
 .next-match-card h2 { margin-top: 0; font-size: 1.2rem; color: #ffd84d; }
 
@@ -204,12 +220,11 @@ body {
 
 /* Nouveautés : Objectifs, Alertes & Progression */
 .objective-card {
-  background: linear-gradient(135deg, #0a1931 0%, #1e3a8a 100%);
-  color: #fff;
-  border-radius: 16px;
-  padding: 20px;
-  margin-top: 16px;
-  box-shadow: var(--shadow);
+  background: linear-gradient(
+      135deg,
+      #3b0712 0%,
+      #991b1b 100%
+  );
 }
 .progress-bar-container {
   background: rgba(255,255,255,0.2);
