@@ -1,3 +1,4 @@
+import * as timer from './timer.js';
 import { state, chargerDonneesExcelEtCalendrier, exporterEvenementICS as exporterEvenementICSBase } from './calendar.js';
 import { synchroniserScores } from './storage.js';
 import * as ui from './ui.js';
@@ -22,6 +23,8 @@ export async function synchroniserEtRecharger() {
             ui.afficherStats();
         } else if (ui.pageActuelle === "top10") {
             ui.afficherTop10();
+        } else if (ui.pageActuelle === "timer") {
+            timer.afficherTimer();
         }
     } catch (e) {
         ui.afficherToast("❌ Erreur de synchronisation");
@@ -66,6 +69,15 @@ window.recalculerTotalSeries = ui.recalculerTotalSeries;
 window.enregistrerScore = ui.enregistrerScore;
 window.supprimerScore = (index) => ui.supprimerScore(index, initApp);
 window.modifierObjectifPersonnel = ui.modifierObjectifPersonnel;
+
+// Pont Global pour le Timer
+window.afficherTimer = timer.afficherTimer;
+window.appliquerPresetTimer = timer.appliquerPresetTimer;
+window.demarrerPauseTimer = timer.demarrerPauseTimer;
+window.resetTimer = timer.resetTimer;
+window.changerPhaseTimer = timer.changerPhaseTimer;
+window.ajusterTempsTimer = timer.ajusterTempsTimer;
+window.testerSonTimer = timer.testerSonTimer;
 
 export async function initApp() {
     try {
