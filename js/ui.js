@@ -3,6 +3,12 @@ import { getScoresLocaux, setScoresLocaux, getObjectifPersonnel, setObjectifPers
 import { calculerStatistiques, dessinerGraphique } from './stats.js';
 
 export let pageActuelle = "tableau";
+
+/* Permet aux autres modules (palmares.js) de dire quelle page est affichee. */
+export function definirPage(nom) {
+    pageActuelle = nom;
+}
+
 export function afficherHero() {
     const scores = [...state.scoresExcel, ...state.entrainementsExcel];
     if (scores.length === 0) return;
@@ -53,6 +59,7 @@ export function majToolbar() {
         "resultats":   "Résultats",
         "stats":       "Statistiques",
         "top10":       "Top 10",
+        "palmares":    "Palmarès",
         "timer":       "Timer Stand"
     };
     const cible = libelles[pageActuelle];
@@ -73,7 +80,7 @@ export function majPastilleSync() {
     setTimeout(() => el.classList.remove("sync-flash"), 1200);
 }
 
-function boutonRetour() {
+export function boutonRetour() {
     return '<button class="btn btn-retour" onclick="afficherTableauDeBord()">← Retour au tableau de bord</button>';
 }
 
