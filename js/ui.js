@@ -219,8 +219,28 @@ export function afficherResultats() {
         const date = state.datesMatchs[i];
         const score = Number(state.scoresExcel[i]);
         const key = date + "|match|" + score;
-        const local = mapLocaux.get(key);
-        resultats.push({ date: date, type: "🏆 Compétition", score: score, lieu: local?.lieu || state.lieuxParResultat?.[date] || "" });
+       const local = mapLocaux.get(key);
+
+let lieu =
+    local?.lieu ||
+    state.lieuxParResultat?.[date] ||
+    state.lieuxParDate?.[date] ||
+    "";
+
+// Correction manuelle du score du Hainaut
+if (
+    date === "18/10" &&
+    Math.abs(score - 610.5) < 0.1
+) {
+    lieu = "AULNOYE";
+}
+
+resultats.push({
+    date,
+    type: "🏆 Compétition",
+    score,
+    lieu
+});
     }
 
     for (let i = 0; i < state.datesEntrainements.length; i++) {
