@@ -225,7 +225,6 @@ body {
   box-sizing: border-box;
 }
 
-/* Chaque carte garde une hauteur stable, quel que soit le texte */
 .calendar-grid > .competition-card {
   display: flex;
   flex-direction: column;
@@ -236,7 +235,6 @@ body {
   box-sizing: border-box;
 }
 
-/* Le bloc de gauche ne doit jamais pousser la carte */
 .calendar-grid .competition-left {
   min-width: 0;
   align-items: flex-start;
@@ -247,7 +245,6 @@ body {
   flex: 1 1 auto;
 }
 
-/* Un nom long passe a la ligne au lieu de deborder */
 .calendar-grid .competition-title {
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -259,13 +256,11 @@ body {
   word-break: break-word;
 }
 
-/* Le badge de date reste compact */
 .calendar-grid .competition-date-badge {
   flex: 0 0 auto;
   line-height: 1.2;
 }
 
-/* La barre d'actions ne s'ecrase pas */
 .calendar-grid .competition-card > div:last-child {
   flex-wrap: wrap;
   gap: 6px;
@@ -411,7 +406,6 @@ body {
   height: 100% !important;
 }
 
-/* Titres de section : une barre d'accent a gauche, plus lisibles */
 #etat > h2 {
   display: flex;
   align-items: center;
@@ -422,7 +416,6 @@ body {
   border-left: 4px solid var(--primary);
 }
 
-/* Les cartes de KPI du tableau de bord respirent mieux */
 .kpi-grid { gap: 14px; }
 
 .kpi {
@@ -445,7 +438,6 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Toast de synchro */
 #toast-sync {
   position: fixed;
   bottom: 20px;
@@ -587,7 +579,6 @@ footer {
   .hero{ padding:30px 16px 70px !important; }
 }
 
-/* Icônes du HTML : raccordées à la palette du club */
 .ic-blue { color: var(--primary); }
 .ic-navy { color: var(--navy); }
 .ic-gold { color: var(--gold); }
@@ -614,14 +605,12 @@ footer {
   border-color: var(--primary) !important;
 }
 
-/* Le bouton de la page affichee est marque */
 .toolbar .btn.active {
   background: var(--primary) !important;
   color: #fff !important;
   box-shadow: 0 4px 14px rgba(176, 40, 32, .35);
 }
 
-/* La pastille "A jour" clignote doucement quand elle se met a jour */
 #sync-badge {
   display: inline-block;
   transition: opacity .3s ease, transform .3s ease;
@@ -637,7 +626,6 @@ footer {
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* Barre de chargement pendant la lecture de l'Excel */
 .barre-chargement {
   position: fixed;
   top: 0; left: 0;
@@ -672,7 +660,6 @@ footer {
 
 .toolbar-row { gap: 9px !important; }
 
-/* Le badge carré qui porte l'icône */
 .toolbar .btn .ic {
   display: inline-flex;
   align-items: center;
@@ -686,7 +673,6 @@ footer {
 
 .toolbar .btn .ic svg { width: 15px; height: 15px; }
 
-/* La pastille colorée de chaque famille de bouton */
 .toolbar .btn .ic-blue   { background: #e02e2e; }
 .toolbar .btn .ic-green  { background: #12c95a; }
 .toolbar .btn .ic-gold   { background: #f0c020; }
@@ -694,14 +680,12 @@ footer {
 .toolbar .btn .ic-red    { background: #e02e2e; }
 .toolbar .btn .ic-grey   { background: #3a2a2a; }
 
-/* Le trait de l'icône est blanc sur la pastille */
 .toolbar .btn .ic svg,
 .toolbar .btn .ic svg use {
   color: #ffffff !important;
   stroke: #ffffff;
 }
 
-/* Survol : la pastille grossit un peu */
 .toolbar .btn:hover .ic {
   transform: scale(1.08);
   filter: brightness(1.12);
@@ -711,20 +695,11 @@ footer {
   border-color: var(--primary) !important;
 }
 
-/* Le bouton de la page affichée */
-.toolbar .btn.active {
-  background: var(--primary) !important;
-  color: #fff !important;
-  border-color: var(--primary) !important;
-  box-shadow: 0 3px 12px rgba(176, 40, 32, .35);
-}
-
 .toolbar .btn.active .ic {
   background: rgba(255, 255, 255, .22);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35);
 }
 
-/* Le bouton Synchroniser : entièrement doré, texte foncé */
 .toolbar .btn-gold {
   background: var(--gold) !important;
   border-color: var(--gold) !important;
@@ -734,7 +709,6 @@ footer {
 .toolbar .btn-gold .ic { background: rgba(0, 0, 0, .16); }
 .toolbar .btn-gold .ic svg use { color: #2a1204 !important; stroke: #2a1204; }
 
-/* La barre de recherche s'aligne sur la hauteur des boutons */
 .search {
   min-height: 40px;
   border-radius: 999px !important;
@@ -758,4 +732,60 @@ footer {
   .toolbar .btn .ic { width: 23px; height: 23px; flex-basis: 23px; border-radius: 7px; }
   .toolbar .btn .ic svg { width: 13px; height: 13px; }
   .toolbar-row { gap: 7px !important; }
+}
+
+/* ===== Boîte de confirmation aux couleurs du site ===== */
+#modale-confirme {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modale-fond {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 4, 4, .72);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modale-boite {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 26px 24px 20px;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .5);
+  animation: modale-in .2s ease;
+}
+
+@keyframes modale-in {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modale-texte {
+  margin: 0 0 20px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.modale-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.modale-actions .btn {
+  flex: 1 1 auto;
+  justify-content: center;
+  padding: 11px 18px !important;
 }
