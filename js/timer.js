@@ -41,6 +41,7 @@ function restaurerEtat() {
             reste = Math.max(0, reste - ecoule);
         }
         tempsRestant = reste;
+        timerActif = Boolean(e.enMarche) && tempsRestant > 0;
     } catch (err) { /* etat illisible : on repart du preset par defaut */ }
 }
 
@@ -137,10 +138,7 @@ export function demarrerPauseTimer() {
                     setTimeout(() => jouerBip(880, 0.2), 300);
                     setTimeout(() => jouerBip(1320, 0.6), 600);
                     if (phaseActuelle === "essais" && modeActuelConfig.match > 0) {
-                        if (confirm("⏱️ Fin des essais ! Passer au match (" + modeActuelConfig.match + " min) ?")) {
-                            changerPhaseTimer();
-                            demarrerPauseTimer();
-                        }
+                        afficherToast("🏆 Fin des essais — passez au match quand vous êtes prêt");
                     } else {
                         afficherToast("🏁 TEMPS ÉCOULÉ ! Fin de la séance.");
                     }
@@ -182,12 +180,15 @@ export function mettreAJourAffichageTimer() {
     const affichage = document.getElementById("timer-affichage");
     const titrePhase = document.getElementById("timer-phase-titre");
     const barreProgression = document.getElementById("timer-progression");
-    if (!affichage) return;
 
-    affichage.textContent = formaterTemps(tempsRestant);
     if (titrePhase) {
         titrePhase.textContent = phaseActuelle === "essais" ? "🎯 Phase d'Essais (Illimités)" : "🏆 Phase de Match Officiel";
     }
+
+    if (!affichage) return;
+
+    affichage.textContent = formaterTemps(tempsRestant);
+
     if (barreProgression && dureeTotalePhase > 0) {
         const pct = (tempsRestant / dureeTotalePhase) * 100;
         barreProgression.style.width = pct + "%";
@@ -208,6 +209,9 @@ export function mettreAJourAffichageTimer() {
 export function afficherTimer() {
     window.pageActuelle = "timer";
     restaurerEtat();
+
+    const pctDepart = dureeTotalePhase > 0 ? Math.round((tempsRestant / dureeTotalePhase) * 100) : 100;
+
     let html = '<button class="btn btn-retour" onclick="afficherTableauDeBord()">← Retour au tableau de bord</button>' +
         '<h2>⏱️ Timer & Stand de Tir Officiel</h2>' +
         '<p style="color:var(--muted); margin-bottom:16px;">Chronométrage officiel FFTir (Règlement ISSF) avec alertes sonores.</p>' +
@@ -222,15 +226,21 @@ export function afficherTimer() {
         '</div>' +
 
         '<div id="timer-card-main" class="card" style="text-align:center; padding:30px; background:linear-gradient(135deg, var(--card-bg) 0%, var(--bg) 100%); transition: all 0.3s;">' +
-            '<div id="timer-phase-titre" style="font-size:1.2rem; font-weight:800; color:var(--primary); margin-bottom:10px;">🎯 Phase d\'Essais</div>' +
-            '<div id="timer-affichage" style="font-size:5rem; font-weight:900; font-variant-numeric:tabular-nums; letter-spacing:0.05em; margin:15px 0;">15:00</div>' +
+            '<div id="timer-phase-titre" style="font-size:1.2rem; font-weight:800; color:var(--primary); margin-bottom:10px;">' +
+                (phaseActuelle === "essais" ? "🎯 Phase d'Essais (Illimités)" : "🏆 Phase de Match Officiel") +
+            '</div>' +
+            '<div id="timer-affichage" style="font-size:5rem; font-weight:900; font-variant-numeric:tabular-nums; letter-spacing:0.05em; margin:15px 0;">' +
+                formaterTemps(tempsRestant) +
+            '</div>' +
             
             '<div style="background:var(--border); border-radius:999px; height:12px; width:100%; overflow:hidden; margin-bottom:20px;">' +
-                '<div id="timer-progression" style="background:#22c55e; height:100%; width:100%; transition: width 1s linear;"></div>' +
+                '<div id="timer-progression" style="background:' + (phaseActuelle === "essais" ? "#22c55e" : "var(--primary)") + '; height:100%; width:' + pctDepart + '%; transition: width 1s linear;"></div>' +
             '</div>' +
 
             '<div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom:15px;">' +
-                '<button id="btn-start-pause" class="btn btn-primary" style="font-size:1.1rem; padding:12px 24px;" onclick="demarrerPauseTimer()">▶ Démarrer</button>' +
+                '<button id="btn-start-pause" class="btn btn-primary" style="font-size:1.1rem; padding:12px 24px;" onclick="demarrerPauseTimer()">' +
+                    (timerActif ? '⏸️ Pause' : '▶ Démarrer') +
+                '</button>' +
                 '<button class="btn" style="font-size:1.1rem; padding:12px 18px;" onclick="resetTimer()">🔄 Reset</button>' +
                 '<button class="btn" style="font-size:1.1rem; padding:12px 18px;" onclick="changerPhaseTimer()">🔀 Changer Phase</button>' +
             '</div>' +
