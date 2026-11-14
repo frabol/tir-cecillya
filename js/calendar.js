@@ -8,6 +8,7 @@ export const state = {
     prochainesCompetitions: [],
     toutesCompetitionsCalendrier: [],
     lieuxParDate: {},
+    lieuxParResultat: {},
     filtreDisciplineActif: "all"
 };
 function determinerLieu(evenement, lieu) {
@@ -164,7 +165,18 @@ export async function chargerDonneesExcelEtCalendrier(filtre = "avenir") {
         const lieu = determinerLieu(evenement, lieuBrut);
         const statut = ligne[5];
         const dateReelle = ligne[4];
+    if (dateReelle && lieu) {
 
+    const match = String(dateReelle)
+        .match(/(\d{2})\/(\d{2})\/\d{4}/);
+
+    if (match) {
+
+        const cle = `${match[1]}/${match[2]}`;
+
+        state.lieuxParResultat[cle] = lieu;
+    }
+}
        if (evenement) {
 
     if (date && lieu) {
