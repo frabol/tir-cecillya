@@ -10,7 +10,26 @@ export const state = {
     lieuxParDate: {},
     filtreDisciplineActif: "all"
 };
+function determinerLieu(evenement, lieu) {
 
+    const lieuNettoye = String(lieu || "").trim();
+
+    if (
+        lieuNettoye &&
+        lieuNettoye !== "SUIVANT ZONES"
+    ) {
+        return lieuNettoye;
+    }
+
+    const match = String(evenement || "")
+        .match(/\(([^)]+)\)/);
+
+    if (match) {
+        return match[1];
+    }
+
+    return lieuNettoye || "Lieu non spécifié";
+}
 export function exporterEvenementICS(titre, dateBrute, moisBrut, lieu, afficherToast) {
     const moisMap = {
         "septembre": "09", "octobre": "10", "novembre": "11", "décembre": "12",
