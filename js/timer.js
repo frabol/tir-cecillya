@@ -146,7 +146,7 @@ export function mettreAJourAffichageTimer() {
     if (barreProgression && dureeTotalePhase > 0) {
         const pct = (tempsRestant / dureeTotalePhase) * 100;
         barreProgression.style.width = pct + "%";
-        barreProgression.style.background = phaseActuelle === "essais" ? "#10b981" : "var(--primary)";
+        barreProgression.style.background = phaseActuelle === "essais" ? "#22c55e" : "var(--primary)";
     }
 
     const cardChrono = document.getElementById("timer-card-main");
@@ -162,7 +162,8 @@ export function mettreAJourAffichageTimer() {
 
 export function afficherTimer() {
     window.pageActuelle = "timer";
-    let html = '<h2>⏱️ Timer & Stand de Tir Officiel</h2>' +
+    let html = '<button class="btn btn-retour" onclick="afficherTableauDeBord()">← Retour au tableau de bord</button>' +
+        '<h2>⏱️ Timer & Stand de Tir Officiel</h2>' +
         '<p style="color:var(--muted); margin-bottom:16px;">Chronométrage officiel FFTir (Règlement ISSF) avec alertes sonores.</p>' +
         
         '<div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">' +
@@ -179,7 +180,7 @@ export function afficherTimer() {
             '<div id="timer-affichage" style="font-size:5rem; font-weight:900; font-variant-numeric:tabular-nums; letter-spacing:0.05em; margin:15px 0;">15:00</div>' +
             
             '<div style="background:var(--border); border-radius:999px; height:12px; width:100%; overflow:hidden; margin-bottom:20px;">' +
-                '<div id="timer-progression" style="background:#10b981; height:100%; width:100%; transition: width 1s linear;"></div>' +
+                '<div id="timer-progression" style="background:#22c55e; height:100%; width:100%; transition: width 1s linear;"></div>' +
             '</div>' +
 
             '<div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom:15px;">' +

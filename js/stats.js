@@ -125,37 +125,37 @@ export function dessinerGraphique(canvasId) {
                 {
                     label: "Compétitions",
                     data: serieMatchs,
-                    borderColor: "#2563eb",
-                    backgroundColor: "rgba(37, 99, 235, 0.12)",
+                    borderColor: "#e04a3a",
+                    backgroundColor: "rgba(224, 74, 58, 0.12)",
                     borderWidth: 3.5,
                     tension: 0.35,
                     fill: true,
                     spanGaps: true,
                     pointRadius: 5,
                     pointHoverRadius: 8,
-                    pointBackgroundColor: "#2563eb",
+                    pointBackgroundColor: "#e04a3a",
                     pointBorderColor: "#ffffff",
                     pointBorderWidth: 2
                 },
                 {
                     label: "Entraînements",
                     data: serieEntrainements,
-                    borderColor: "#10b981",
-                    backgroundColor: "rgba(16, 185, 129, 0.12)",
+                    borderColor: "#f0cf5a",
+                    backgroundColor: "rgba(240, 207, 90, 0.12)",
                     borderWidth: 3.5,
                     tension: 0.35,
                     fill: true,
                     spanGaps: true,
                     pointRadius: 5,
                     pointHoverRadius: 8,
-                    pointBackgroundColor: "#10b981",
+                    pointBackgroundColor: "#f0cf5a",
                     pointBorderColor: "#ffffff",
                     pointBorderWidth: 2
                 },
                 {
                     label: `Objectif (${objectif} pts)`,
                     data: serieObjectif,
-                    borderColor: "#f5b301",
+                    borderColor: "#c9a227",
                     borderWidth: 2,
                     borderDash: [6, 6],
                     pointRadius: 0,
@@ -172,7 +172,7 @@ export function dessinerGraphique(canvasId) {
                     labels: { font: { size: 13, weight: "bold" }, usePointStyle: true, boxWidth: 8 }
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    backgroundColor: 'rgba(26, 8, 8, 0.94)',
                     titleFont: { size: 13, weight: 'bold' },
                     bodyFont: { size: 12 },
                     padding: 12,
@@ -184,12 +184,12 @@ export function dessinerGraphique(canvasId) {
                 y: {
                     min: minY,
                     max: maxY,
-                    grid: { color: "rgba(100, 116, 139, 0.1)" },
-                    ticks: { font: { size: 11 }, color: "#64748b" }
+                    grid: { color: "rgba(184, 144, 136, 0.14)" },
+                    ticks: { font: { size: 11 }, color: "#b89088" }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { font: { size: 11 }, color: "#64748b", maxRotation: 45 }
+                    ticks: { font: { size: 11 }, color: "#b89088", maxRotation: 45 }
                 }
             }
         }

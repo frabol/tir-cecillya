@@ -594,3 +594,130 @@ footer {
 .ic-green { color: var(--success); }
 .ic-red { color: var(--primary); }
 .ic-grey { color: var(--muted); }
+
+/* Bouton retour sur les sous-pages */
+.btn-retour {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding: 8px 16px !important;
+  font-size: .88rem !important;
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.btn-retour:hover {
+  background: var(--primary) !important;
+  color: #fff !important;
+  border-color: var(--primary) !important;
+}
+
+/* Le bouton de la page affichee est marque */
+.toolbar .btn.active {
+  background: var(--primary) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 14px rgba(176, 40, 32, .35);
+}
+
+/* La pastille "A jour" clignote doucement quand elle se met a jour */
+#sync-badge {
+  display: inline-block;
+  transition: opacity .3s ease, transform .3s ease;
+}
+
+#sync-badge.sync-flash {
+  animation: sync-pulse .6s ease 2;
+}
+
+@keyframes sync-pulse {
+  0%   { opacity: 1; transform: scale(1); }
+  50%  { opacity: .55; transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Barre de chargement pendant la lecture de l'Excel */
+.barre-chargement {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 100%;
+  z-index: 2000;
+  background: linear-gradient(90deg,
+      transparent, var(--gold), var(--primary), var(--gold), transparent);
+  background-size: 200% 100%;
+  animation: defile 1.1s linear infinite;
+}
+
+@keyframes defile {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ===== Boutons de la barre d'outils : lisibilité et confort ===== */
+.toolbar .btn {
+  min-height: 50px;
+  padding: 13px 20px !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.1;
+  border: 1px solid transparent;
+}
+
+.toolbar-row { gap: 10px !important; }
+
+/* Une seule couleur d'icône : gris chaud. La couleur reste au bouton actif. */
+.toolbar .btn .ic,
+.toolbar .btn .ic-blue,
+.toolbar .btn .ic-green,
+.toolbar .btn .ic-gold,
+.toolbar .btn .ic-navy,
+.toolbar .btn .ic-red,
+.toolbar .btn .ic-grey {
+  color: var(--muted) !important;
+  transition: color .2s ease;
+}
+
+/* Au survol : léger soulèvement et bordure teintée */
+.toolbar .btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--border);
+}
+
+.toolbar .btn:hover .ic { color: var(--primary) !important; }
+
+/* Le bouton de la page affichée */
+.toolbar .btn.active {
+  background: var(--primary) !important;
+  color: #fff !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 6px 18px rgba(176, 40, 32, .38);
+}
+
+.toolbar .btn.active .ic { color: #fff !important; }
+
+/* Le bouton Synchroniser garde son or, avec un texte lisible */
+.toolbar .btn-gold {
+  color: #2a1204 !important;
+}
+
+.toolbar .btn-gold .ic { color: #6b4a10 !important; }
+
+/* La barre de recherche s'aligne sur la hauteur des boutons */
+.search {
+  min-height: 50px;
+  border-radius: 999px !important;
+  padding: 0 18px !important;
+}
+
+.search input { font-size: 1rem; }
+
+@media (max-width: 640px) {
+  .toolbar .btn {
+    min-height: 46px;
+    padding: 11px 15px !important;
+    font-size: .86rem !important;
+  }
+}

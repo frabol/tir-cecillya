@@ -174,6 +174,26 @@ input[name^="serie"] {
 
 <script>
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js'); }
+
+/* Barre de chargement pendant la lecture du classeur Excel */
+(function(){
+  const barre = document.createElement('div');
+  barre.className = 'barre-chargement';
+  barre.style.display = 'none';
+  document.body.appendChild(barre);
+  window._chargement = function(actif){
+    barre.style.display = actif ? 'block' : 'none';
+  };
+  const fetchOriginal = window.fetch;
+  window.fetch = function(...args){
+    const url = String(args[0] || '');
+    if (url.includes('.xlsx')) {
+      window._chargement(true);
+      return fetchOriginal.apply(this, args).finally(() => window._chargement(false));
+    }
+    return fetchOriginal.apply(this, args);
+  };
+})();
 const SVG_MAP = {
   "🏠":"#i-home","📅":"#i-cal","✅":"#i-check","🏆":"#i-trophy","📈":"#i-trend","🥇":"#i-medal","🥈":"#i-medal","🥉":"#i-medal","🎯":"#i-target","📊":"#i-chart","📋":"#i-list","🏋":"#i-trend","📍":"#i-pin","💾":"#i-dl","☁":"#i-cloud"
 };
@@ -189,7 +209,6 @@ function _embellirTableau(){
   cards.forEach(c=>{
     if(c.textContent.includes('Prochaine compétition')) c.classList.add('next-match');
   });
-  document.querySelectorAll('.toolbar .btn').forEach(b=>b.classList.remove('active'));
 }
 function _embellirIcones(){
   const etat = document.getElementById('etat');
@@ -243,6 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script type="module" src="js/main.js?v=6.7"></script>
+<script type="module" src="js/main.js?v=6.8"></script>
 </body>
 </html>
