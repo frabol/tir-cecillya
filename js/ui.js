@@ -1,7 +1,6 @@
 import { state, chargerDonneesExcelEtCalendrier, appliquerFiltresCalendrier, exporterEvenementICS } from './calendar.js';
 import { getScoresLocaux, setScoresLocaux, getObjectifPersonnel, setObjectifPersonnel, ajouterScore, supprimerScoreParIndex } from './storage.js';
 import { calculerStatistiques, dessinerGraphique } from './stats.js';
-import { state as etatCalendrier } from './calendar.js';   // ← si pas déjà importé
 
 export let pageActuelle = "tableau";
 /* ===== Bandeau hero (KPI en haut de page) ===== */
