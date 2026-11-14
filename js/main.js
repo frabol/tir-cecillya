@@ -94,10 +94,12 @@ export async function initApp() {
         } else if (ui.pageActuelle === "top10") {
             ui.afficherTop10();
         }
+        ui.afficherHero();          // ← ajoute cette ligne
     } catch (e) {
         console.error("Erreur d'initialisation :", e);
     }
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
     initApp();
