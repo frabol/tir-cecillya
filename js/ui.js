@@ -17,6 +17,27 @@ export function afficherToast(msg) {
     t._timer = setTimeout(() => t.classList.remove("show"), 2500);
 }
 
+function corrigerLieuCompetition(date, score, lieuActuel) {
+
+    const corrections = [
+
+        { date: "04/10", score: 604.1, lieu: "Trith St Léger" },
+
+        { date: "18/10", score: 610.5, lieu: "AULNOYE" },
+
+        { date: "25/10", score: 600.3, lieu: "Aulnoye" },
+
+
+    ];
+
+    const correction = corrections.find(c =>
+        c.date === date &&
+        Math.abs(c.score - score) < 0.1
+    );
+
+    return correction ? correction.lieu : lieuActuel;
+}
+
 export async function afficherCalendrier(filtre = "avenir") {
     pageActuelle = "calendrier";
     try {
@@ -227,12 +248,17 @@ let lieu =
     state.lieuxParDate?.[date] ||
     "";
 
-// Correction manuelle du score du Hainaut
-if (
-    date === "18/10" &&
-    Math.abs(score - 610.5) < 0.1
-) {
+// Corrections connues de la saison
+if (date === "18/10" && Math.abs(score - 610.5) < 0.1) {
     lieu = "AULNOYE";
+}
+
+if (date === "04/10" && Math.abs(score - 604.1) < 0.1) {
+    lieu = "Trith St Léger";
+}
+
+if (date === "25/10" && Math.abs(score - 600.3) < 0.1) {
+    lieu = " AULNOYE";
 }
 
 resultats.push({
