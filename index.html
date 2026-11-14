@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tir Cécillya — Suivi & Calendrier Ligue Tir NPdC</title>
 <meta name="description" content="Tir Cécillya : tableau de bord, résultats, statistiques et calendrier Ligue Tir Nord-Pas-de-Calais 2026-2027.">
-<meta name="theme-color" content="#0a1931">
+<meta name="theme-color" content="#0f172a">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="styles.css">
@@ -240,26 +240,27 @@ function _embellirIcones(){
     let html = el.innerHTML;
     let changed = false;
     for(const [emoji, ref] of Object.entries(SVG_MAP)){
-      if(html.includes(emoji)){ html = html.split(emoji).join(svgIcon(ref)); changed = true; }
+      if(html.includes(emoji)){
+        html = html.split(emoji).join(svgIcon(ref));
+        changed = true;
+      }
     }
-    if(changed){ el.innerHTML = html; el.dataset.svgDone = "1"; }
+    if(changed){ el.innerHTML = html; el.dataset.svgDone = '1'; }
   });
 }
-function _embellir(){ _embellirTableau(); _embellirIcones(); }
-_embellir();
-if('MutationObserver' in window){
-  const _obs = new MutationObserver(()=>{ _embellir(); });
-  _obs.observe(document.documentElement, { childList: true, subtree: true });
-} else {
-  setInterval(_embellir, 1500);
+function _observer(){
+  const etat = document.getElementById('etat');
+  if(!etat || etat.dataset.observe) return;
+  etat.dataset.observe = '1';
+  new MutationObserver(()=>{ _embellirIcones(); if(window.afficherHero) window.afficherHero(); }).observe(etat, {childList:true, subtree:true});
 }
-function toggleTheme(){
+window.toggleTheme = function(){
   const html = document.documentElement;
   const cur = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-theme', cur);
   localStorage.setItem('theme', cur);
   document.body.classList.toggle('dark', cur==='dark');
-}
+};
 (function(){
   const saved = localStorage.getItem('theme');
   if(saved==='dark'){ document.documentElement.setAttribute('data-theme','dark'); }
