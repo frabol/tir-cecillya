@@ -180,22 +180,16 @@ export async function chargerDonneesExcelEtCalendrier(filtre = "avenir") {
         const statut = ligne[5];
         const dateReelle = ligne[4];
     if (dateReelle && lieu) {
-
-    const match = String(dateReelle)
-        .match(/(\d{2})\/(\d{2})\/\d{4}/);
-
-    if (match) {
-
-        const cle = `${match[1]}/${match[2]}`;
-
-        state.lieuxParResultat[cle] = lieu;
+        const match = String(dateReelle).match(/(\d{2})\/(\d{2})\/\d{4}/);
+        if (match) {
+            const cle = `${match[1]}/${match[2]}`;
+            state.lieuxParResultat[cle] = lieu;
+        }
     }
-}
-       if (evenement) {
-
-    if (date && lieu) {
-        state.lieuxParDate[String(date).trim()] = String(lieu).trim();
-    }
+    if (evenement) {
+        if (date && lieu) {
+            state.lieuxParDate[String(date).trim()] = String(lieu).trim();
+        }
 
     state.toutesCompetitionsCalendrier.push({
         mois: moisCourantRecherche,
