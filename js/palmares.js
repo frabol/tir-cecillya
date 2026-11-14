@@ -4,6 +4,7 @@
    un score sur 600 (10m) avec un score sur 654 (50m couché).
    ============================================================ */
 import { PALMARES } from './palmares-donnees.js';
+import { echapperHTML, boutonRetour, majToolbar, definirPage } from './ui.js';
 
 let filtrePalmares = "10m";
 
@@ -13,7 +14,7 @@ export function filtrerPalmares(d) {
 }
 
 export function afficherPalmares() {
-    pageActuelle = "palmares";
+    definirPage("palmares");
 
     const familles = [
         { id: "10m",       label: "Carabine 10m",  max: 600 },
