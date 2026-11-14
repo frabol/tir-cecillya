@@ -1,6 +1,6 @@
 import * as timer from './timer.js';
 import { state, chargerDonneesExcelEtCalendrier, exporterEvenementICS as exporterEvenementICSBase } from './calendar.js';
-import { synchroniserScores } from './storage.js';
+import { synchroniserScores, seConnecter, seDeconnecter, estConnecte, verifierEcriture } from './storage.js';
 import * as ui from './ui.js';
 import { afficherPalmares, filtrerPalmares } from './palmares.js';
 
@@ -40,7 +40,7 @@ export function rechercherCompetition() {
     if (!input) return;
     const filtre = input.value.toLowerCase();
     const elements = document.querySelectorAll(".competition-card");
-    
+
     elements.forEach(el => {
         const texte = el.getAttribute("data-texte") || "";
         if (texte.includes(filtre)) {
@@ -49,6 +49,81 @@ export function rechercherCompetition() {
             el.style.display = "none";
         }
     });
+}
+
+/* ------------------------------------------------------------------
+   CONNEXION / ÉCRITURE
+   Pour modifier les scores dans le cloud, il faut être connecté.
+   La base Supabase refuse de toute façon toute écriture anonyme.
+   ------------------------------------------------------------------ */
+
+/** Met à jour l'aspect du bouton de connexion selon l'état de session. */
+export async function majEtatConnexion() {
+    const btn = document.getElementById("btn-connexion");
+    if (!btn) return;
+    const connecte = await estConnecte();
+    btn.classList.toggle("connecte", connecte);
+    btn.innerHTML = connecte
+        ? '<span class="ic ic-red"><svg class="svgi"><use href="#i-check"/></svg></span> Connecté'
+        : '<span class="ic ic-navy"><svg class="svgi"><use href="#i-lock"/></svg></span> Connexion';
+}
+
+/** Ouvre la modale de connexion (ou déconnecte si déjà connecté). */
+export async function ouvrirModaleConnexion() {
+    if (await estConnecte()) {
+        await seDeconnecter();
+        await majEtatConnexion();
+        ui.afficherToast("Déconnecté — mode lecture seule");
+        return;
+    }
+
+    const existante = document.getElementById("modale-connexion");
+    if (existante) existante.remove();
+
+    const modale = document.createElement("div");
+    modale.id = "modale-connexion";
+    modale.innerHTML = `
+      <div class="modale-fond" data-fermer></div>
+      <div class="modale-boite">
+        <h3 class="modale-titre">Connexion</h3>
+        <p class="modale-sous-titre">Pour ajouter ou supprimer des scores.</p>
+        <input type="email" id="conn-email" class="conn-champ" autocomplete="username" placeholder="Email">
+        <input type="password" id="conn-mdp" class="conn-champ" autocomplete="current-password" placeholder="Mot de passe">
+        <p class="conn-erreur" id="conn-erreur" hidden></p>
+        <div class="modale-actions">
+          <button class="btn" data-fermer>Annuler</button>
+          <button class="btn btn-primary" id="conn-valider">Se connecter</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modale);
+
+    modale.querySelectorAll("[data-fermer]").forEach(el => {
+        el.addEventListener("click", () => modale.remove());
+    });
+
+    const champEmail = modale.querySelector("#conn-email");
+    const champMdp = modale.querySelector("#conn-mdp");
+    const erreur = modale.querySelector("#conn-erreur");
+
+    async function valider() {
+        erreur.hidden = true;
+        const res = await seConnecter(champEmail.value, champMdp.value);
+        if (!res.ok) {
+            erreur.textContent = res.message;
+            erreur.hidden = false;
+            return;
+        }
+        modale.remove();
+        await majEtatConnexion();
+        ui.afficherToast("Connecté — écriture autorisée");
+    }
+
+    modale.querySelector("#conn-valider").addEventListener("click", valider);
+    modale.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") valider();
+        if (e.key === "Escape") modale.remove();
+    });
+    champEmail.focus();
 }
 
 // Pont global pour le HTML (onclick)
@@ -77,6 +152,7 @@ window.recalculerTotalSeries = ui.recalculerTotalSeries;
 window.enregistrerScore = ui.enregistrerScore;
 window.supprimerScore = (index) => ui.supprimerScore(index, initApp);
 window.modifierObjectifPersonnel = ui.modifierObjectifPersonnel;
+window.ouvrirModaleConnexion = ouvrirModaleConnexion;
 
 // Pont Global pour le Timer
 window.afficherTimer = timer.afficherTimer;
@@ -104,6 +180,7 @@ export async function initApp() {
         } else if (ui.pageActuelle === "palmares") {
             afficherPalmares();
         }
+        await majEtatConnexion();
     } catch (e) {
         console.error("Erreur d'initialisation :", e);
     }
