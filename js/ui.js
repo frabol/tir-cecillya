@@ -228,7 +228,12 @@ export function afficherResultats() {
         const score = Number(state.entrainementsExcel[i]);
         const key = date + "|entrainement|" + score;
         const local = mapLocaux.get(key);
-        resultats.push({ date: date, type: "🏋️ Entraînement", score: score, lieu: local?.lieu || state.lieuxParResultat?.[date] || "" });
+        resultats.push({
+    date: date,
+    type: "🏋️ Entraînement",
+    score: score,
+    lieu: local?.lieu || "MAUBEUGE"
+});
     }
 
     resultats.sort((a, b) => {
