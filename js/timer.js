@@ -116,7 +116,7 @@ export function arreterTimer() {
     clearInterval(timerInterval);
     timerActif = false;
     const btn = document.getElementById("btn-start-pause");
-    if (btn) { btn.textContent = "▶ Démarrer"; btn.style.background = "#2563eb"; }
+    if (btn) { btn.textContent = "▶ Démarrer"; btn.style.background = ""; }
 }
 
 export function resetTimer() {
@@ -146,7 +146,7 @@ export function mettreAJourAffichageTimer() {
     if (barreProgression && dureeTotalePhase > 0) {
         const pct = (tempsRestant / dureeTotalePhase) * 100;
         barreProgression.style.width = pct + "%";
-        barreProgression.style.background = phaseActuelle === "essais" ? "#10b981" : "#2563eb";
+        barreProgression.style.background = phaseActuelle === "essais" ? "#10b981" : "var(--primary)";
     }
 
     const cardChrono = document.getElementById("timer-card-main");
