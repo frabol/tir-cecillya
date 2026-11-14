@@ -160,7 +160,8 @@ export async function chargerDonneesExcelEtCalendrier(filtre = "avenir") {
 
         const date = ligne[1];
         const evenement = ligne[2];
-        const lieu = ligne[3];
+        const lieuBrut = ligne[3];
+        const lieu = determinerLieu(evenement, lieuBrut);
         const statut = ligne[5];
         const dateReelle = ligne[4];
 
