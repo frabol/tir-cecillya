@@ -3,7 +3,6 @@ import { getScoresLocaux, setScoresLocaux, getObjectifPersonnel, setObjectifPers
 import { calculerStatistiques, dessinerGraphique } from './stats.js';
 
 export let pageActuelle = "tableau";
-/* ===== Bandeau hero (KPI en haut de page) ===== */
 export function afficherHero() {
     const scores = [...state.scoresExcel, ...state.entrainementsExcel];
     if (scores.length === 0) return;
@@ -87,7 +86,6 @@ export function echapperHTML(texte) {
         .replace(/'/g, "&#39;");
 }
 
-/* Boite de confirmation aux couleurs du site, a la place du confirm() natif. */
 export function confirmer(message, onOui, texteBouton = "Confirmer") {
     const deja = document.getElementById("modale-confirme");
     if (deja) deja.remove();
@@ -163,6 +161,14 @@ function construireEvenementsChronologiques() {
     return events;
 }
 
+/* Mois affiché dans le calendrier : "all" ou le libellé exact d'un mois. */
+let moisCalendrier = "all";
+
+export function filtrerMoisCalendrier(mois) {
+    moisCalendrier = mois;
+    afficherCalendrier("avenir");
+}
+
 export async function afficherCalendrier(filtre = "avenir") {
     pageActuelle = "calendrier";
     try {
@@ -207,6 +213,31 @@ export async function afficherCalendrier(filtre = "avenir") {
         });
         html += '</div></div>';
 
+        const moisDisponibles = [];
+        state.toutesCompetitionsCalendrier.forEach(c => {
+            if (c.statut === "À venir" && c.mois && moisDisponibles.indexOf(c.mois) === -1) {
+                moisDisponibles.push(c.mois);
+            }
+        });
+        const ordreMois = ["Septembre","Octobre","Novembre","Décembre","Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août"];
+        const rangMois = m => ordreMois.findIndex(o => m.indexOf(o) === 0);
+        const anneeDe = m => Number((m.match(/20\d{2}/) || [0])[0]);
+        moisDisponibles.sort((a, b) => {
+            if (anneeDe(a) !== anneeDe(b)) return anneeDe(a) - anneeDe(b);
+            return rangMois(a) - rangMois(b);
+        });
+
+        if (moisDisponibles.length > 0) {
+            html += '<div class="filters-section"><h3>Filtrer par mois</h3><div class="filter-buttons">';
+            html += '<button class="filter-btn ' + (moisCalendrier === "all" ? 'active' : '') +
+                    '" onclick="filtrerMoisCalendrier(\'all\')">Tous</button>';
+            moisDisponibles.forEach(m => {
+                html += '<button class="filter-btn ' + (moisCalendrier === m ? 'active' : '') +
+                        '" onclick="filtrerMoisCalendrier(\'' + m.replace(/'/g, "\\'") + '\')">' + m + '</button>';
+            });
+            html += '</div></div>';
+        }
+
         let moisCourant = "";
         let premierMoisAffiche = false;
         let dernierMoisAffiche = "";
@@ -223,7 +254,8 @@ export async function afficherCalendrier(filtre = "avenir") {
 
             if (moisBrut) moisCourant = moisBrut;
 
-            if (evenement && (filtre === "toutes" || statut === "À venir")) {
+            const moisAutorise = (moisCalendrier === "all" || moisCalendrier === moisCourant);
+            if (evenement && moisAutorise && (filtre === "toutes" || statut === "À venir")) {
                 if (!premierMoisAffiche) {
                     html += '<div class="month-header">📅 ' + (moisCourant || "Septembre 2026") + '</div><div class="calendar-grid">';
                     premierMoisAffiche = true;
@@ -288,7 +320,6 @@ export function afficherTableauDeBord() {
     const objectif = getObjectifPersonnel();
     const pourcentageObjectif = Math.min(100, Math.round((record / objectif) * 100));
 
-    /* L'alerte ne s'affiche que si la compétition est dans les 30 jours. */
     let joursAvantProchaine = null;
     if (state.prochainesCompetitions.length > 0) {
         const dp = state.prochainesCompetitions[0].dateReelle || "";
@@ -363,6 +394,20 @@ export function modifierObjectifPersonnel() {
     }
 }
 
+/* Etat du tri et du filtre sur la page Resultats. */
+let triResultats = "date-asc";
+let triResultatsFiltre = "all";
+
+export function trierResultats(id) {
+    triResultats = id;
+    afficherResultats();
+}
+
+export function filtrerResultats(id) {
+    triResultatsFiltre = id;
+    afficherResultats();
+}
+
 export function afficherResultats() {
     pageActuelle = "resultats";
     let html = boutonRetour() + "<h2>🏆 Résultats</h2>";
@@ -413,20 +458,65 @@ export function afficherResultats() {
         });
     }
 
-    resultats.sort((a, b) => tsJJMM(a.date) - tsJJMM(b.date));
+    let liste = resultats;
+    if (triResultatsFiltre === "match") {
+        liste = liste.filter(r => r.type.indexOf("Compétition") !== -1);
+    } else if (triResultatsFiltre === "entrainement") {
+        liste = liste.filter(r => r.type.indexOf("Entraînement") !== -1);
+    }
 
-    if (resultats.length === 0) {
-        html += "<p>Aucun résultat enregistré.</p>";
+    if (triResultats === "score-desc") {
+        liste = [...liste].sort((a, b) => b.score - a.score);
+    } else if (triResultats === "score-asc") {
+        liste = [...liste].sort((a, b) => a.score - b.score);
+    } else if (triResultats === "date-desc") {
+        liste = [...liste].sort((a, b) => tsJJMM(b.date) - tsJJMM(a.date));
     } else {
-        resultats.forEach(item => {
+        liste = [...liste].sort((a, b) => tsJJMM(a.date) - tsJJMM(b.date));
+    }
+
+    const tris = [
+        { id: "date-asc",  label: "📅 Date ↑" },
+        { id: "date-desc", label: "📅 Date ↓" },
+        { id: "score-desc", label: "🏆 Score ↓" },
+        { id: "score-asc",  label: "📉 Score ↑" }
+    ];
+    const filtres = [
+        { id: "all",          label: "Tout" },
+        { id: "match",        label: "🏆 Compétitions" },
+        { id: "entrainement", label: "🏋️ Entraînements" }
+    ];
+
+    html += '<div class="filters-section"><h3>Trier par</h3><div class="filter-buttons">';
+    tris.forEach(t => {
+        html += '<button class="filter-btn ' + (triResultats === t.id ? 'active' : '') +
+                '" onclick="trierResultats(\'' + t.id + '\')">' + t.label + '</button>';
+    });
+    html += '</div><h3 style="margin-top:14px;">Afficher</h3><div class="filter-buttons">';
+    filtres.forEach(f => {
+        html += '<button class="filter-btn ' + (triResultatsFiltre === f.id ? 'active' : '') +
+                '" onclick="filtrerResultats(\'' + f.id + '\')">' + f.label + '</button>';
+    });
+    html += '</div></div>';
+
+    html += '<p style="color:var(--muted); font-size:.88rem; margin:6px 0 14px 0;">' +
+            liste.length + ' résultat' + (liste.length > 1 ? 's' : '') + '</p>';
+
+    if (liste.length === 0) {
+        html += "<p>Aucun résultat pour ce filtre.</p>";
+    } else {
+        const meilleur = Math.max(...resultats.map(r => r.score));
+        liste.forEach(item => {
             const detailLieu = item.lieu ? '<div style="font-size:0.88em; color:var(--muted); margin-top:2px;">📍 ' + echapperHTML(item.lieu) + '</div>' : "";
+            const estRecord = item.score === meilleur;
+            const couleurScore = estRecord ? 'var(--gold)' : 'var(--text)';
             html += '<div class="competition competition-card">' +
                         '<div class="competition-left">' +
                             '<div class="competition-date-badge">' + item.date + '</div>' +
                             '<div class="competition-details">' +
-                                '<div class="competition-title">' + item.type + '</div>' +
+                                '<div class="competition-title">' + item.type + (estRecord ? ' · <span style="color:var(--gold);">record</span>' : '') + '</div>' +
                                 detailLieu +
-                                '<div class="competition-location">Score : <b>' + item.score + '</b></div>' +
+                                '<div class="competition-location">Score : <b style="color:' + couleurScore + ';">' + item.score + '</b></div>' +
                             '</div>' +
                         '</div>' +
                     '</div>';
@@ -525,7 +615,6 @@ export async function enregistrerScore() {
     if (!date) { afficherToast("⚠️ Choisissez une date"); return; }
     if (isNaN(score) || score <= 0) { afficherToast("⚠️ Score invalide"); return; }
 
-    /* Contrôle de vraisemblance : maximum 654 en carabine 10m (60 plombs). */
     const MAX_VRAISEMBLABLE = 654;
     if (score > MAX_VRAISEMBLABLE) {
         const msg = "⚠️ " + score + " pts dépasse le maximum possible (" + MAX_VRAISEMBLABLE + ").\n" +
