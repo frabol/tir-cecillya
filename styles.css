@@ -655,69 +655,76 @@ footer {
   to   { background-position: -200% 0; }
 }
 
-/* ===== Boutons de la barre d'outils : lisibilité et confort ===== */
+/* ===== Boutons de la barre d'outils : compacts et colorés ===== */
 .toolbar .btn {
-  min-height: 50px;
-  padding: 13px 20px !important;
+  min-height: 40px;
+  padding: 9px 15px !important;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
+  font-size: .88rem !important;
   line-height: 1.1;
   border: 1px solid transparent;
 }
 
-.toolbar-row { gap: 10px !important; }
+.toolbar-row { gap: 8px !important; }
 
-/* Une seule couleur d'icône : gris chaud. La couleur reste au bouton actif. */
-.toolbar .btn .ic,
-.toolbar .btn .ic-blue,
-.toolbar .btn .ic-green,
-.toolbar .btn .ic-gold,
-.toolbar .btn .ic-navy,
-.toolbar .btn .ic-red,
-.toolbar .btn .ic-grey {
-  color: var(--muted) !important;
-  transition: color .2s ease;
-}
+/* Chaque famille de bouton retrouve sa couleur */
+.toolbar .btn .ic { transition: color .2s ease; }
 
-/* Au survol : léger soulèvement et bordure teintée */
+.toolbar .btn .ic-blue   { color: var(--primary) !important; }
+.toolbar .btn .ic-green  { color: #2e9e57 !important; }
+.toolbar .btn .ic-gold   { color: var(--gold) !important; }
+.toolbar .btn .ic-navy   { color: #c98a7a !important; }
+.toolbar .btn .ic-red    { color: #e04a3a !important; }
+.toolbar .btn .ic-grey   { color: var(--muted) !important; }
+
+/* Au survol */
 .toolbar .btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   border-color: var(--border);
 }
 
-.toolbar .btn:hover .ic { color: var(--primary) !important; }
+.toolbar .btn:hover .ic { filter: brightness(1.25); }
 
-/* Le bouton de la page affichée */
+/* Le bouton de la page affichée : rouge plein, texte blanc, icône blanche */
 .toolbar .btn.active {
   background: var(--primary) !important;
   color: #fff !important;
   border-color: var(--primary) !important;
-  box-shadow: 0 6px 18px rgba(176, 40, 32, .38);
+  box-shadow: 0 3px 10px rgba(176, 40, 32, .32);
 }
 
-.toolbar .btn.active .ic { color: #fff !important; }
+.toolbar .btn.active .ic,
+.toolbar .btn.active .ic-blue,
+.toolbar .btn.active .ic-green,
+.toolbar .btn.active .ic-gold,
+.toolbar .btn.active .ic-navy,
+.toolbar .btn.active .ic-red {
+  color: #fff !important;
+}
 
-/* Le bouton Synchroniser garde son or, avec un texte lisible */
+/* Le bouton Synchroniser garde son or, avec un texte foncé lisible */
 .toolbar .btn-gold {
   color: #2a1204 !important;
 }
 
-.toolbar .btn-gold .ic { color: #6b4a10 !important; }
+.toolbar .btn-gold .ic { color: #7a5710 !important; }
 
-/* La barre de recherche s'aligne sur la hauteur des boutons */
+/* La barre de recherche s'aligne sur la nouvelle hauteur */
 .search {
-  min-height: 50px;
+  min-height: 40px;
   border-radius: 999px !important;
-  padding: 0 18px !important;
+  padding: 0 16px !important;
 }
 
-.search input { font-size: 1rem; }
+.search input { font-size: .92rem; }
 
 @media (max-width: 640px) {
   .toolbar .btn {
-    min-height: 46px;
-    padding: 11px 15px !important;
-    font-size: .86rem !important;
+    min-height: 38px;
+    padding: 8px 12px !important;
+    font-size: .8rem !important;
   }
+  .toolbar-row { gap: 6px !important; }
 }
