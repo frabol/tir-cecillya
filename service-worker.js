@@ -1,4 +1,4 @@
-const CACHE_NAME = "tir-cecillya-v1.0.2";
+const CACHE_NAME = "tir-cecillya-v1.0.4";
 
 const FILES_TO_CACHE = [
   "./",
