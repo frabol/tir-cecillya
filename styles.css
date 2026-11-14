@@ -655,76 +655,107 @@ footer {
   to   { background-position: -200% 0; }
 }
 
-/* ===== Boutons de la barre d'outils : compacts et colorés ===== */
+/* ===== Boutons de la barre d'outils : badges colorés ===== */
 .toolbar .btn {
   min-height: 40px;
-  padding: 9px 15px !important;
+  padding: 8px 15px 8px 9px !important;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 9px;
   font-size: .88rem !important;
   line-height: 1.1;
-  border: 1px solid transparent;
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+  border-radius: 999px;
 }
 
-.toolbar-row { gap: 8px !important; }
+.toolbar-row { gap: 9px !important; }
 
-/* Chaque famille de bouton retrouve sa couleur */
-.toolbar .btn .ic { transition: color .2s ease; }
+/* Le badge carré qui porte l'icône */
+.toolbar .btn .ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  flex: 0 0 26px;
+  transition: transform .18s ease, filter .18s ease, background .18s ease;
+}
 
-.toolbar .btn .ic-blue   { color: var(--primary) !important; }
-.toolbar .btn .ic-green  { color: #2e9e57 !important; }
-.toolbar .btn .ic-gold   { color: var(--gold) !important; }
-.toolbar .btn .ic-navy   { color: #c98a7a !important; }
-.toolbar .btn .ic-red    { color: #e04a3a !important; }
-.toolbar .btn .ic-grey   { color: var(--muted) !important; }
+.toolbar .btn .ic svg { width: 15px; height: 15px; }
 
-/* Au survol */
+/* La pastille colorée de chaque famille de bouton */
+.toolbar .btn .ic-blue   { background: #e02e2e; }
+.toolbar .btn .ic-green  { background: #12c95a; }
+.toolbar .btn .ic-gold   { background: #f0c020; }
+.toolbar .btn .ic-navy   { background: #4a2318; }
+.toolbar .btn .ic-red    { background: #e02e2e; }
+.toolbar .btn .ic-grey   { background: #3a2a2a; }
+
+/* Le trait de l'icône est blanc sur la pastille */
+.toolbar .btn .ic svg,
+.toolbar .btn .ic svg use {
+  color: #ffffff !important;
+  stroke: #ffffff;
+}
+
+/* Survol : la pastille grossit un peu */
+.toolbar .btn:hover .ic {
+  transform: scale(1.08);
+  filter: brightness(1.12);
+}
+
 .toolbar .btn:hover {
-  transform: translateY(-1px);
-  border-color: var(--border);
+  border-color: var(--primary) !important;
 }
 
-.toolbar .btn:hover .ic { filter: brightness(1.25); }
-
-/* Le bouton de la page affichée : rouge plein, texte blanc, icône blanche */
+/* Le bouton de la page affichée */
 .toolbar .btn.active {
   background: var(--primary) !important;
   color: #fff !important;
   border-color: var(--primary) !important;
-  box-shadow: 0 3px 10px rgba(176, 40, 32, .32);
+  box-shadow: 0 3px 12px rgba(176, 40, 32, .35);
 }
 
-.toolbar .btn.active .ic,
-.toolbar .btn.active .ic-blue,
-.toolbar .btn.active .ic-green,
-.toolbar .btn.active .ic-gold,
-.toolbar .btn.active .ic-navy,
-.toolbar .btn.active .ic-red {
-  color: #fff !important;
+.toolbar .btn.active .ic {
+  background: rgba(255, 255, 255, .22);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35);
 }
 
-/* Le bouton Synchroniser garde son or, avec un texte foncé lisible */
+/* Le bouton Synchroniser : entièrement doré, texte foncé */
 .toolbar .btn-gold {
+  background: var(--gold) !important;
+  border-color: var(--gold) !important;
   color: #2a1204 !important;
 }
 
-.toolbar .btn-gold .ic { color: #7a5710 !important; }
+.toolbar .btn-gold .ic { background: rgba(0, 0, 0, .16); }
+.toolbar .btn-gold .ic svg use { color: #2a1204 !important; stroke: #2a1204; }
 
-/* La barre de recherche s'aligne sur la nouvelle hauteur */
+/* La barre de recherche s'aligne sur la hauteur des boutons */
 .search {
   min-height: 40px;
   border-radius: 999px !important;
   padding: 0 16px !important;
 }
 
+.search .ic {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 8px;
+  background: #2f4a8a; flex: 0 0 26px;
+}
+.search .ic svg use { color: #fff !important; stroke: #fff; }
 .search input { font-size: .92rem; }
 
 @media (max-width: 640px) {
   .toolbar .btn {
     min-height: 38px;
-    padding: 8px 12px !important;
+    padding: 7px 12px 7px 7px !important;
     font-size: .8rem !important;
   }
-  .toolbar-row { gap: 6px !important; }
+  .toolbar .btn .ic { width: 23px; height: 23px; flex-basis: 23px; border-radius: 7px; }
+  .toolbar .btn .ic svg { width: 13px; height: 13px; }
+  .toolbar-row { gap: 7px !important; }
 }
