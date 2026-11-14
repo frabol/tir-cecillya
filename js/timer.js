@@ -108,6 +108,33 @@ export function changerPhaseTimer() {
     sauvegarderEtat();
 }
 
+/* Un seul intervalle vivant a la fois. Appelee au demarrage et au retour sur la page. */
+function lancerBoucle() {
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        if (tempsRestant > 0) {
+            tempsRestant--;
+            if (tempsRestant === 60) {
+                jouerBip(587, 0.3);
+                afficherToast("⚠️ Dernière minute !");
+            }
+            if (tempsRestant <= 0) {
+                arreterTimer();
+                jouerBip(880, 0.2);
+                setTimeout(() => jouerBip(880, 0.2), 300);
+                setTimeout(() => jouerBip(1320, 0.6), 600);
+                if (phaseActuelle === "essais" && modeActuelConfig.match > 0) {
+                    afficherToast("🏆 Fin des essais — passez au match quand vous êtes prêt");
+                } else {
+                    afficherToast("🏁 TEMPS ÉCOULÉ ! Fin de la séance.");
+                }
+            }
+        }
+        mettreAJourAffichageTimer();
+        sauvegarderEtat();
+    }, 1000);
+}
+
 export function demarrerPauseTimer() {
     const btn = document.getElementById("btn-start-pause");
     if (timerActif) {
@@ -125,28 +152,7 @@ export function demarrerPauseTimer() {
             navigator.wakeLock.request('screen').catch(() => {});
         }
 
-        timerInterval = setInterval(() => {
-            if (tempsRestant > 0) {
-                tempsRestant--;
-                if (tempsRestant === 60) {
-                    jouerBip(587, 0.3);
-                    afficherToast("⚠️ Dernière minute !");
-                }
-                if (tempsRestant <= 0) {
-                    arreterTimer();
-                    jouerBip(880, 0.2);
-                    setTimeout(() => jouerBip(880, 0.2), 300);
-                    setTimeout(() => jouerBip(1320, 0.6), 600);
-                    if (phaseActuelle === "essais" && modeActuelConfig.match > 0) {
-                        afficherToast("🏆 Fin des essais — passez au match quand vous êtes prêt");
-                    } else {
-                        afficherToast("🏁 TEMPS ÉCOULÉ ! Fin de la séance.");
-                    }
-                }
-            }
-            mettreAJourAffichageTimer();
-            sauvegarderEtat();
-        }, 1000);
+        lancerBoucle();
         sauvegarderEtat();
         afficherToast("▶️ Timer démarré");
     }
@@ -209,6 +215,11 @@ export function mettreAJourAffichageTimer() {
 export function afficherTimer() {
     window.pageActuelle = "timer";
     restaurerEtat();
+
+    /* Si le timer tournait, il doit continuer a descendre a l'ecran. */
+    if (timerActif && tempsRestant > 0) {
+        lancerBoucle();
+    }
 
     const pctDepart = dureeTotalePhase > 0 ? Math.round((tempsRestant / dureeTotalePhase) * 100) : 100;
 
