@@ -7,7 +7,6 @@ let phaseActuelle = "essais"; // "essais" ou "match"
 let timerActif = false;
 let modeActuelConfig = { essais: 15, match: 75, nom: "10m - 60 coups (Électro)" };
 
-// ===== Sauvegarde de l'etat : le timer survit au changement de page =====
 const CLE_ETAT = "timer_etat";
 
 function sauvegarderEtat() {
@@ -34,7 +33,6 @@ function restaurerEtat() {
         if (e.modeActuelConfig) modeActuelConfig = e.modeActuelConfig;
         dureeTotalePhase = Number(e.dureeTotalePhase) || tempsRestant;
 
-        /* Si le timer tournait, on retire le temps ecoule depuis la sauvegarde. */
         let reste = Number(e.tempsRestant);
         if (e.enMarche && e.horodatage) {
             const ecoule = Math.floor((Date.now() - e.horodatage) / 1000);
@@ -42,7 +40,7 @@ function restaurerEtat() {
         }
         tempsRestant = reste;
         timerActif = Boolean(e.enMarche) && tempsRestant > 0;
-    } catch (err) { /* etat illisible : on repart du preset par defaut */ }
+    } catch (err) { /* etat illisible */ }
 }
 
 export function jouerBip(frequence = 880, duree = 0.2, type = 'sine') {
@@ -108,7 +106,6 @@ export function changerPhaseTimer() {
     sauvegarderEtat();
 }
 
-/* Un seul intervalle vivant a la fois. Appelee au demarrage et au retour sur la page. */
 function lancerBoucle() {
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
@@ -164,6 +161,7 @@ export function arreterTimer() {
     sauvegarderEtat();
     const btn = document.getElementById("btn-start-pause");
     if (btn) { btn.textContent = "▶ Démarrer"; btn.style.background = ""; }
+    majBandeauTimer();
 }
 
 export function resetTimer() {
@@ -182,7 +180,33 @@ export function ajusterTempsTimer(minutes) {
     sauvegarderEtat();
 }
 
+/* Bandeau flottant en haut de page : visible des que le timer tourne. */
+function majBandeauTimer() {
+    let bandeau = document.getElementById("bandeau-timer");
+
+    if (!timerActif || tempsRestant <= 0) {
+        if (bandeau) bandeau.remove();
+        return;
+    }
+
+    if (!bandeau) {
+        bandeau = document.createElement("div");
+        bandeau.id = "bandeau-timer";
+        bandeau.onclick = () => afficherTimer();
+        document.body.appendChild(bandeau);
+    }
+
+    const phaseTxt = phaseActuelle === "essais" ? "Essais" : "Match";
+    const alerte = tempsRestant <= 60 ? "bandeau-timer-alerte" : "";
+    bandeau.className = alerte;
+    bandeau.innerHTML =
+        '<span class="bandeau-timer-ic">⏱️</span>' +
+        '<span class="bandeau-timer-temps">' + formaterTemps(tempsRestant) + '</span>' +
+        '<span class="bandeau-timer-phase">' + phaseTxt + '</span>';
+}
+
 export function mettreAJourAffichageTimer() {
+    majBandeauTimer();
     const affichage = document.getElementById("timer-affichage");
     const titrePhase = document.getElementById("timer-phase-titre");
     const barreProgression = document.getElementById("timer-progression");
@@ -216,10 +240,10 @@ export function afficherTimer() {
     window.pageActuelle = "timer";
     restaurerEtat();
 
-    /* Si le timer tournait, il doit continuer a descendre a l'ecran. */
     if (timerActif && tempsRestant > 0) {
         lancerBoucle();
     }
+    majBandeauTimer();
 
     const pctDepart = dureeTotalePhase > 0 ? Math.round((tempsRestant / dureeTotalePhase) * 100) : 100;
 
