@@ -231,6 +231,243 @@ function toggleTheme(){
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script type="module" src="js/main.js?v=6.1"></script>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tir Cécillya — Suivi & Calendrier Ligue Tir NPdC</title>
+<meta name="description" content="Tir Cécillya : tableau de bord, résultats, statistiques et calendrier Ligue Tir Nord-Pas-de-Calais 2026-2027.">
+<meta name="theme-color" content="#0a1931">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>.svgi{width:19px;height:19px;flex:0 0 19px}</style>
+
+<style>
+/* Grille 2 lignes de 3 pour les 6 séries + affichage complet du score sans coupure */
+#etat details > div {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  margin-top: 14px !important;
+}
+#etat details > div > div {
+  min-width: 0 !important;
+  padding: 12px 10px !important;
+  text-align: center !important;
+}
+#etat details input[type="number"],
+#etat details input[type="text"],
+input[id^="serie"],
+input[name^="serie"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  padding: 12px 6px !important;
+  font-size: 1.3rem !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+  letter-spacing: 0.02em !important;
+  box-sizing: border-box !important;
+  -moz-appearance: textfield !important;
+}
+#etat details input[type="number"]::-webkit-inner-spin-button,
+#etat details input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+@media (max-width: 400px) {
+  #etat details > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+</style>
+
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="i-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4a1 1 0 0 0-1 1c0 2.5 2 4 4 4M17 6h3a1 1 0 0 1 1 1c0 2.5-2 4-4 4"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+<symbol id="i-cloud" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.5 19a4.5 4.5 0 0 0 .4-9A7 7 0 0 0 4.3 12.5 3.5 3.5 0 0 0 6 19h11.5z"/><path d="M12 12v6M9.5 15.5L12 13l2.5 2.5"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></symbol>
+<symbol id="i-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></symbol>
+<symbol id="i-medal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="14" r="5"/><path d="M9 9L6 3h4l2 4 2-4h4l-3 6"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1.3" fill="currentColor"/><circle cx="4" cy="12" r="1.3" fill="currentColor"/><circle cx="4" cy="18" r="1.3" fill="currentColor"/></symbol>
+<symbol id="i-dl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 21h16"/></symbol>
+<symbol id="i-table" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10M15 10v10"/></symbol>
+<symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></symbol>
+<symbol id="i-bulb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.5 1 2.5h6c0-1 .2-1.8 1-2.5A6 6 0 0 0 12 3z"/></symbol>
+</defs>
+</svg>
+
+<header class="hero" style="position:relative; padding:45px 20px 80px;">
+  <!-- Logos latéraux pour Desktop (aux emplacements des cercles rouges) -->
+  <div style="position:absolute; left:40px; top:50%; transform:translateY(-50%); z-index:5; display:flex; flex-direction:column; align-items:center; gap:6px;" class="desktop-logo-left">
+    <img src="https://s3.static-clubeo.com/1200/uploads/carabiniers-de-maubeuge/logo__saedhg.png" alt="Logo Carabiniers de Maubeuge" style="width:155px; height:155px; object-fit:contain; border-radius:50%; filter:drop-shadow(0 10px 25px rgba(0,0,0,0.6)); background:rgba(255,255,255,0.12); padding:6px; border:3px solid rgba(255,255,255,0.45);">
+    <span style="font-size:12px; font-weight:700; color:#fff; text-shadow:0 2px 5px rgba(0,0,0,0.8); letter-spacing:0.06em; text-transform:uppercase;">Maubeuge</span>
+  </div>
+
+  <div style="position:absolute; right:40px; top:50%; transform:translateY(-50%); z-index:5; display:flex; flex-direction:column; align-items:center; gap:6px;" class="desktop-logo-right">
+    <img src="https://www.liguedetirnpdc.fr/wp-content/uploads/2021/10/Logo-Ligue-de-Tir-Small.png" alt="Écusson Ligue de Tir Nord-Pas-de-Calais" style="width:155px; height:155px; object-fit:contain; border-radius:18px; filter:drop-shadow(0 10px 25px rgba(0,0,0,0.6)); background:rgba(255,255,255,0.08); padding:6px; border:3px solid rgba(255,255,255,0.45);">
+    <span style="font-size:12px; font-weight:700; color:#fff; text-shadow:0 2px 5px rgba(0,0,0,0.8); letter-spacing:0.06em; text-transform:uppercase;">Ligue NPdC</span>
+  </div>
+
+  <!-- Contenu central -->
+  <div style="max-width:600px; margin:0 auto; position:relative; z-index:4;">
+    <div class="hero-badge"><span class="ic ic-gold"><svg class="svgi"><use href="#i-target"/></svg></span> Tir sportif • Carabine • Saison 2026-2027</div>
+    <div style="margin-top:10px"><span id="sync-badge">● À jour</span></div>
+    <h1>Tir <span>Cécillya</span></h1>
+    <p>Calendrier Ligue Tir Nord-Pas-de-Calais • Suivi des scores & performances</p>
+    <div class="hero-stats">
+      <div class="hero-pill"><img src="https://s3.static-clubeo.com/1200/uploads/carabiniers-de-maubeuge/logo__saedhg.png" alt="Maubeuge" style="width:20px;height:20px;object-fit:contain;border-radius:50%"> Carabiniers de Maubeuge</div>
+      <div class="hero-pill"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Compétitions & entraînements</div>
+      <div class="hero-pill"><span class="ic ic-blue"><svg class="svgi"><use href="#i-chart"/></svg></span> Stats en direct</div>
+    </div>
+  </div>
+</header>
+
+<style>
+@media(max-width: 1050px) {
+  .desktop-logo-left, .desktop-logo-right {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
+  }
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 16px 70px !important;
+  }
+  .hero::before {
+    content: "";
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+}
+</style>
+
+
+<div class="toolbar-wrap">
+  <nav class="toolbar" aria-label="Navigation principale">
+    <div class="toolbar-row">
+      <div class="search">
+        <span class="ic ic-grey"><svg class="svgi"><use href="#i-search"/></svg></span>
+        <input type="text" id="recherche" placeholder="Rechercher une compétition ou un lieu…" onkeyup="rechercherCompetition()">
+      </div>
+      <button class="btn btn-gold" onclick="synchroniserEtRecharger()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-cloud"/></svg></span> Synchroniser</button>
+      <button class="btn" onclick="toggleTheme()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-moon"/></svg></span> Mode sombre</button>
+    </div>
+    <div class="toolbar-row" role="tablist">
+      <button class="btn btn-primary" onclick="afficherTableauDeBord()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-home"/></svg></span> Tableau de bord</button>
+      <button class="btn" onclick="afficherToutes()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-cal"/></svg></span> Toutes</button>
+      <button class="btn" onclick="afficherAVenir()"><span class="ic ic-green"><svg class="svgi"><use href="#i-check"/></svg></span> À venir</button>
+      <button class="btn" onclick="afficherResultats()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Résultats</button>
+      <button class="btn" onclick="afficherStats()"><span class="ic ic-green"><svg class="svgi"><use href="#i-trend"/></svg></span> Statistiques</button>
+      <button class="btn" onclick="afficherTop10()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-medal"/></svg></span> Top 10</button>
+    </div>
+    <div class="toolbar-row">
+      <button class="btn" onclick="afficherAjoutScore()"><span class="ic ic-green"><svg class="svgi"><use href="#i-plus"/></svg></span> Ajouter un score</button>
+      <button class="btn" onclick="voirScores()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-list"/></svg></span> Scores saisis</button>
+      <button class="btn" onclick="exporterScores()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-dl"/></svg></span> Export JSON</button>
+      <button class="btn" onclick="exporterExcel()"><span class="ic ic-green"><svg class="svgi"><use href="#i-table"/></svg></span> Export Excel</button>
+      <button class="btn" onclick="document.getElementById('importScores').click()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-folder"/></svg></span> Importer</button>
+      <input type="file" id="importScores" accept=".json" onchange="importerScores(event)" style="display:none">
+    </div>
+  </nav>
+</div>
+
+<main class="container">
+  <div class="card">
+    <div id="etat">
+      <h2><span class="ic ic-blue"><svg class="svgi"><use href="#i-home"/></svg></span> Tableau de bord</h2>
+      <p>Chargement des données…</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h2><span class="ic ic-gold"><svg class="svgi"><use href="#i-bulb"/></svg></span> Comment utiliser ce site ?</h2>
+    <p style="color:var(--muted);line-height:1.6;margin:0">
+      Consultez le <b>calendrier Ligue</b> •
+      Ajoutez vos <b>scores d'entraînement et de match</b> •
+      Suivez votre <b>moyenne, record et progression</b> dans Statistiques •
+      <b>Synchronisez</b> pour retrouver vos données sur mobile et PC.
+    </p>
+  </div>
+</main>
+
+<footer>
+  Tir Cécillya • Saison 2026-2027 • Données stockées localement + Supabase
+</footer>
+
+<script>
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js'); }
+const SVG_MAP = {
+  "🏠":"#i-home","📅":"#i-cal","✅":"#i-check","🏆":"#i-trophy","📈":"#i-trend","🥇":"#i-medal","🥈":"#i-medal","🥉":"#i-medal","🎯":"#i-target","📊":"#i-chart","📋":"#i-list","🏋":"#i-trend","📍":"#i-pin","💾":"#i-dl","☁":"#i-cloud"
+};
+function svgIcon(ref){ return '<span class="ic"><svg class="svgi"><use href="'+ref+'"/></svg></span>'; }
+function _embellirTableau(){
+  const etat = document.getElementById('etat');
+  if(!etat) return;
+  const grid = etat.querySelector('div[style*="grid-template"]');
+  if(grid){ grid.classList.add('kpi-grid'); grid.removeAttribute('style');
+    grid.querySelectorAll(':scope > div').forEach(d=>d.classList.add('kpi'));
+  }
+  const cards = etat.querySelectorAll(':scope > div.card, :scope div.card');
+  cards.forEach(c=>{
+    if(c.textContent.includes('Prochaine compétition')) c.classList.add('next-match');
+  });
+  document.querySelectorAll('.toolbar .btn').forEach(b=>b.classList.remove('active'));
+}
+function _embellirIcones(){
+  const etat = document.getElementById('etat');
+  if(!etat) return;
+  etat.querySelectorAll('h2,h3,.competition').forEach(el=>{
+    if(el.dataset.svgDone) return;
+    let html = el.innerHTML;
+    let changed = false;
+    for(const [emoji, ref] of Object.entries(SVG_MAP)){
+      if(html.includes(emoji)){ html = html.split(emoji).join(svgIcon(ref)); changed = true; }
+    }
+    if(changed){ el.innerHTML = html; el.dataset.svgDone = "1"; }
+  });
+}
+setInterval(()=>{ _embellirTableau(); _embellirIcones(); }, 400);
+function toggleTheme(){
+  const html = document.documentElement;
+  const cur = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', cur);
+  localStorage.setItem('theme', cur);
+  document.body.classList.toggle('dark', cur==='dark');
+}
+(function(){
+  const saved = localStorage.getItem('theme');
+  if(saved==='dark'){ document.documentElement.setAttribute('data-theme','dark'); }
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script type="module" src="js/main.js?v=6.0"></script>
 </body>
 </html>
