@@ -7,6 +7,7 @@ export const state = {
     datesEntrainements: [],
     prochainesCompetitions: [],
     toutesCompetitionsCalendrier: [],
+    lieuxParDate: {},
     filtreDisciplineActif: "all"
 };
 
@@ -129,6 +130,7 @@ export async function chargerDonneesExcelEtCalendrier(filtre = "avenir") {
 
     state.prochainesCompetitions = [];
     state.toutesCompetitionsCalendrier = [];
+    state.lieuxParDate = {};
     let dateProchainMatch = null;
     let moisCourantRecherche = "";
 
@@ -143,15 +145,20 @@ export async function chargerDonneesExcelEtCalendrier(filtre = "avenir") {
         const statut = ligne[5];
         const dateReelle = ligne[4];
 
-        if (evenement) {
-            state.toutesCompetitionsCalendrier.push({
-                mois: moisCourantRecherche,
-                date,
-                evenement,
-                lieu,
-                statut,
-                dateReelle
-            });
+       if (evenement) {
+
+    if (date && lieu) {
+        state.lieuxParDate[String(date).trim()] = String(lieu).trim();
+    }
+
+    state.toutesCompetitionsCalendrier.push({
+        mois: moisCourantRecherche,
+        date,
+        evenement,
+        lieu,
+        statut,
+        dateReelle
+    });
 
             if (statut === "À venir") {
                 if (!dateProchainMatch) {
