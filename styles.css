@@ -634,23 +634,33 @@ footer {
 
 @media (max-width: 640px) {
   .toolbar .btn {
-    min-height: 38px;
-    padding: 7px 12px 7px 7px !important;
-    font-size: .8rem !important;
+    min-height: 34px;
+    padding: 6px 11px 6px 6px !important;
+    font-size: .78rem !important;
+    gap: 7px;
   }
-  .toolbar .btn .ic { width: 23px; height: 23px; flex-basis: 23px; border-radius: 7px; }
-  .toolbar .btn .ic svg { width: 13px; height: 13px; }
-  .toolbar-row { gap: 7px !important; }
+  .toolbar .btn .ic { width: 21px; height: 21px; flex-basis: 21px; border-radius: 6px; }
+  .toolbar .btn .ic svg { width: 12px; height: 12px; }
+  .toolbar-row { gap: 6px !important; }
+  .toolbar { gap: 7px; padding: 9px 10px 11px; }
+  .search { min-height: 36px; }
 }
 
-/* Sur mobile : 2 boutons par ligne, recherche pleine largeur, rien ne dépasse */
+/* Sur mobile : les boutons se resserrent et se rangent d'eux-mêmes,
+   plusieurs par ligne — jamais un bouton seul sur toute la largeur. */
 @media (max-width: 560px) {
   .toolbar-row .btn {
-    flex: 1 1 calc(50% - 8px);
+    flex: 0 1 auto;
     justify-content: center;
+    padding: 6px 10px 6px 6px !important;
+    font-size: .76rem !important;
   }
   .toolbar-row-top .search {
     flex: 1 1 100%;
+    order: -1;
+  }
+  .toolbar-row-top .btn {
+    flex: 1 1 auto;
   }
 }
 
