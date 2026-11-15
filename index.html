@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#1a0808">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="styles.css?v=8">
+<link rel="stylesheet" href="styles.css?v=9">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>.svgi{width:19px;height:19px;flex:0 0 19px}</style>
@@ -71,6 +71,7 @@ input[name^="serie"] {
     font-weight: 700;
     font-size: .85rem;
     cursor: pointer;
+    font-family: inherit;
   }
   .toolbar-toggle-chevron { display: inline-flex; }
 }
@@ -105,7 +106,6 @@ input[name^="serie"] {
 </svg>
 
 <header class="hero" style="position:relative; padding:45px 20px 80px;">
-  <!-- Logos latéraux pour Desktop -->
   <div style="position:absolute; left:40px; top:50%; transform:translateY(-50%); z-index:5; display:flex; flex-direction:column; align-items:center; gap:6px;" class="desktop-logo-left">
     <img src="logo-maubeuge.png" alt="Logo Carabiniers de Maubeuge" style="width:155px; height:155px; object-fit:contain; border-radius:50%; filter:drop-shadow(0 10px 25px rgba(0,0,0,0.6)); background:rgba(255,255,255,0.12); padding:6px; border:3px solid rgba(255,255,255,0.45);">
     <span style="font-size:12px; font-weight:700; color:#fff; text-shadow:0 2px 5px rgba(0,0,0,0.8); letter-spacing:0.06em; text-transform:uppercase;">Maubeuge</span>
@@ -116,7 +116,6 @@ input[name^="serie"] {
     <span style="font-size:12px; font-weight:700; color:#fff; text-shadow:0 2px 5px rgba(0,0,0,0.8); letter-spacing:0.06em; text-transform:uppercase;">Ligue NPdC</span>
   </div>
 
-   <!-- Contenu central -->
   <div class="hero-content">
     <div class="hero-badge"><span class="ic ic-gold"><svg class="svgi"><use href="#i-target"/></svg></span> Tir sportif • Carabine • Saison 2026-2027</div>
     <div style="margin-top:10px"><span id="sync-badge">● À jour</span></div>
@@ -131,7 +130,6 @@ input[name^="serie"] {
 
     <div class="hero-next" id="hero-next"></div>
   </div>
-
 </header>
 
 <style>
@@ -148,22 +146,20 @@ input[name^="serie"] {
     height: 64px !important;
   }
   .desktop-logo-left span, .desktop-logo-right span { display: none !important; }
-  .hero {
-    padding: 30px 16px 70px !important;
-  }
+  .hero { padding: 30px 16px 70px !important; }
 }
 </style>
 
 <div class="toolbar-wrap">
   <nav class="toolbar" aria-label="Navigation principale">
 
-    <!-- Bouton de repli (visible seulement sur mobile) -->
-    <button type="button" class="toolbar-toggle" id="toolbar-toggle" onclick="basculerToolbar()" aria-expanded="true" aria-controls="toolbar-rows">
+    <!-- Bouton de repli (visible seulement sur mobile).
+         Pas de onclick : un seul gestionnaire, dans le script ci-dessous. -->
+    <button type="button" class="toolbar-toggle" id="toolbar-toggle" aria-expanded="false" aria-controls="toolbar-rows">
       <span class="toolbar-toggle-label">Menu</span>
       <span class="toolbar-toggle-chevron"><svg class="svgi"><use href="#i-chevron"/></svg></span>
     </button>
 
-    <!-- Rangée 0 : recherche + connexion, toujours visibles -->
     <div class="toolbar-row toolbar-row-top">
       <div class="search">
         <span class="ic ic-grey"><svg class="svgi"><use href="#i-search"/></svg></span>
@@ -174,10 +170,8 @@ input[name^="serie"] {
       <button class="btn" onclick="toggleTheme()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-moon"/></svg></span> Mode clair</button>
     </div>
 
-    <!-- Rangées repliables sur mobile -->
     <div class="toolbar-rows" id="toolbar-rows">
 
-      <!-- Rangée 2 : navigation du calendrier -->
       <div class="toolbar-row" role="tablist">
         <button class="btn btn-primary" onclick="afficherTableauDeBord()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-home"/></svg></span> Tableau de bord</button>
         <button class="btn" onclick="afficherToutes()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-cal"/></svg></span> Toutes</button>
@@ -186,14 +180,12 @@ input[name^="serie"] {
         <button class="btn" onclick="afficherTimer()"><span class="ic ic-red"><svg class="svgi"><use href="#i-target"/></svg></span> Timer Stand</button>
       </div>
 
-      <!-- Rangée 3 : analyse -->
       <div class="toolbar-row">
         <button class="btn" onclick="afficherStats()"><span class="ic ic-green"><svg class="svgi"><use href="#i-trend"/></svg></span> Statistiques</button>
         <button class="btn" onclick="afficherTop10()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-medal"/></svg></span> Top 10</button>
         <button class="btn" onclick="afficherPalmares()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Palmarès</button>
       </div>
 
-      <!-- Rangée 4 : gestion des scores -->
       <div class="toolbar-row">
         <button class="btn" onclick="afficherAjoutScore()"><span class="ic ic-green"><svg class="svgi"><use href="#i-plus"/></svg></span> Ajouter un score</button>
         <button class="btn" onclick="voirScores()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-list"/></svg></span> Scores saisis</button>
@@ -221,49 +213,43 @@ input[name^="serie"] {
 </footer>
 
 <script>
-/* Repli de la barre d'outils — déclaré EN PREMIER pour être disponible au clic */
-function _toolbarMobile(){ return window.matchMedia('(max-width: 860px)').matches; }
-
-function basculerToolbar(force){
+/* ============================================================
+   REPLI DE LA BARRE — un seul gestionnaire, pose sur le bouton.
+   ============================================================ */
+(function(){
   const wrap = document.querySelector('.toolbar-wrap');
   const btn  = document.getElementById('toolbar-toggle');
-  if(!wrap || !btn) return;
+  const rows = document.getElementById('toolbar-rows');
+  if(!wrap || !btn || !rows) return;
 
-  const ouvert = (typeof force === 'boolean')
-      ? force
-      : !wrap.classList.contains('toolbar-ouvert');
+  function estMobile(){ return window.matchMedia('(max-width: 860px)').matches; }
 
-  wrap.classList.toggle('toolbar-ouvert', ouvert);
-  btn.setAttribute('aria-expanded', String(ouvert));
-
-  const label = btn.querySelector('.toolbar-toggle-label');
-  if(label) label.textContent = ouvert ? 'Réduire' : 'Menu';
-}
-
-/* Le clic sur le bouton Menu est traité ici aussi :
-   fonctionne même si le reste du script échoue. */
-document.addEventListener('click', function(e){
-  const t = e.target;
-  if(!t || !t.closest) return;
-
-  if(t.closest('#toolbar-toggle')){
-    basculerToolbar();
-    return;
+  function appliquer(ouvert){
+    wrap.classList.toggle('toolbar-ouvert', ouvert);
+    btn.setAttribute('aria-expanded', String(ouvert));
+    rows.style.display = ouvert ? 'flex' : 'none';
+    const label = btn.querySelector('.toolbar-toggle-label');
+    if(label) label.textContent = ouvert ? 'Réduire' : 'Menu';
   }
 
-  const b = t.closest('.toolbar-rows .btn');
-  if(b && _toolbarMobile()) basculerToolbar(false);
-}, true);
+  // Clic sur le bouton Menu : on bascule
+  btn.addEventListener('click', function(ev){
+    ev.preventDefault();
+    ev.stopPropagation();
+    appliquer(!wrap.classList.contains('toolbar-ouvert'));
+  });
 
-window.addEventListener('resize', function(){
-  if(_toolbarMobile()) basculerToolbar(false);
-  else basculerToolbar(true);
-});
+  // Sur mobile, un clic sur une action referme le menu.
+  rows.addEventListener('click', function(ev){
+    if(ev.target.closest('.btn') && estMobile()) appliquer(false);
+  });
 
-document.addEventListener('DOMContentLoaded', function(){
-  if(_toolbarMobile()) basculerToolbar(false);
-  else basculerToolbar(true);
-});
+  // Adaptation au changement de taille
+  window.addEventListener('resize', function(){ appliquer(!estMobile()); });
+
+  // Etat initial
+  appliquer(!estMobile());
+})();
 
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js'); }
 
@@ -297,10 +283,6 @@ function _embellirTableau(){
   if(grid){ grid.classList.add('kpi-grid'); grid.removeAttribute('style');
     grid.querySelectorAll(':scope > div').forEach(d=>d.classList.add('kpi'));
   }
-  const cards = etat.querySelectorAll(':scope > div.card, :scope div.card');
-  cards.forEach(c=>{
-    if(c.textContent.includes('Prochaine compétition')) c.classList.add('next-match');
-  });
 }
 function _embellirIcones(){
   const etat = document.getElementById('etat');
@@ -345,7 +327,7 @@ window.toggleTheme = function(){
   document.documentElement.setAttribute('data-theme', theme);
   document.body.classList.toggle('dark', theme === 'dark');
 })();
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function(){
   _embellirTableau();
   _embellirIcones();
   _observer();
@@ -353,6 +335,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script type="module" src="js/main.js?v=8"></script>
+<script type="module" src="js/main.js?v=9"></script>
 </body>
 </html>
