@@ -117,7 +117,7 @@ body {
   justify-content: center;
 }
 
-/* Rangée du haut : la recherche prend la place restante, les 2 boutons restent à droite */
+/* Rangée du haut : la recherche prend la place restante, les boutons restent à droite */
 .toolbar-row-top{
   justify-content: flex-start;
 }
@@ -654,6 +654,15 @@ footer {
   }
 }
 
+/* État du bouton Connexion une fois la session ouverte */
+.toolbar .btn.connecte {
+  background: var(--success) !important;
+  border-color: var(--success) !important;
+  color: #08340f !important;
+}
+.toolbar .btn.connecte .ic { background: rgba(0, 0, 0, .18); }
+.toolbar .btn.connecte .ic svg use { color: #fff !important; stroke: #fff; }
+
 #modale-confirme {
   position: fixed;
   inset: 0;
@@ -709,6 +718,62 @@ footer {
   padding: 11px 18px !important;
 }
 
+/* Modale de connexion */
+#modale-connexion {
+  position: fixed;
+  inset: 0;
+  z-index: 3200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modale-titre {
+  margin: 0 0 4px 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.modale-sous-titre {
+  margin: 0 0 18px 0;
+  font-size: .85rem;
+  color: var(--muted);
+}
+
+.conn-champ {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: .95rem;
+  font-family: inherit;
+}
+
+.conn-champ:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(176, 40, 32, .16);
+}
+
+.conn-erreur {
+  margin: 0 0 12px 0;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: .84rem;
+  font-weight: 600;
+  background: rgba(224, 74, 58, .14);
+  color: var(--primary);
+}
+
 #bandeau-timer {
   position: fixed;
   top: 12px;
@@ -735,4 +800,3 @@ footer {
   transform: translateX(-50%) translateY(-1px);
   box-shadow: 0 10px 28px rgba(0, 0, 0, .55);
 }
-
