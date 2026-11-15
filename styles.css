@@ -132,6 +132,14 @@ body {
   white-space: nowrap;
 }
 
+/* Groupe de rangées repliable (invisible sur grand écran) */
+.toolbar-rows{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.toolbar-toggle{ display: none; }
+
 .search {
   display: flex;
   align-items: center;
@@ -662,6 +670,97 @@ footer {
   .toolbar-row-top .btn {
     flex: 1 1 auto;
   }
+}
+
+/* ---- Barre repliable (mobile) ---- */
+@media (max-width: 860px) {
+  .toolbar {
+    gap: 7px;
+    padding: 8px 10px 10px;
+  }
+
+  .toolbar-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text);
+    font-weight: 700;
+    font-size: .85rem;
+    cursor: pointer;
+  }
+
+  .toolbar-toggle-chevron {
+    display: inline-flex;
+    transition: transform .22s ease;
+  }
+
+  .toolbar-toggle-chevron svg { width: 15px; height: 15px; }
+
+  .toolbar-wrap.toolbar-ouvert .toolbar-toggle-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Repliée par défaut : le menu est masqué */
+  .toolbar-rows {
+    display: none;
+    gap: 7px;
+  }
+
+  .toolbar-wrap.toolbar-ouvert .toolbar-rows {
+    display: flex;
+    animation: menu-in .18s ease;
+  }
+
+  @keyframes menu-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* ---- Contenu plus compact sous la barre (mobile) ---- */
+@media (max-width: 860px) {
+  .container {
+    margin: 10px auto;
+    padding: 0 10px;
+  }
+
+  .card {
+    border-radius: 18px;
+    padding: 16px;
+  }
+
+  .card:hover { transform: none; }
+
+  #etat > h2 {
+    font-size: 1.15rem;
+    margin: 0 0 12px 0;
+    padding-left: 10px;
+  }
+
+  .kpi { padding: 12px; }
+  .kpi strong { font-size: 1.7rem; }
+  .kpi h3 { font-size: .78rem; }
+  .kpi-grid { gap: 10px; }
+
+  .competition-card { padding: 13px; border-radius: 16px; }
+  .competition-card:hover { transform: none; }
+  .calendar-grid { gap: 10px; }
+  .calendar-grid > .competition-card { min-height: 0; }
+  .competition-title { font-size: .95rem; }
+  .competition-date-badge { padding: 6px 8px; font-size: .78rem; min-width: 48px; }
+
+  .chart-wrap { height: 290px; }
+
+  .hero-next { margin-top: 12px; }
+  .hero-stats { margin-top: 20px; gap: 12px; }
+
+  footer { margin: 26px 0 16px 0; font-size: .8rem; }
 }
 
 /* État du bouton Connexion une fois la session ouverte */
