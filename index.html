@@ -77,6 +77,7 @@ input[name^="serie"] {
 <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></symbol>
 <symbol id="i-bulb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.5 1 2.5h6c0-1 .2-1.8 1-2.5A6 6 0 0 0 12 3z"/></symbol>
 <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+<symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></symbol>
 </defs>
 </svg>
 
@@ -133,7 +134,13 @@ input[name^="serie"] {
 <div class="toolbar-wrap">
   <nav class="toolbar" aria-label="Navigation principale">
 
-    <!-- Rangée 1 : recherche + actions globales -->
+    <!-- Bouton de repli (visible seulement sur mobile) -->
+    <button class="toolbar-toggle" id="toolbar-toggle" onclick="basculerToolbar()" aria-expanded="true" aria-controls="toolbar-rows">
+      <span class="toolbar-toggle-label">Menu</span>
+      <span class="toolbar-toggle-chevron"><svg class="svgi"><use href="#i-chevron"/></svg></span>
+    </button>
+
+    <!-- Rangée 0 : recherche + connexion, toujours visibles -->
     <div class="toolbar-row toolbar-row-top">
       <div class="search">
         <span class="ic ic-grey"><svg class="svgi"><use href="#i-search"/></svg></span>
@@ -144,32 +151,36 @@ input[name^="serie"] {
       <button class="btn" onclick="toggleTheme()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-moon"/></svg></span> Mode clair</button>
     </div>
 
-    <!-- Rangée 2 : navigation du calendrier -->
-    <div class="toolbar-row" role="tablist">
-      <button class="btn btn-primary" onclick="afficherTableauDeBord()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-home"/></svg></span> Tableau de bord</button>
-      <button class="btn" onclick="afficherToutes()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-cal"/></svg></span> Toutes</button>
-      <button class="btn" onclick="afficherAVenir()"><span class="ic ic-green"><svg class="svgi"><use href="#i-check"/></svg></span> À venir</button>
-      <button class="btn" onclick="afficherResultats()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Résultats</button>
-      <button class="btn" onclick="afficherTimer()"><span class="ic ic-red"><svg class="svgi"><use href="#i-target"/></svg></span> Timer Stand</button>
-    </div>
+    <!-- Rangées repliables sur mobile -->
+    <div class="toolbar-rows" id="toolbar-rows">
 
-    <!-- Rangée 3 : analyse -->
-    <div class="toolbar-row">
-      <button class="btn" onclick="afficherStats()"><span class="ic ic-green"><svg class="svgi"><use href="#i-trend"/></svg></span> Statistiques</button>
-      <button class="btn" onclick="afficherTop10()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-medal"/></svg></span> Top 10</button>
-      <button class="btn" onclick="afficherPalmares()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Palmarès</button>
-    </div>
+      <!-- Rangée 2 : navigation du calendrier -->
+      <div class="toolbar-row" role="tablist">
+        <button class="btn btn-primary" onclick="afficherTableauDeBord()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-home"/></svg></span> Tableau de bord</button>
+        <button class="btn" onclick="afficherToutes()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-cal"/></svg></span> Toutes</button>
+        <button class="btn" onclick="afficherAVenir()"><span class="ic ic-green"><svg class="svgi"><use href="#i-check"/></svg></span> À venir</button>
+        <button class="btn" onclick="afficherResultats()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Résultats</button>
+        <button class="btn" onclick="afficherTimer()"><span class="ic ic-red"><svg class="svgi"><use href="#i-target"/></svg></span> Timer Stand</button>
+      </div>
 
-    <!-- Rangée 4 : gestion des scores -->
-    <div class="toolbar-row">
-      <button class="btn" onclick="afficherAjoutScore()"><span class="ic ic-green"><svg class="svgi"><use href="#i-plus"/></svg></span> Ajouter un score</button>
-      <button class="btn" onclick="voirScores()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-list"/></svg></span> Scores saisis</button>
-      <button class="btn" onclick="exporterScores()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-dl"/></svg></span> Export JSON</button>
-      <button class="btn" onclick="exporterExcel()"><span class="ic ic-green"><svg class="svgi"><use href="#i-table"/></svg></span> Export Excel</button>
-      <button class="btn" onclick="document.getElementById('importScores').click()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-folder"/></svg></span> Importer</button>
-      <input type="file" id="importScores" accept=".json" onchange="importerScores(event)" style="display:none">
-    </div>
+      <!-- Rangée 3 : analyse -->
+      <div class="toolbar-row">
+        <button class="btn" onclick="afficherStats()"><span class="ic ic-green"><svg class="svgi"><use href="#i-trend"/></svg></span> Statistiques</button>
+        <button class="btn" onclick="afficherTop10()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-medal"/></svg></span> Top 10</button>
+        <button class="btn" onclick="afficherPalmares()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Palmarès</button>
+      </div>
 
+      <!-- Rangée 4 : gestion des scores -->
+      <div class="toolbar-row">
+        <button class="btn" onclick="afficherAjoutScore()"><span class="ic ic-green"><svg class="svgi"><use href="#i-plus"/></svg></span> Ajouter un score</button>
+        <button class="btn" onclick="voirScores()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-list"/></svg></span> Scores saisis</button>
+        <button class="btn" onclick="exporterScores()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-dl"/></svg></span> Export JSON</button>
+        <button class="btn" onclick="exporterExcel()"><span class="ic ic-green"><svg class="svgi"><use href="#i-table"/></svg></span> Export Excel</button>
+        <button class="btn" onclick="document.getElementById('importScores').click()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-folder"/></svg></span> Importer</button>
+        <input type="file" id="importScores" accept=".json" onchange="importerScores(event)" style="display:none">
+      </div>
+
+    </div>
   </nav>
 </div>
 
@@ -188,6 +199,31 @@ input[name^="serie"] {
 
 <script>
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js'); }
+
+/* Repli de la barre d'outils (mobile) */
+function _toolbarMobile(){ return window.matchMedia('(max-width: 860px)').matches; }
+function basculerToolbar(force){
+  const wrap = document.querySelector('.toolbar-wrap');
+  const btn  = document.getElementById('toolbar-toggle');
+  if(!wrap || !btn) return;
+  const ouvert = (typeof force === 'boolean') ? force : !wrap.classList.contains('toolbar-ouvert');
+  wrap.classList.toggle('toolbar-ouvert', ouvert);
+  btn.setAttribute('aria-expanded', String(ouvert));
+  const label = btn.querySelector('.toolbar-toggle-label');
+  if(label) label.textContent = ouvert ? 'Réduire' : 'Menu';
+}
+window.basculerToolbar = basculerToolbar;
+
+/* Fermer le menu après un clic sur une action, uniquement sur mobile */
+document.addEventListener('click', (e) => {
+  const b = e.target.closest && e.target.closest('.toolbar-rows .btn');
+  if(b && _toolbarMobile()) basculerToolbar(false);
+});
+
+window.addEventListener('resize', () => {
+  if(!_toolbarMobile()) basculerToolbar(true);
+  else basculerToolbar(false);
+});
 
 /* Barre de chargement pendant la lecture du classeur Excel */
 (function(){
@@ -272,9 +308,10 @@ document.addEventListener('DOMContentLoaded', () => {
   _embellirIcones();
   _observer();
   _majLibelleTheme();
+  if(_toolbarMobile()) basculerToolbar(false);
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script type="module" src="js/main.js?v=7.4"></script>
+<script type="module" src="js/main.js?v=7.5"></script>
 </body>
 </html>
