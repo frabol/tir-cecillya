@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#1a0808">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=8">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>.svgi{width:19px;height:19px;flex:0 0 19px}</style>
@@ -50,6 +50,29 @@ input[name^="serie"] {
   #etat details > div {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
+}
+
+/* ---- Bouton Menu : style de secours, lisible meme si styles.css tarde ---- */
+.toolbar-toggle {
+  display: none;
+}
+@media (max-width: 860px) {
+  .toolbar-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 12px;
+    border: 1px solid #4a1a18;
+    background: #2a0f0f;
+    color: #fdf3ef;
+    font-weight: 700;
+    font-size: .85rem;
+    cursor: pointer;
+  }
+  .toolbar-toggle-chevron { display: inline-flex; }
 }
 </style>
 
@@ -135,7 +158,7 @@ input[name^="serie"] {
   <nav class="toolbar" aria-label="Navigation principale">
 
     <!-- Bouton de repli (visible seulement sur mobile) -->
-    <button class="toolbar-toggle" id="toolbar-toggle" onclick="basculerToolbar()" aria-expanded="true" aria-controls="toolbar-rows">
+    <button type="button" class="toolbar-toggle" id="toolbar-toggle" onclick="basculerToolbar()" aria-expanded="true" aria-controls="toolbar-rows">
       <span class="toolbar-toggle-label">Menu</span>
       <span class="toolbar-toggle-chevron"><svg class="svgi"><use href="#i-chevron"/></svg></span>
     </button>
@@ -198,32 +221,51 @@ input[name^="serie"] {
 </footer>
 
 <script>
-if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js'); }
-
-/* Repli de la barre d'outils (mobile) */
+/* Repli de la barre d'outils — déclaré EN PREMIER pour être disponible au clic */
 function _toolbarMobile(){ return window.matchMedia('(max-width: 860px)').matches; }
+
 function basculerToolbar(force){
   const wrap = document.querySelector('.toolbar-wrap');
   const btn  = document.getElementById('toolbar-toggle');
   if(!wrap || !btn) return;
-  const ouvert = (typeof force === 'boolean') ? force : !wrap.classList.contains('toolbar-ouvert');
+
+  const ouvert = (typeof force === 'boolean')
+      ? force
+      : !wrap.classList.contains('toolbar-ouvert');
+
   wrap.classList.toggle('toolbar-ouvert', ouvert);
   btn.setAttribute('aria-expanded', String(ouvert));
+
   const label = btn.querySelector('.toolbar-toggle-label');
   if(label) label.textContent = ouvert ? 'Réduire' : 'Menu';
 }
-window.basculerToolbar = basculerToolbar;
 
-/* Fermer le menu après un clic sur une action, uniquement sur mobile */
-document.addEventListener('click', (e) => {
-  const b = e.target.closest && e.target.closest('.toolbar-rows .btn');
+/* Le clic sur le bouton Menu est traité ici aussi :
+   fonctionne même si le reste du script échoue. */
+document.addEventListener('click', function(e){
+  const t = e.target;
+  if(!t || !t.closest) return;
+
+  if(t.closest('#toolbar-toggle')){
+    basculerToolbar();
+    return;
+  }
+
+  const b = t.closest('.toolbar-rows .btn');
   if(b && _toolbarMobile()) basculerToolbar(false);
+}, true);
+
+window.addEventListener('resize', function(){
+  if(_toolbarMobile()) basculerToolbar(false);
+  else basculerToolbar(true);
 });
 
-window.addEventListener('resize', () => {
-  if(!_toolbarMobile()) basculerToolbar(true);
-  else basculerToolbar(false);
+document.addEventListener('DOMContentLoaded', function(){
+  if(_toolbarMobile()) basculerToolbar(false);
+  else basculerToolbar(true);
 });
+
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js'); }
 
 /* Barre de chargement pendant la lecture du classeur Excel */
 (function(){
@@ -308,10 +350,9 @@ document.addEventListener('DOMContentLoaded', () => {
   _embellirIcones();
   _observer();
   _majLibelleTheme();
-  if(_toolbarMobile()) basculerToolbar(false);
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script type="module" src="js/main.js?v=7.5"></script>
+<script type="module" src="js/main.js?v=8"></script>
 </body>
 </html>
