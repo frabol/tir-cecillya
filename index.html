@@ -21,9 +21,9 @@
 })();
 </script>
 
-<link rel="stylesheet" href="styles.css?v=12">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="styles.css?v=13">
+<script src="[cdnjs.cloudflare.com](https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js)"></script>
+<script src="[cdn.jsdelivr.net](https://cdn.jsdelivr.net/npm/chart.js)"></script>
 <style>.svgi{width:19px;height:19px;flex:0 0 19px}</style>
 
 <style>
@@ -121,8 +121,8 @@ input[name^="serie"] {
   font-family: inherit;
 }
 
-/* Compteur de scores en attente de synchronisation */
-#btn-sync-attente {
+/* Compteur de scores en attente : par CLASSE, jamais par id */
+.toolbar .btn.btn-sync-attente {
   border-color: #f0c020 !important;
 }
 </style>
@@ -167,15 +167,15 @@ input[name^="serie"] {
   </div>
 
   <div class="hero-content">
-    <div class="hero-badge"><span class="ic ic-gold"><svg class="svgi"><use href="#i-target"/></svg></span> Tir sportif • Carabine • Saison 2026-2027</div>
+    <div class="hero-badge"><span class="ic ic-gold"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-target"/></svg></span> Tir sportif • Carabine • Saison 2026-2027</div>
     <div style="margin-top:10px"><span id="sync-badge">● À jour</span></div>
     <h1 class="hero-title">Tir <span>Cécillya</span></h1>
     <p class="hero-subtitle">Calendrier Ligue Tir Nord-Pas-de-Calais • Suivi des scores & performances</p>
 
     <div class="hero-stats">
       <div class="hero-pill"><img src="logo-maubeuge.png" alt="Maubeuge" style="width:20px;height:20px;object-fit:contain;border-radius:50%"> Carabiniers de Maubeuge</div>
-      <div class="hero-pill"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Compétitions & entraînements</div>
-      <div class="hero-pill"><span class="ic ic-blue"><svg class="svgi"><use href="#i-chart"/></svg></span> Stats en direct</div>
+      <div class="hero-pill"><span class="ic ic-gold"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-trophy"/></svg></span> Compétitions & entraînements</div>
+      <div class="hero-pill"><span class="ic ic-blue"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-chart"/></svg></span> Stats en direct</div>
     </div>
 
     <div class="hero-next" id="hero-next"></div>
@@ -350,7 +350,9 @@ input[name^="serie"] {
 
 /* ============================================================
    COMPTEUR DE SCORES EN ATTENTE DE SYNCHRONISATION
-   storage.js marque offline:true quand le cloud echoue en silence.
+   On ne touche JAMAIS a btn.id : le changer casserait toutes les
+   recherches getElementById('btn-sync') suivantes, et le badge
+   resterait fige pour toujours. L'etat passe par une CLASSE.
    ============================================================ */
 window._majAttenteSync = function(){
   const btn = document.getElementById('btn-sync');
@@ -359,16 +361,16 @@ window._majAttenteSync = function(){
   try { n = Number(localStorage.getItem('scores_en_attente')) || 0; } catch(e) {}
   const ancien = btn.querySelector('.badge-attente');
   if(ancien) ancien.remove();
+
+  btn.classList.toggle('btn-sync-attente', n > 0);
+
   if(n > 0){
-    btn.id = 'btn-sync-attente';
     const badge = document.createElement('span');
     badge.className = 'badge-attente';
     badge.style.cssText = 'background:#f0c020; color:#2a1204; border-radius:999px; padding:1px 7px; font-size:.72rem; font-weight:800; margin-left:4px;';
     badge.textContent = n;
     badge.title = n + ' score(s) en attente de synchronisation';
     btn.appendChild(badge);
-  } else {
-    btn.id = 'btn-sync';
   }
 };
 
@@ -498,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function(){
   window._majAttenteSync();
 });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script type="module" src="js/main.js?v=12"></script>
+<script src="[cdn.jsdelivr.net](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)"></script>
+<script type="module" src="js/main.js?v=13"></script>
 </body>
 </html>
