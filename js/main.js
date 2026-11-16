@@ -14,6 +14,7 @@ export async function synchroniserEtRecharger() {
         try { await synchroniserScores(); } catch (e) { console.warn("Sync Supabase ignorée :", e); }
         await chargerDonneesExcelEtCalendrier("avenir");
         ui.afficherToast("Synchronisation réussie !");
+        if (typeof window._majAttenteSync === "function") window._majAttenteSync();
         if (ui.pageActuelle === "tableau") {
             ui.afficherTableauDeBord();
         } else if (ui.pageActuelle === "calendrier") {
@@ -51,24 +52,16 @@ export function rechercherCompetition() {
     });
 }
 
-/* ------------------------------------------------------------------
-   CONNEXION / ÉCRITURE
-   Pour modifier les scores dans le cloud, il faut être connecté.
-   La base Supabase refuse de toute façon toute écriture anonyme.
-   ------------------------------------------------------------------ */
-
-/** Met à jour l'aspect du bouton de connexion selon l'état de session. */
 export async function majEtatConnexion() {
     const btn = document.getElementById("btn-connexion");
     if (!btn) return;
     const connecte = await estConnecte();
     btn.classList.toggle("connecte", connecte);
     btn.innerHTML = connecte
-        ? '<span class="ic ic-red"><svg class="svgi"><use href="#i-check"/></svg></span> Connecté'
-        : '<span class="ic ic-navy"><svg class="svgi"><use href="#i-lock"/></svg></span> Connexion';
+        ? '<span class="ic ic-red"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span> Connecté'
+        : '<span class="ic ic-navy"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-lock"/></svg></span> Connexion';
 }
 
-/** Ouvre la modale de connexion (ou déconnecte si déjà connecté). */
 export async function ouvrirModaleConnexion() {
     if (await estConnecte()) {
         await seDeconnecter();
@@ -181,6 +174,7 @@ export async function initApp() {
             afficherPalmares();
         }
         await majEtatConnexion();
+        if (typeof window._majAttenteSync === "function") window._majAttenteSync();
     } catch (e) {
         console.error("Erreur d'initialisation :", e);
     }
