@@ -17,7 +17,7 @@ function determinerLieu(evenement, lieu) {
     const lieuNettoye = String(lieu || "").trim();
     const evenementTexte = String(evenement || "").trim();
 
-    // Cas normal : lieu réel présent
+    // Cas normal : lieu reel present
     if (
         lieuNettoye &&
         ![
@@ -43,6 +43,31 @@ function determinerLieu(evenement, lieu) {
 
     // Cas sans lieu connu
     return "À déterminer";
+}
+
+/* ============================================================
+   NOMBRE DE JOURS ENTRE AUJOURD'HUI ET UNE EPREUVE
+   dateReelle ressemble a "Sam 21/11 - Dim 22/11/2026" ou a
+   "Du Jeu 17/09 au Dim 20/09/2026". On prend la DERNIERE date
+   de la chaine, celle qui porte l'annee.
+   Retourne null si aucune date exploitable.
+   ============================================================ */
+function joursDepuis(dateReelle){
+    const t = String(dateReelle || "");
+    const toutes = [...t.matchAll(/(\d{2})\/(\d{2})\/(\d{4})/g)];
+    if (toutes.length === 0) return null;
+
+    const m = toutes[toutes.length - 1];
+    const j = parseInt(m[1], 10);
+    const mo = parseInt(m[2], 10);
+    const an = parseInt(m[3], 10);
+    if (!j || !mo || !an) return null;
+
+    const auj = new Date();
+    const minuit = new Date(auj.getFullYear(), auj.getMonth(), auj.getDate()).getTime();
+    const cible = new Date(an, mo - 1, j).getTime();
+
+    return Math.round((cible - minuit) / 86400000);
 }
 
 export function exporterEvenementICS(titre, dateBrute, moisBrut, lieu, afficherToast) {
@@ -96,7 +121,6 @@ function convertirCelluleDateExcel(valeur) {
         return jsDate.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
     }
     const texte = String(valeur).trim();
-    // Déjà au format JJ/MM ou JJ/MM/AAAA
     const m = texte.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/);
     if (m) {
         return m[1].padStart(2, "0") + "/" + m[2].padStart(2, "0");
@@ -166,8 +190,18 @@ export async function chargerDonneesExcelEtCalendrier(filtre = "avenir") {
     state.prochainesCompetitions = [];
     state.toutesCompetitionsCalendrier = [];
     state.lieuxParDate = {};
-    let dateProchainMatch = null;
     let moisCourantRecherche = "";
+
+    /* ============================================================
+       PROCHAINES COMPETITIONS
+       On ne se fie PAS au mot "A venir" du classeur : la Ligue
+       l'ecrit en bloc pour toute la saison (88 lignes, dont des
+       epreuves deja passees et d'autres en septembre 2027).
+       On calcule le nombre de jours reels et on ne garde que les
+       epreuves dont la date est aujourd'hui ou plus tard, en
+       retenant le jour le plus proche.
+       ============================================================ */
+    let joursAvantProchain = null;
 
     for (let i = 3; i < lignes.length; i++) {
         const ligne = lignes[i];
@@ -180,38 +214,44 @@ export async function chargerDonneesExcelEtCalendrier(filtre = "avenir") {
         const lieu = determinerLieu(evenement, lieuBrut);
         const statut = ligne[5];
         const dateReelle = ligne[4];
-    if (dateReelle && lieu) {
-        const match = String(dateReelle).match(/(\d{2})\/(\d{2})\/\d{4}/);
-        if (match) {
-            const cle = `${match[1]}/${match[2]}`;
-            state.lieuxParResultat[cle] = lieu;
-        }
-    }
-    if (evenement) {
-        if (date && lieu) {
-            state.lieuxParDate[String(date).trim()] = String(lieu).trim();
+
+        if (dateReelle && lieu) {
+            const match = String(dateReelle).match(/(\d{2})\/(\d{2})\/\d{4}/);
+            if (match) {
+                const cle = `${match[1]}/${match[2]}`;
+                state.lieuxParResultat[cle] = lieu;
+            }
         }
 
-    state.toutesCompetitionsCalendrier.push({
-        mois: moisCourantRecherche,
-        date,
-        evenement,
-        lieu,
-        statut,
-        dateReelle
-    });
+        if (evenement) {
+            if (date && lieu) {
+                state.lieuxParDate[String(date).trim()] = String(lieu).trim();
+            }
 
-            if (statut === "À venir") {
-                if (!dateProchainMatch) {
-                    dateProchainMatch = `${moisCourantRecherche}|${date}`;
+            state.toutesCompetitionsCalendrier.push({
+                mois: moisCourantRecherche,
+                date,
+                evenement,
+                lieu,
+                statut,
+                dateReelle
+            });
+
+            const jours = joursDepuis(dateReelle);
+
+            if (statut === "À venir" && jours !== null && jours >= 0) {
+                if (joursAvantProchain === null || jours < joursAvantProchain) {
+                    joursAvantProchain = jours;
+                    state.prochainesCompetitions = [];
                 }
-                if (`${moisCourantRecherche}|${date}` === dateProchainMatch) {
+                if (jours === joursAvantProchain) {
                     state.prochainesCompetitions.push({
                         mois: moisCourantRecherche,
                         date: date || "",
                         evenement: evenement,
                         lieu: lieu || "Lieu non spécifié",
-                        dateReelle: dateReelle || ""
+                        dateReelle: dateReelle || "",
+                        jours: jours
                     });
                 }
             }
