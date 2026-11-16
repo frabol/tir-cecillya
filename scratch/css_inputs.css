@@ -1,0 +1,78 @@
+/* ============================================================
+   CHAMPS DE SAISIE — fin du fond blanc natif du navigateur
+   Les inputs du formulaire "Ajouter un score" ne sont pas dans
+   un <details>, donc la regle de index.html ne les atteignait
+   pas et ils gardaient le blanc par defaut de Chrome/Safari.
+   ============================================================ */
+input[type="number"],
+input[type="text"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  font-family: inherit;
+  border-radius: 10px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: .8;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(176, 40, 32, .18);
+}
+
+/* Safari mobile force son propre rendu des dates */
+input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 44px;
+}
+
+/* L'indicateur de calendrier doit rester visible sur fond sombre */
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(.7);
+  cursor: pointer;
+}
+
+/* Le <select> garde une flèche lisible */
+[data-theme="dark"] select {
+  background-image: none;
+}
+
+/* ------------------------------------------------
+   Les six series du formulaire d'ajout de score
+   ------------------------------------------------ */
+#serie1, #serie2, #serie3,
+#serie4, #serie5, #serie6 {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+}
+
+#serie1:focus, #serie2:focus, #serie3:focus,
+#serie4:focus, #serie5:focus, #serie6:focus {
+  background: var(--card-bg) !important;
+  border-color: var(--primary) !important;
+}
+
+/* L'autofill de Chrome repeint le fond en jaune pale : on le neutralise */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text);
+  -webkit-box-shadow: 0 0 0 1000px var(--card-bg) inset;
+  box-shadow: 0 0 0 1000px var(--card-bg) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
