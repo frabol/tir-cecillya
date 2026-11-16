@@ -11,6 +11,27 @@ export const supabaseClient = window.supabase.createClient(supabaseUrl, supabase
 const EMAIL_AUTORISE = "frabol2@hotmail.com";
 const CLE_SESSION = "cecillya_session";
 
+/* Nombre d'écritures qui n'ont pas atteint le cloud.
+   Affiché par une pastille à côté du bouton Synchroniser. */
+const CLE_ATTENTE = "scores_en_attente";
+
+export function getAttenteSync() {
+    try { return Number(localStorage.getItem(CLE_ATTENTE)) || 0; } catch (e) { return 0; }
+}
+
+export function setAttenteSync(n) {
+    try {
+        const v = Math.max(0, Number(n) || 0);
+        if (v === 0) localStorage.removeItem(CLE_ATTENTE);
+        else localStorage.setItem(CLE_ATTENTE, String(v));
+    } catch (e) { /* stockage indisponible */ }
+    if (typeof window._majAttenteSync === "function") window._majAttenteSync();
+}
+
+export function ajouterAttenteSync(n = 1) {
+    setAttenteSync(getAttenteSync() + n);
+}
+
 export async function estConnecte() {
     try {
         const { data } = await supabaseClient.auth.getSession();
@@ -99,6 +120,9 @@ export async function synchroniserScores() {
             };
         });
         setScoresLocaux(historique);
+
+        // Le cloud a répondu : plus rien en attente.
+        setAttenteSync(0);
     } catch (e) {
         console.warn("Mode hors-ligne : utilisation du cache local.");
     }
@@ -131,6 +155,9 @@ export async function ajouterScore(nouveauScore) {
         score: nouveauScore.score
     }]);
 
+    // Ecrit en local mais pas parti dans le cloud : on compte.
+    if (error) ajouterAttenteSync(1);
+
     return { ok: true, offline: Boolean(error) };
 }
 
@@ -154,8 +181,10 @@ export async function supprimerScoreParIndex(index) {
             .eq("date", scoreASupprimer.date)
             .eq("type", scoreASupprimer.type)
             .eq("score", scoreASupprimer.score);
+        if (error) ajouterAttenteSync(1);
         return { ok: true, offline: Boolean(error) };
     } catch (e) {
+        ajouterAttenteSync(1);
         return { ok: true, offline: true };
     }
 }
