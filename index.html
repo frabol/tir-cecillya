@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#1a0808">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="styles.css?v=9">
+<link rel="stylesheet" href="styles.css?v=10">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>.svgi{width:19px;height:19px;flex:0 0 19px}</style>
@@ -53,9 +53,7 @@ input[name^="serie"] {
 }
 
 /* ---- Bouton Menu : style de secours, lisible meme si styles.css tarde ---- */
-.toolbar-toggle {
-  display: none;
-}
+.toolbar-toggle { display: none; }
 @media (max-width: 860px) {
   .toolbar-toggle {
     display: flex;
@@ -111,8 +109,9 @@ input[name^="serie"] {
     <span style="font-size:12px; font-weight:700; color:#fff; text-shadow:0 2px 5px rgba(0,0,0,0.8); letter-spacing:0.06em; text-transform:uppercase;">Maubeuge</span>
   </div>
 
+  <!-- Logo Ligue NPdC heberge localement : indispensable hors-ligne (PWA) -->
   <div style="position:absolute; right:40px; top:50%; transform:translateY(-50%); z-index:5; display:flex; flex-direction:column; align-items:center; gap:6px;" class="desktop-logo-right">
-    <img src="https://www.liguedetirnpdc.fr/wp-content/uploads/2021/10/Logo-Ligue-de-Tir-Small.png" alt="Écusson Ligue de Tir Nord-Pas-de-Calais" style="width:155px; height:155px; object-fit:contain; border-radius:18px; filter:drop-shadow(0 10px 25px rgba(0,0,0,0.6)); background:rgba(255,255,255,0.08); padding:6px; border:3px solid rgba(255,255,255,0.45);">
+    <img src="logo-ligue-npdc.png" alt="Écusson Ligue de Tir Nord-Pas-de-Calais" style="width:155px; height:155px; object-fit:contain; border-radius:18px; filter:drop-shadow(0 10px 25px rgba(0,0,0,0.6)); background:rgba(255,255,255,0.08); padding:6px; border:3px solid rgba(255,255,255,0.45);">
     <span style="font-size:12px; font-weight:700; color:#fff; text-shadow:0 2px 5px rgba(0,0,0,0.8); letter-spacing:0.06em; text-transform:uppercase;">Ligue NPdC</span>
   </div>
 
@@ -153,8 +152,6 @@ input[name^="serie"] {
 <div class="toolbar-wrap">
   <nav class="toolbar" aria-label="Navigation principale">
 
-    <!-- Bouton de repli (visible seulement sur mobile).
-         Pas de onclick : un seul gestionnaire, dans le script ci-dessous. -->
     <button type="button" class="toolbar-toggle" id="toolbar-toggle" aria-expanded="false" aria-controls="toolbar-rows">
       <span class="toolbar-toggle-label">Menu</span>
       <span class="toolbar-toggle-chevron"><svg class="svgi"><use href="#i-chevron"/></svg></span>
@@ -167,7 +164,7 @@ input[name^="serie"] {
       </div>
       <button class="btn btn-gold" onclick="synchroniserEtRecharger()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-cloud"/></svg></span> Synchroniser</button>
       <button class="btn" id="btn-connexion" onclick="ouvrirModaleConnexion()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-lock"/></svg></span> Connexion</button>
-      <button class="btn" onclick="toggleTheme()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-moon"/></svg></span> Mode clair</button>
+      <button class="btn" id="btn-theme" onclick="toggleTheme()" aria-pressed="true"><span class="ic ic-navy"><svg class="svgi"><use href="#i-moon"/></svg></span> <span class="theme-label">Mode clair</span></button>
     </div>
 
     <div class="toolbar-rows" id="toolbar-rows">
@@ -214,7 +211,10 @@ input[name^="serie"] {
 
 <script>
 /* ============================================================
-   REPLI DE LA BARRE — un seul gestionnaire, pose sur le bouton.
+   REPLI DE LA BARRE (mobile)
+   On ecoute le FRANCHISSEMENT du seuil via matchMedia, pas
+   l'evenement resize : sur mobile, la barre d'adresse qui se
+   masque declenche resize et refermait le menu tout seul.
    ============================================================ */
 (function(){
   const wrap = document.querySelector('.toolbar-wrap');
@@ -222,7 +222,7 @@ input[name^="serie"] {
   const rows = document.getElementById('toolbar-rows');
   if(!wrap || !btn || !rows) return;
 
-  function estMobile(){ return window.matchMedia('(max-width: 860px)').matches; }
+  const seuil = window.matchMedia('(max-width: 860px)');
 
   function appliquer(ouvert){
     wrap.classList.toggle('toolbar-ouvert', ouvert);
@@ -232,26 +232,30 @@ input[name^="serie"] {
     if(label) label.textContent = ouvert ? 'Réduire' : 'Menu';
   }
 
-  // Clic sur le bouton Menu : on bascule
   btn.addEventListener('click', function(ev){
     ev.preventDefault();
     ev.stopPropagation();
     appliquer(!wrap.classList.contains('toolbar-ouvert'));
   });
 
-  // Sur mobile, un clic sur une action referme le menu.
   rows.addEventListener('click', function(ev){
-    if(ev.target.closest('.btn') && estMobile()) appliquer(false);
+    if(ev.target.closest('.btn') && seuil.matches) appliquer(false);
   });
 
-  // Adaptation au changement de taille
-  window.addEventListener('resize', function(){ appliquer(!estMobile()); });
+  // Ne reagit qu'au passage 860px, pas a chaque resize.
+  if(seuil.addEventListener){
+    seuil.addEventListener('change', e => appliquer(!e.matches));
+  } else if (seuil.addListener){
+    seuil.addListener(e => appliquer(!e.matches));
+  }
 
-  // Etat initial
-  appliquer(!estMobile());
+  appliquer(!seuil.matches);
 })();
 
-if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js'); }
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .catch(err => console.warn('Service worker non enregistré :', err));
+}
 
 /* Barre de chargement pendant la lecture du classeur Excel */
 (function(){
@@ -264,7 +268,9 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-wo
   };
   const fetchOriginal = window.fetch;
   window.fetch = function(...args){
-    const url = String(args[0] || '');
+    // args[0] peut etre une string OU un objet Request.
+    const a = args[0];
+    const url = (typeof a === 'string') ? a : ((a && a.url) ? a.url : '');
     if (url.includes('.xlsx')) {
       window._chargement(true);
       return fetchOriginal.apply(this, args).finally(() => window._chargement(false));
@@ -272,47 +278,81 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-wo
     return fetchOriginal.apply(this, args);
   };
 })();
+
 const SVG_MAP = {
-  "🏠":"#i-home","📅":"#i-cal","✅":"#i-check","🏆":"#i-trophy","📈":"#i-trend","🥇":"#i-medal","🥈":"#i-medal","🥉":"#i-medal","🎯":"#i-target","📊":"#i-chart","📋":"#i-list","🏋":"#i-trend","📍":"#i-pin","💾":"#i-dl","☁":"#i-cloud"
+  "🏠":"#i-home","📅":"#i-cal","✅":"#i-check","🏆":"#i-trophy","📈":"#i-trend","🥇":"#i-medal","🥈":"#i-medal","🥉":"#i-medal","🎯":"#i-target","📊":"#i-chart","📋":"#i-list","🏋":"#i-trend","📍":"#i-pin","💾":"#i-dl","☁":"#i-cloud","📆":"#i-cal","🔔":"#i-bulb","❌":"#i-bulb","⚠️":"#i-bulb"
 };
+
 function svgIcon(ref){ return '<span class="ic"><svg class="svgi"><use href="'+ref+'"/></svg></span>'; }
+
+/* Remplace les emojis DANS LES NOEUDS TEXTE uniquement.
+   Aucun innerHTML reecrit : les ecouteurs d'evenements restent intacts. */
+const RE_EMOJI = new RegExp('(' + Object.keys(SVG_MAP).join('|') + ')', 'g');
+
+function _remplacerEmojis(racine){
+  if(!racine) return;
+  const walker = document.createTreeWalker(racine, NodeFilter.SHOW_TEXT, null);
+  const cibles = [];
+  let n;
+  while((n = walker.nextNode())){
+    if(n.nodeValue && RE_EMOJI.test(n.nodeValue)) cibles.push(n);
+    RE_EMOJI.lastIndex = 0;
+  }
+  cibles.forEach(noeud => {
+    const frag = document.createDocumentFragment();
+    noeud.nodeValue.split(RE_EMOJI).forEach(part => {
+      if(SVG_MAP[part]){
+        const tmp = document.createElement('span');
+        tmp.innerHTML = svgIcon(SVG_MAP[part]);
+        frag.appendChild(tmp.firstChild);
+      } else if(part){
+        frag.appendChild(document.createTextNode(part));
+      }
+    });
+    noeud.parentNode.replaceChild(frag, noeud);
+  });
+}
+
 function _embellirTableau(){
   const etat = document.getElementById('etat');
   if(!etat) return;
+  if(etat.dataset.kpiDone) return;
+
   const grid = etat.querySelector('div[style*="grid-template"]');
-  if(grid){ grid.classList.add('kpi-grid'); grid.removeAttribute('style');
-    grid.querySelectorAll(':scope > div').forEach(d=>d.classList.add('kpi'));
+  if(grid){
+    grid.classList.add('kpi-grid');
+    grid.removeAttribute('style');
+    grid.querySelectorAll(':scope > div').forEach(d => d.classList.add('kpi'));
+    etat.dataset.kpiDone = '1';
+    return;
+  }
+
+  const grille = etat.querySelector('.kpi-grid');
+  if(grille){
+    grille.querySelectorAll(':scope > div').forEach(d => d.classList.add('kpi'));
+    etat.dataset.kpiDone = '1';
   }
 }
-function _embellirIcones(){
-  const etat = document.getElementById('etat');
-  if(!etat) return;
-  etat.querySelectorAll('h2,h3,.competition').forEach(el=>{
-    if(el.dataset.svgDone) return;
-    let html = el.innerHTML;
-    let changed = false;
-    for(const [emoji, ref] of Object.entries(SVG_MAP)){
-      if(html.includes(emoji)){
-        html = html.split(emoji).join(svgIcon(ref));
-        changed = true;
-      }
-    }
-    if(changed){ el.innerHTML = html; el.dataset.svgDone = '1'; }
-  });
-}
+
 function _observer(){
   const etat = document.getElementById('etat');
   if(!etat || etat.dataset.observe) return;
   etat.dataset.observe = '1';
-  new MutationObserver(()=>{ _embellirIcones(); }).observe(etat, {childList:true, subtree:true});
+  new MutationObserver(function(){
+    _embellirTableau();
+    _remplacerEmojis(etat);
+  }).observe(etat, {childList:true, subtree:true});
 }
+
 function _majLibelleTheme(){
-  const btn = document.querySelector('.toolbar .btn[onclick="toggleTheme()"]');
+  const btn = document.getElementById('btn-theme');
   if(!btn) return;
   const sombre = document.documentElement.getAttribute('data-theme') === 'dark';
-  const label = btn.lastChild;
-  if(label && label.nodeType === 3){ label.textContent = sombre ? ' Mode clair' : ' Mode sombre'; }
+  btn.setAttribute('aria-pressed', String(sombre));
+  const label = btn.querySelector('.theme-label');
+  if(label) label.textContent = sombre ? 'Mode clair' : 'Mode sombre';
 }
+
 window.toggleTheme = function(){
   const html = document.documentElement;
   const cur = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -321,20 +361,21 @@ window.toggleTheme = function(){
   document.body.classList.toggle('dark', cur==='dark');
   _majLibelleTheme();
 };
+
 (function(){
   const saved = localStorage.getItem('theme');
   const theme = (saved === 'light') ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', theme);
   document.body.classList.toggle('dark', theme === 'dark');
 })();
+
 document.addEventListener('DOMContentLoaded', function(){
   _embellirTableau();
-  _embellirIcones();
   _observer();
   _majLibelleTheme();
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script type="module" src="js/main.js?v=9"></script>
+<script type="module" src="js/main.js?v=10"></script>
 </body>
 </html>
