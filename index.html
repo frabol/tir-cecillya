@@ -7,8 +7,21 @@
 <meta name="description" content="Tir Cécillya : tableau de bord, résultats, statistiques et calendrier Ligue Tir Nord-Pas-de-Calais 2026-2027.">
 <meta name="theme-color" content="#1a0808">
 <link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="styles.css?v=11">
+
+<!-- Theme applique AVANT le CSS : evite le clignotement au chargement -->
+<script>
+(function(){
+  try {
+    const saved = localStorage.getItem('theme');
+    const theme = (saved === 'light') ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+  } catch(e) { /* stockage indisponible */ }
+})();
+</script>
+
+<link rel="stylesheet" href="styles.css?v=12">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>.svgi{width:19px;height:19px;flex:0 0 19px}</style>
@@ -72,6 +85,45 @@ input[name^="serie"] {
     font-family: inherit;
   }
   .toolbar-toggle-chevron { display: inline-flex; }
+}
+
+/* Bannière « nouvelle version » du service worker */
+#maj-app {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%) translateY(80px);
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #2a0f0f;
+  border: 1px solid rgba(240, 207, 90, .5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .55);
+  color: #fdf3ef;
+  font-size: .85rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity .3s ease, transform .3s ease;
+}
+#maj-app.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+#maj-app button {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 14px;
+  background: #c9a227;
+  color: #2a1204;
+  font-weight: 800;
+  font-size: .82rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Compteur de scores en attente de synchronisation */
+#btn-sync-attente {
+  border-color: #f0c020 !important;
 }
 </style>
 
@@ -153,41 +205,41 @@ input[name^="serie"] {
 
     <button type="button" class="toolbar-toggle" id="toolbar-toggle" aria-expanded="false" aria-controls="toolbar-rows">
       <span class="toolbar-toggle-label">Menu</span>
-      <span class="toolbar-toggle-chevron"><svg class="svgi"><use href="#i-chevron"/></svg></span>
+      <span class="toolbar-toggle-chevron"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-chevron"/></svg></span>
     </button>
 
     <div class="toolbar-row toolbar-row-top">
       <div class="search">
-        <span class="ic ic-grey"><svg class="svgi"><use href="#i-search"/></svg></span>
+        <span class="ic ic-grey"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-search"/></svg></span>
         <input type="text" id="recherche" placeholder="Rechercher une compétition ou un lieu…" oninput="rechercherCompetition()">
       </div>
-      <button class="btn btn-gold" onclick="synchroniserEtRecharger()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-cloud"/></svg></span> Synchroniser</button>
-      <button class="btn" id="btn-connexion" onclick="ouvrirModaleConnexion()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-lock"/></svg></span> Connexion</button>
-      <button class="btn" id="btn-theme" onclick="toggleTheme()" aria-pressed="true"><span class="ic ic-navy"><svg class="svgi"><use href="#i-moon"/></svg></span> <span class="theme-label">Mode clair</span></button>
+      <button class="btn btn-gold" id="btn-sync" onclick="synchroniserEtRecharger()"><span class="ic ic-blue"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-cloud"/></svg></span> Synchroniser</button>
+      <button class="btn" id="btn-connexion" onclick="ouvrirModaleConnexion()"><span class="ic ic-navy"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-lock"/></svg></span> Connexion</button>
+      <button class="btn" id="btn-theme" onclick="toggleTheme()" aria-pressed="true"><span class="ic ic-navy"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-moon"/></svg></span> <span class="theme-label">Mode clair</span></button>
     </div>
 
     <div class="toolbar-rows" id="toolbar-rows">
 
       <div class="toolbar-row" role="tablist">
-        <button class="btn btn-primary" onclick="afficherTableauDeBord()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-home"/></svg></span> Tableau de bord</button>
-        <button class="btn" onclick="afficherToutes()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-cal"/></svg></span> Toutes</button>
-        <button class="btn" onclick="afficherAVenir()"><span class="ic ic-green"><svg class="svgi"><use href="#i-check"/></svg></span> À venir</button>
-        <button class="btn" onclick="afficherResultats()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Résultats</button>
-        <button class="btn" onclick="afficherTimer()"><span class="ic ic-red"><svg class="svgi"><use href="#i-target"/></svg></span> Timer Stand</button>
+        <button class="btn btn-primary" onclick="afficherTableauDeBord()"><span class="ic ic-blue"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-home"/></svg></span> Tableau de bord</button>
+        <button class="btn" onclick="afficherToutes()"><span class="ic ic-blue"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-cal"/></svg></span> Toutes</button>
+        <button class="btn" onclick="afficherAVenir()"><span class="ic ic-green"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span> À venir</button>
+        <button class="btn" onclick="afficherResultats()"><span class="ic ic-gold"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-trophy"/></svg></span> Résultats</button>
+        <button class="btn" onclick="afficherTimer()"><span class="ic ic-red"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-target"/></svg></span> Timer Stand</button>
       </div>
 
       <div class="toolbar-row">
-        <button class="btn" onclick="afficherStats()"><span class="ic ic-green"><svg class="svgi"><use href="#i-trend"/></svg></span> Statistiques</button>
-        <button class="btn" onclick="afficherTop10()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-medal"/></svg></span> Top 10</button>
-        <button class="btn" onclick="afficherPalmares()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-trophy"/></svg></span> Palmarès</button>
+        <button class="btn" onclick="afficherStats()"><span class="ic ic-green"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-trend"/></svg></span> Statistiques</button>
+        <button class="btn" onclick="afficherTop10()"><span class="ic ic-gold"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-medal"/></svg></span> Top 10</button>
+        <button class="btn" onclick="afficherPalmares()"><span class="ic ic-gold"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-trophy"/></svg></span> Palmarès</button>
       </div>
 
       <div class="toolbar-row">
-        <button class="btn" onclick="afficherAjoutScore()"><span class="ic ic-green"><svg class="svgi"><use href="#i-plus"/></svg></span> Ajouter un score</button>
-        <button class="btn" onclick="voirScores()"><span class="ic ic-navy"><svg class="svgi"><use href="#i-list"/></svg></span> Scores saisis</button>
-        <button class="btn" onclick="exporterScores()"><span class="ic ic-blue"><svg class="svgi"><use href="#i-dl"/></svg></span> Export JSON</button>
-        <button class="btn" onclick="exporterExcel()"><span class="ic ic-green"><svg class="svgi"><use href="#i-table"/></svg></span> Export Excel</button>
-        <button class="btn" onclick="document.getElementById('importScores').click()"><span class="ic ic-gold"><svg class="svgi"><use href="#i-folder"/></svg></span> Importer</button>
+        <button class="btn" onclick="afficherAjoutScore()"><span class="ic ic-green"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-plus"/></svg></span> Ajouter un score</button>
+        <button class="btn" onclick="voirScores()"><span class="ic ic-navy"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-list"/></svg></span> Scores saisis</button>
+        <button class="btn" onclick="exporterScores()"><span class="ic ic-blue"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-dl"/></svg></span> Export JSON</button>
+        <button class="btn" onclick="exporterExcel()"><span class="ic ic-green"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-table"/></svg></span> Export Excel</button>
+        <button class="btn" onclick="document.getElementById('importScores').click()"><span class="ic ic-gold"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-folder"/></svg></span> Importer</button>
         <input type="file" id="importScores" accept=".json" onchange="importerScores(event)" style="display:none">
       </div>
 
@@ -198,7 +250,7 @@ input[name^="serie"] {
 <main class="container">
   <div class="card">
     <div id="etat">
-      <h2><span class="ic ic-blue"><svg class="svgi"><use href="#i-home"/></svg></span> Tableau de bord</h2>
+      <h2><span class="ic ic-blue"><svg class="svgi" aria-hidden="true" focusable="false"><use href="#i-home"/></svg></span> Tableau de bord</h2>
       <p>Chargement des données…</p>
     </div>
   </div>
@@ -250,10 +302,79 @@ input[name^="serie"] {
   appliquer(!seuil.matches);
 })();
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js')
-    .catch(err => console.warn('Service worker non enregistré :', err));
-}
+/* ============================================================
+   SERVICE WORKER + banniere « nouvelle version disponible »
+   ============================================================ */
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+
+  navigator.serviceWorker.register('service-worker.js').then(function(reg){
+
+    function proposerMaj(worker){
+      if(!worker) return;
+      worker.addEventListener('statechange', function(){
+        if(worker.state !== 'installed') return;
+        if(!navigator.serviceWorker.controller) return; // 1er chargement
+        afficherBanniereMaj(reg);
+      });
+    }
+
+    if(reg.waiting) afficherBanniereMaj(reg);
+    reg.addEventListener('updatefound', () => proposerMaj(reg.installing));
+
+  }).catch(function(err){
+    console.warn('Service worker non enregistré :', err);
+  });
+
+  let rechargee = false;
+  navigator.serviceWorker.addEventListener('controllerchange', function(){
+    if(rechargee) return;
+    rechargee = true;
+    window.location.reload();
+  });
+
+  function afficherBanniereMaj(reg){
+    if(document.getElementById('maj-app')) return;
+    const b = document.createElement('div');
+    b.id = 'maj-app';
+    b.innerHTML = '<span>Nouvelle version disponible</span>' +
+                  '<button type="button">Actualiser</button>';
+    b.querySelector('button').addEventListener('click', function(){
+      if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
+      else window.location.reload();
+    });
+    document.body.appendChild(b);
+    setTimeout(() => b.classList.add('visible'), 50);
+  }
+})();
+
+/* ============================================================
+   COMPTEUR DE SCORES EN ATTENTE DE SYNCHRONISATION
+   storage.js marque offline:true quand le cloud echoue en silence.
+   ============================================================ */
+window._majAttenteSync = function(){
+  const btn = document.getElementById('btn-sync');
+  if(!btn) return;
+  let n = 0;
+  try { n = Number(localStorage.getItem('scores_en_attente')) || 0; } catch(e) {}
+  const ancien = btn.querySelector('.badge-attente');
+  if(ancien) ancien.remove();
+  if(n > 0){
+    btn.id = 'btn-sync-attente';
+    const badge = document.createElement('span');
+    badge.className = 'badge-attente';
+    badge.style.cssText = 'background:#f0c020; color:#2a1204; border-radius:999px; padding:1px 7px; font-size:.72rem; font-weight:800; margin-left:4px;';
+    badge.textContent = n;
+    badge.title = n + ' score(s) en attente de synchronisation';
+    btn.appendChild(badge);
+  } else {
+    btn.id = 'btn-sync';
+  }
+};
+
+window.addEventListener('online', function(){
+  window._majAttenteSync();
+});
 
 /* Barre de chargement pendant la lecture du classeur Excel */
 (function(){
@@ -284,12 +405,15 @@ const SVG_MAP = {
   "❌":"#i-bulb","⚠️":"#i-bulb","🏅":"#i-medal"
 };
 
-function svgIcon(ref){ return '<span class="ic"><svg class="svgi"><use href="'+ref+'"/></svg></span>'; }
+/* aria-hidden + focusable=false : les icones sont decoratives, un lecteur
+   d'ecran doit les ignorer au lieu d'annoncer du vide. */
+function svgIcon(ref){
+  return '<span class="ic"><svg class="svgi" aria-hidden="true" focusable="false"><use href="'+ref+'"/></svg></span>';
+}
 
 /* Remplace les emojis DANS LES NOEUDS TEXTE uniquement.
    - Aucun innerHTML reecrit : les ecouteurs d'evenements restent intacts.
-   - On saute les <script>, <style>, <textarea> et le contenu de .ic,
-     ou il n'y a rien a remplacer. */
+   - On saute les <script>, <style>, <textarea> et le contenu de .ic. */
 const RE_EMOJI = new RegExp('(' + Object.keys(SVG_MAP).join('|') + ')', 'g');
 
 function _remplacerEmojis(racine){
@@ -357,15 +481,13 @@ window.toggleTheme = function(){
   const html = document.documentElement;
   const cur = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-theme', cur);
-  localStorage.setItem('theme', cur);
+  try { localStorage.setItem('theme', cur); } catch(e) {}
   document.body.classList.toggle('dark', cur==='dark');
   _majLibelleTheme();
 };
 
 (function(){
-  const saved = localStorage.getItem('theme');
-  const theme = (saved === 'light') ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', theme);
+  const theme = document.documentElement.getAttribute('data-theme') || 'dark';
   document.body.classList.toggle('dark', theme === 'dark');
 })();
 
@@ -373,9 +495,10 @@ document.addEventListener('DOMContentLoaded', function(){
   _embellirTableau();
   _observer();
   _majLibelleTheme();
+  window._majAttenteSync();
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script type="module" src="js/main.js?v=11"></script>
+<script type="module" src="js/main.js?v=12"></script>
 </body>
 </html>
