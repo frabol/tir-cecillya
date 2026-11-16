@@ -466,6 +466,30 @@ export function afficherToast(msg) {
     clearTimeout(t._timer);
     t._timer = setTimeout(() => t.classList.remove("show"), 2500);
 }
+
+export function confirmer(message, onOui, texteBouton = "Confirmer") {
+    const deja = document.getElementById("modale-confirme");
+    if (deja) deja.remove();
+
+    const box = document.createElement("div");
+    box.id = "modale-confirme";
+    box.innerHTML =
+        '<div class="modale-fond"></div>' +
+        '<div class="modale-boite" role="dialog" aria-modal="true">' +
+            '<p class="modale-texte">' + echapperHTML(message) + '</p>' +
+            '<div class="modale-actions">' +
+                '<button class="btn" id="modale-non">Annuler</button>' +
+                '<button class="btn btn-primary" id="modale-oui">' + echapperHTML(texteBouton) + '</button>' +
+            '</div>' +
+        '</div>';
+    document.body.appendChild(box);
+
+    const fermer = () => box.remove();
+    box.querySelector(".modale-fond").onclick = fermer;
+    box.querySelector("#modale-non").onclick = fermer;
+    box.querySelector("#modale-oui").onclick = () => { fermer(); onOui(); };
+}
+
 export function afficherStats() {
     pageActuelle = "stats";
     const stats = calculerStatistiques();
