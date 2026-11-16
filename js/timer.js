@@ -9,6 +9,42 @@ let modeActuelConfig = { essais: 15, match: 75, nom: "10m - 60 coups (Électro)"
 
 const CLE_ETAT = "timer_etat";
 
+/* ============================================================
+   ANTI-VEILLE DE L'ECRAN
+   Au pas de tir, le telephone s'endort au bout de 30 s et on
+   perd le chrono de vue. On demande au navigateur de garder
+   l'ecran allume tant que le timer tourne.
+   Supporte par Chrome / Edge / Android. Safari iOS ne le
+   propose pas : on ignore silencieusement.
+   ============================================================ */
+let verrouEcran = null;
+
+async function garderEcranAllume(){
+    if (!('wakeLock' in navigator)) return;
+    try {
+        if (!verrouEcran) {
+            verrouEcran = await navigator.wakeLock.request('screen');
+            verrouEcran.addEventListener('release', () => { verrouEcran = null; });
+        }
+    } catch (e) {
+        // refus, onglet en arriere-plan, batterie faible : sans gravité
+    }
+}
+
+async function relacherEcran(){
+    try {
+        if (verrouEcran) { await verrouEcran.release(); verrouEcran = null; }
+    } catch (e) { /* deja libere */ }
+}
+
+// Le navigateur libere le verrou quand l'onglet passe en arriere-plan.
+// On le reprend au retour si le timer tourne encore.
+document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'visible' && timerActif && tempsRestant > 0) {
+        garderEcranAllume();
+    }
+});
+
 function sauvegarderEtat() {
     try {
         localStorage.setItem(CLE_ETAT, JSON.stringify({
@@ -123,7 +159,7 @@ function lancerBoucle() {
                 if (phaseActuelle === "essais" && modeActuelConfig.match > 0) {
                     afficherToast("🏆 Fin des essais — passez au match quand vous êtes prêt");
                 } else {
-                    afficherToast("🏁 TEMPS ÉCOULÉ ! Fin de la séance.");
+                    afficherToast("🏁 TEMPS ÉCOULÉ ! Fin de la séance.");
                 }
             }
         }
@@ -137,6 +173,7 @@ export function demarrerPauseTimer() {
     if (timerActif) {
         clearInterval(timerInterval);
         timerActif = false;
+        relacherEcran();
         sauvegarderEtat();
         if (btn) { btn.textContent = "▶ Reprendre"; btn.style.background = "#22c55e"; }
         afficherToast("⏸️ Timer en pause");
@@ -144,11 +181,7 @@ export function demarrerPauseTimer() {
         if (tempsRestant <= 0) return;
         timerActif = true;
         if (btn) { btn.textContent = "⏸️ Pause"; btn.style.background = "#d97706"; }
-        
-        if ('wakeLock' in navigator) {
-            navigator.wakeLock.request('screen').catch(() => {});
-        }
-
+        garderEcranAllume();
         lancerBoucle();
         sauvegarderEtat();
         afficherToast("▶️ Timer démarré");
@@ -158,6 +191,7 @@ export function demarrerPauseTimer() {
 export function arreterTimer() {
     clearInterval(timerInterval);
     timerActif = false;
+    relacherEcran();
     sauvegarderEtat();
     const btn = document.getElementById("btn-start-pause");
     if (btn) { btn.textContent = "▶ Démarrer"; btn.style.background = ""; }
@@ -242,6 +276,7 @@ export function afficherTimer() {
 
     if (timerActif && tempsRestant > 0) {
         lancerBoucle();
+        garderEcranAllume();
     }
     majBandeauTimer();
 
@@ -249,7 +284,7 @@ export function afficherTimer() {
 
     let html = '<button class="btn btn-retour" onclick="afficherTableauDeBord()">← Retour au tableau de bord</button>' +
         '<h2>⏱️ Timer & Stand de Tir Officiel</h2>' +
-        '<p style="color:var(--muted); margin-bottom:16px;">Chronométrage officiel FFTir (Règlement ISSF) avec alertes sonores.</p>' +
+        '<p style="color:var(--muted); margin-bottom:16px;">Chronométrage officiel FFTir (Règlement ISSF) avec alertes sonores. L\'écran reste allumé pendant le décompte.</p>' +
         
         '<div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">' +
             '<button class="btn btn-primary" onclick="appliquerPresetTimer(15, 75, \'10m - 60 coups (Électro)\')">🎯 10m 60c (15+75)</button>' +
