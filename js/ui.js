@@ -31,7 +31,8 @@ export function texteCompteARebours(jours){
 
 export function lienItineraire(lieu){
     const q = encodeURIComponent(String(lieu || "") + " France");
-    return "[google.com](https://www.google.com/maps/search/?api=1&query=)" + q;
+        return "[google.com](https://www.google.com/maps/search/?api=1&query=)" + q;
+
 }
 
 /* Moyennes separees : entrainement d'un cote, competition de l'autre. */
