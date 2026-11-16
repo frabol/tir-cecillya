@@ -48,8 +48,14 @@ function determinerLieu(evenement, lieu) {
 /* ============================================================
    NOMBRE DE JOURS ENTRE AUJOURD'HUI ET UNE EPREUVE
    dateReelle ressemble a "Sam 21/11 - Dim 22/11/2026" ou a
-   "Du Jeu 17/09 au Dim 20/09/2026". On prend la DERNIERE date
-   de la chaine, celle qui porte l'annee.
+   "Du Jeu 17/09 au Dim 20/09/2026".
+
+   On prend la PREMIERE date datee de la chaine, c'est-a-dire le
+   DEBUT de l'epreuve : pour un tournoi du samedi 21 au dimanche
+   22, le compte a rebours affiche J-5 depuis le lundi 16, ce qui
+   correspond au temps de preparation restant avant d'arriver au
+   stand. (Prendre la fin donnerait J-6, moins parlant.)
+
    Retourne null si aucune date exploitable.
    ============================================================ */
 function joursDepuis(dateReelle){
@@ -57,7 +63,7 @@ function joursDepuis(dateReelle){
     const toutes = [...t.matchAll(/(\d{2})\/(\d{2})\/(\d{4})/g)];
     if (toutes.length === 0) return null;
 
-    const m = toutes[toutes.length - 1];
+    const m = toutes[0];
     const j = parseInt(m[1], 10);
     const mo = parseInt(m[2], 10);
     const an = parseInt(m[3], 10);
