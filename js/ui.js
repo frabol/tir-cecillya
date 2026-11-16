@@ -31,7 +31,7 @@ export function texteCompteARebours(jours){
 
 export function lienItineraire(lieu){
     const q = encodeURIComponent(String(lieu || "") + " France");
-    return "[google.com](https://www.google.com/maps/search/?api=1&query=)" + q;
+    return "https://www.google.com/maps/search/?api=1&query=" + q;
 
 
 }
