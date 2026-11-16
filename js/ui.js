@@ -454,6 +454,18 @@ export function filtrerResultats(mode) {
     });
     rendreResultats();
 }
+export function afficherToast(msg) {
+    let t = document.getElementById("toast-sync");
+    if (!t) {
+        t = document.createElement("div");
+        t.id = "toast-sync";
+        document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove("show"), 2500);
+}
 export function afficherStats() {
     pageActuelle = "stats";
     const stats = calculerStatistiques();
