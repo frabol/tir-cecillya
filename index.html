@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#1a0808">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>.svgi{width:19px;height:19px;flex:0 0 19px}</style>
@@ -109,7 +109,6 @@ input[name^="serie"] {
     <span style="font-size:12px; font-weight:700; color:#fff; text-shadow:0 2px 5px rgba(0,0,0,0.8); letter-spacing:0.06em; text-transform:uppercase;">Maubeuge</span>
   </div>
 
-  <!-- Logo Ligue NPdC heberge localement : indispensable hors-ligne (PWA) -->
   <div style="position:absolute; right:40px; top:50%; transform:translateY(-50%); z-index:5; display:flex; flex-direction:column; align-items:center; gap:6px;" class="desktop-logo-right">
     <img src="logo-ligue-npdc.png" alt="Écusson Ligue de Tir Nord-Pas-de-Calais" style="width:155px; height:155px; object-fit:contain; border-radius:18px; filter:drop-shadow(0 10px 25px rgba(0,0,0,0.6)); background:rgba(255,255,255,0.08); padding:6px; border:3px solid rgba(255,255,255,0.45);">
     <span style="font-size:12px; font-weight:700; color:#fff; text-shadow:0 2px 5px rgba(0,0,0,0.8); letter-spacing:0.06em; text-transform:uppercase;">Ligue NPdC</span>
@@ -242,7 +241,6 @@ input[name^="serie"] {
     if(ev.target.closest('.btn') && seuil.matches) appliquer(false);
   });
 
-  // Ne reagit qu'au passage 860px, pas a chaque resize.
   if(seuil.addEventListener){
     seuil.addEventListener('change', e => appliquer(!e.matches));
   } else if (seuil.addListener){
@@ -268,7 +266,6 @@ if ('serviceWorker' in navigator) {
   };
   const fetchOriginal = window.fetch;
   window.fetch = function(...args){
-    // args[0] peut etre une string OU un objet Request.
     const a = args[0];
     const url = (typeof a === 'string') ? a : ((a && a.url) ? a.url : '');
     if (url.includes('.xlsx')) {
@@ -280,13 +277,19 @@ if ('serviceWorker' in navigator) {
 })();
 
 const SVG_MAP = {
-  "🏠":"#i-home","📅":"#i-cal","✅":"#i-check","🏆":"#i-trophy","📈":"#i-trend","🥇":"#i-medal","🥈":"#i-medal","🥉":"#i-medal","🎯":"#i-target","📊":"#i-chart","📋":"#i-list","🏋":"#i-trend","📍":"#i-pin","💾":"#i-dl","☁":"#i-cloud","📆":"#i-cal","🔔":"#i-bulb","❌":"#i-bulb","⚠️":"#i-bulb"
+  "🏠":"#i-home","📅":"#i-cal","✅":"#i-check","🏆":"#i-trophy","📈":"#i-trend",
+  "🥇":"#i-medal","🥈":"#i-medal","🥉":"#i-medal","🎯":"#i-target",
+  "📊":"#i-chart","📋":"#i-list","🏋":"#i-trend","📍":"#i-pin",
+  "💾":"#i-dl","☁":"#i-cloud","📆":"#i-cal","🔔":"#i-bulb",
+  "❌":"#i-bulb","⚠️":"#i-bulb","🏅":"#i-medal"
 };
 
 function svgIcon(ref){ return '<span class="ic"><svg class="svgi"><use href="'+ref+'"/></svg></span>'; }
 
 /* Remplace les emojis DANS LES NOEUDS TEXTE uniquement.
-   Aucun innerHTML reecrit : les ecouteurs d'evenements restent intacts. */
+   - Aucun innerHTML reecrit : les ecouteurs d'evenements restent intacts.
+   - On saute les <script>, <style>, <textarea> et le contenu de .ic,
+     ou il n'y a rien a remplacer. */
 const RE_EMOJI = new RegExp('(' + Object.keys(SVG_MAP).join('|') + ')', 'g');
 
 function _remplacerEmojis(racine){
@@ -295,6 +298,8 @@ function _remplacerEmojis(racine){
   const cibles = [];
   let n;
   while((n = walker.nextNode())){
+    const parent = n.parentElement;
+    if(parent && parent.closest('script, style, textarea, .ic')) continue;
     if(n.nodeValue && RE_EMOJI.test(n.nodeValue)) cibles.push(n);
     RE_EMOJI.lastIndex = 0;
   }
@@ -313,25 +318,20 @@ function _remplacerEmojis(racine){
   });
 }
 
-function _embellirTableau(){
-  const etat = document.getElementById('etat');
-  if(!etat) return;
-  if(etat.dataset.kpiDone) return;
+/* Marque la GRILLE stylisee, pas #etat : #etat reste le meme element
+   toute la session, donc le marquer bloquait le style au retour sur
+   le tableau de bord apres un passage sur un autre onglet. */
+function _embellirTableau(racine){
+  const zone = racine || document.getElementById('etat');
+  if(!zone) return;
 
-  const grid = etat.querySelector('div[style*="grid-template"]');
-  if(grid){
-    grid.classList.add('kpi-grid');
-    grid.removeAttribute('style');
-    grid.querySelectorAll(':scope > div').forEach(d => d.classList.add('kpi'));
-    etat.dataset.kpiDone = '1';
-    return;
-  }
+  const grille = zone.querySelector('.kpi-grid, [data-kpi-grid], div[style*="grid-template"]');
+  if(!grille) return;
 
-  const grille = etat.querySelector('.kpi-grid');
-  if(grille){
-    grille.querySelectorAll(':scope > div').forEach(d => d.classList.add('kpi'));
-    etat.dataset.kpiDone = '1';
-  }
+  grille.classList.add('kpi-grid');
+  if(grille.hasAttribute('style')) grille.removeAttribute('style');
+  grille.setAttribute('data-kpi-grid','1');
+  grille.querySelectorAll(':scope > div').forEach(d => d.classList.add('kpi'));
 }
 
 function _observer(){
@@ -339,7 +339,7 @@ function _observer(){
   if(!etat || etat.dataset.observe) return;
   etat.dataset.observe = '1';
   new MutationObserver(function(){
-    _embellirTableau();
+    _embellirTableau(etat);
     _remplacerEmojis(etat);
   }).observe(etat, {childList:true, subtree:true});
 }
@@ -376,6 +376,6 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script type="module" src="js/main.js?v=10"></script>
+<script type="module" src="js/main.js?v=11"></script>
 </body>
 </html>
